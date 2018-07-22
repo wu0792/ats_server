@@ -3,7 +3,7 @@ const ActionEntry = require('../analysis/actionEntryBase')
 
 const ACTION_TYPES = new Enum({
     NETWORK: {
-        collect: (data) => new ActionEntry.NetworkActionEntry(data)
+        collect: (data) => new ActionEntry.NetworkActionEntry(data),
     },
     NAVIGATE: {
         collect: (data) => new ActionEntry.NavigateActionEntry(data)
@@ -11,11 +11,11 @@ const ACTION_TYPES = new Enum({
     MUTATION: {
         collect: (data) => new ActionEntry.MutationActionEntry(data)
     },
-    KEYDOWN: {
-        collect: (data) => new ActionEntry.KeydownActionEntry(data)
+    KEYPRESS: {
+        collect: (data) => new ActionEntry.KeyPressActionEntry(data)
     },
     MOUSEOVER: {
-        collect: (data) => new ActionEntry.MouseoverActionEntry(data)
+        collect: (data) => new ActionEntry.MouseOverActionEntry(data)
     },
     CLICK: {
         collect: (data) => new ActionEntry.ClickActionEntry(data)
