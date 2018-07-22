@@ -1,0 +1,9 @@
+node_modules
+build/ext/content.js
+build/ext/background.js
+build/ext/devtools.html
+build/ext/devtools.js
+build/ext/icon.png
+build/ext/manifest.json
+build/ext/panel.html
+build/ext/panel.js
