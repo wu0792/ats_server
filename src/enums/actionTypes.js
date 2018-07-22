@@ -1,23 +1,31 @@
-import Enum from 'enum'
+const Enum = require('enum')
+const ActionEntry = require('../analysis/actionEntryBase')
 
-export const ACTION_TYPES = new Enum({
+const ACTION_TYPES = new Enum({
     NETWORK: {
-        collect: (entry) => {
-            
-        }
+        collect: (data) => new ActionEntry.NetworkActionEntry(data)
     },
     NAVIGATE: {
+        collect: (data) => new ActionEntry.NavigateActionEntry(data)
     },
     MUTATION: {
+        collect: (data) => new ActionEntry.MutationActionEntry(data)
     },
     KEYDOWN: {
+        collect: (data) => new ActionEntry.KeydownActionEntry(data)
     },
     MOUSEOVER: {
+        collect: (data) => new ActionEntry.MouseoverActionEntry(data)
     },
     CLICK: {
+        collect: (data) => new ActionEntry.ClickActionEntry(data)
     },
     SCROLL: {
+        collect: (data) => new ActionEntry.ScrollActionEntry(data)
     },
     RESIZE: {
+        collect: (data) => new ActionEntry.ResizeActionEntry(data)
     },
 })
+
+module.exports = ACTION_TYPES 

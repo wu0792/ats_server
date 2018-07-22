@@ -1,0 +1,6 @@
+{
+    "npm-intellisense.importES6": false,
+	"npm-intellisense.importQuotes": "'",
+	"npm-intellisense.importLinebreak": "\r\n",
+	"npm-intellisense.importDeclarationType": "const"
+}

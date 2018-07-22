@@ -1,27 +1,41 @@
-import { ACTION_TYPES } from '../enums/actionTypes';
-
+const ACTION_TYPES = require('../enums/actionTypes')
+const Collector = require('./collector')
 const readFilePromise = require('fs-readfile-promise')
 
-export class Receiver {
-    async constructor(path) {
-        let configText = await readFilePromise(path, { encoding: 'utf8' }),
+class Receiver {
+    constructor(path) {
+        this.path = path
+        this.data = null
+    }
+
+    async init() {
+        let configText = await readFilePromise(this.path, { encoding: 'utf8' }),
             configJson = JSON.parse(configText)
 
         this.data = configJson
     }
 
-    analysis() {
-        const keys = Object.keys(this.data)
+    async dump() {
+        await this.init()
+
+        const keys = Object.keys(this.data),
+            collector = new Collector()
+
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i],
-                list = this.data[key]
+                dataList = this.data[key]
 
-            const theActionType = ACTION_TYPES.get(key)
+            const theActionType = ACTION_TYPES.get(key.toUpperCase())
             if (theActionType) {
-                
+                let entryList = dataList.map(data => theActionType.value.collect(data))
+                collector.collect(theActionType, entryList)
             } else {
                 throw `unknown action type: ${key}, all known action types are: ${ACTION_TYPES.enums.map(theEnum => theEnum.key.toLowerCase()).join(', ')}.`
             }
         }
+
+        return collector.flat()
     }
 }
+
+module.exports = Receiver

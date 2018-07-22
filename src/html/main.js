@@ -1,3 +1,5 @@
+const Receiver = require('../analysis/receiver')
+
 const app = require('electron').remote.app,
     path = require('path'),
     fs = require('fs'),
@@ -11,7 +13,8 @@ async function getPic(url) {
         slowMo: 250,
         executablePath:
             'node_modules/puppeteer/.local-chromium/win64-571375/chrome-win32/chrome.exe'
-    });
+    })
+
     const page = await browser.newPage();
     await page.goto(url);
     await page.setViewport({ width: 1200, height: 800 });
@@ -21,7 +24,12 @@ async function getPic(url) {
 }
 
 document.getElementById('start').addEventListener('click', function () {
-    event.preventDefault();
-    console.log('start');
-    getPic('https://www.google.de');
+    // getPic('https://www.google.de');
+
+    let receiver = new Receiver(`C:\\Users\\wu0792\\Downloads\\ats_data (16).json`)
+    let listPromise = receiver.dump()
+    listPromise.then(list => {
+        console.log(list)
+    })
+
 });
