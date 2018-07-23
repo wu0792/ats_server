@@ -26,7 +26,7 @@ async function repeat(groupedList, flatList) {
 }
 
 document.getElementById('start').addEventListener('click', function () {
-    let receiver = new Receiver(`C:\\Users\\wu0792\\Downloads\\ats_data (24).json`)
+    let receiver = new Receiver(`C:\\Users\\wu0792\\Downloads\\ats_data (26).json`)
     let groupPromise = receiver.dumpGroupedList()
 
     groupPromise.then(group => {

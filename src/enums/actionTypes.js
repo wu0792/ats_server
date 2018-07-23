@@ -14,14 +14,17 @@ const ACTION_TYPES = new Enum({
                         origin = `${parsedPageUrl.protocol}//${parsedPageUrl.host}${parsedPageUrl.port ? (':' + parsedPageUrl.port) : ''}`
 
                     const url = request.url(),
-                        matchedRequests = entryList.filter(entry => {
+                        firstMatchedRequestIndex = entryList.findIndex(entry => {
                             return entry.url === url
                         })
 
-                    if (matchedRequests.length) {
+                    if (firstMatchedRequestIndex >= 0) {
                         // todo not get the first one
-                        const validRequest = matchedRequests[0],
+                        const validRequest = entryList[firstMatchedRequestIndex],
                             { body, form, status, contentType } = validRequest
+
+                        entryList.splice(firstMatchedRequestIndex, 1)
+
                         request.respond({
                             status: status,
                             contentType: contentType.indexOf('image') === 0 ? contentType : `${contentType};charset=utf-8`,
