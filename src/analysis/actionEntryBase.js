@@ -1,6 +1,6 @@
 const ACTION_TYPES = require('../enums/actionTypes')
 const expect = require('expect-puppeteer')
-const option = { timeout: 2000 }
+const option = { timeout: 5000 }
 
 class ActionEntryBase {
     constructor(data) {

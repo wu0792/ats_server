@@ -19,7 +19,7 @@ const ACTION_TYPES = new Enum({
                             { body, form, status, contentType } = validRequest
                         request.respond({
                             status: status,
-                            contentType: contentType,
+                            contentType: `${contentType};charset=utf-8`,
                             body: body
                         });
                     } else {
