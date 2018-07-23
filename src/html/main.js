@@ -18,7 +18,7 @@ async function repeat(groupedList, flatList) {
 
     const page = await browser.newPage();
     await page.setRequestInterception(true)
-    await page.setViewport({ width: 1200, height: 800 });
+    await page.setViewport({ width: 1366, height: 768 });
 
     const director = new Director(page, groupedList, flatList)
     await director.preProcess()
@@ -26,7 +26,7 @@ async function repeat(groupedList, flatList) {
 }
 
 document.getElementById('start').addEventListener('click', function () {
-    let receiver = new Receiver(`D:\\Users\\wumm\\Downloads\\ats_data (1).json`)
+    let receiver = new Receiver(`C:\\Users\\wu0792\\Downloads\\ats_data (24).json`)
     let groupPromise = receiver.dumpGroupedList()
 
     groupPromise.then(group => {

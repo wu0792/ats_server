@@ -1,5 +1,6 @@
 const Enum = require('enum')
 const ActionEntry = require('../analysis/actionEntryBase')
+const urlParser = require('url')
 
 const ACTION_TYPES = new Enum({
     NETWORK: {
@@ -8,6 +9,10 @@ const ACTION_TYPES = new Enum({
             if (entryList.length) {
                 await page.setRequestInterception(true)
                 page.on('request', request => {
+                    const pageUrl = page.url(),
+                        parsedPageUrl = urlParser.parse(pageUrl),
+                        origin = `${parsedPageUrl.protocol}//${parsedPageUrl.host}${parsedPageUrl.port ? (':' + parsedPageUrl.port) : ''}`
+
                     const url = request.url(),
                         matchedRequests = entryList.filter(entry => {
                             return entry.url === url
@@ -19,8 +24,11 @@ const ACTION_TYPES = new Enum({
                             { body, form, status, contentType } = validRequest
                         request.respond({
                             status: status,
-                            contentType: `${contentType};charset=utf-8`,
-                            body: body
+                            contentType: contentType.indexOf('image') === 0 ? contentType : `${contentType};charset=utf-8`,
+                            body: body,
+                            headers: {
+                                "Access-Control-Allow-Origin": origin
+                            }
                         });
                     } else {
                         request.continue()
