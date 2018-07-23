@@ -8,27 +8,31 @@ const app = require('electron').remote.app,
     BrowserWindow = require('electron').remote.BrowserWindow,
     puppeteer = require('puppeteer');
 
-async function repeat(entryList) {
+async function repeat(groupedList, flatList) {
     const browser = await puppeteer.launch({
         headless: false,
-        slowMo: 100,
+        slowMo: 50,
         executablePath:
             'node_modules/puppeteer/.local-chromium/win64-571375/chrome-win32/chrome.exe'
     })
 
     const page = await browser.newPage();
+    await page.setRequestInterception(true)
     await page.setViewport({ width: 1200, height: 800 });
 
-    const director = new Director(page, entryList)
+    const director = new Director(page, groupedList, flatList)
     await director.preProcess()
     await director.process()
 }
 
 document.getElementById('start').addEventListener('click', function () {
-    let receiver = new Receiver(`C:\\Users\\wu0792\\Downloads\\ats_data (22).json`)
-    let listPromise = receiver.dump()
-    listPromise.then(list => {
-        repeat(list)
-    })
+    let receiver = new Receiver(`C:\\Users\\wu0792\\Downloads\\ats_data (23).json`)
+    let groupPromise = receiver.dumpGroupedList()
 
+    groupPromise.then(group => {
+        let listPromise = receiver.dumpFlatList()
+        listPromise.then(list => {
+            repeat(group, list)
+        })
+    })
 });

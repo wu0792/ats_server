@@ -1,19 +1,22 @@
+const ACTION_TYPES = require('../enums/actionTypes')
+
 class Director {
-    constructor(page, entryList) {
+    constructor(page, groupedList, flatList) {
         this.page = page
-        this.entryList = entryList
+        this.groupedList = groupedList
+        this.flatList = flatList
     }
 
     async preProcess() {
-        for (let i = 0; i < this.entryList.length; i++) {
-            const entry = this.entryList[i]
-            await entry.preProcess(this.page)
-        }
+        const actionTypes = ACTION_TYPES.enums
+        actionTypes.forEach(async actionType => {
+            await actionType.value.preProcess(this.page, this.groupedList[actionType.key])
+        })
     }
 
     async process() {
-        for (let i = 0; i < this.entryList.length; i++) {
-            const entry = this.entryList[i]
+        for (let i = 0; i < this.flatList.length; i++) {
+            const entry = this.flatList[i]
             await entry.process(this.page)
         }
     }

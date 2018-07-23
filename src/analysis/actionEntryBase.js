@@ -11,10 +11,6 @@ class ActionEntryBase {
         throw 'should be override and never run here.'
     }
 
-    async preProcess(page) {
-
-    }
-
     async process(page) {
 
     }
