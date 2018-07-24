@@ -19,9 +19,8 @@ const ACTION_TYPES = new Enum({
                         })
 
                     if (firstMatchedRequestIndex >= 0) {
-                        // todo not get the first one
                         const validRequest = entryList[firstMatchedRequestIndex],
-                            { body, form, status, contentType } = validRequest
+                            { body, form, status, headers } = validRequest
 
                         entryList.splice(firstMatchedRequestIndex, 1)
 
@@ -30,7 +29,8 @@ const ACTION_TYPES = new Enum({
                             contentType: contentType.indexOf('image') === 0 ? contentType : `${contentType};charset=utf-8`,
                             body: body,
                             headers: {
-                                "Access-Control-Allow-Origin": origin
+                                "Access-Control-Allow-Origin": origin,
+                                "Content-Type": headers['content-type']
                             }
                         });
                     } else {
