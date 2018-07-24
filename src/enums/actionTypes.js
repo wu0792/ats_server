@@ -1,6 +1,5 @@
 const Enum = require('enum')
 const ActionEntry = require('../analysis/actionEntryBase')
-const urlParser = require('url')
 
 const ACTION_TYPES = new Enum({
     NETWORK: {
@@ -9,29 +8,22 @@ const ACTION_TYPES = new Enum({
             if (entryList.length) {
                 await page.setRequestInterception(true)
                 page.on('request', request => {
-                    const pageUrl = page.url(),
-                        parsedPageUrl = urlParser.parse(pageUrl),
-                        origin = `${parsedPageUrl.protocol}//${parsedPageUrl.host}${parsedPageUrl.port ? (':' + parsedPageUrl.port) : ''}`
-
-                    const url = request.url(),
+                    const method = request.method(),
+                        url = request.url(),
                         firstMatchedRequestIndex = entryList.findIndex(entry => {
-                            return entry.url === url
+                            return entry.url === url && entry.method === method
                         })
 
                     if (firstMatchedRequestIndex >= 0) {
                         const validRequest = entryList[firstMatchedRequestIndex],
-                            { body, form, status, headers } = validRequest
+                            { body, form, status, header } = validRequest
 
                         entryList.splice(firstMatchedRequestIndex, 1)
 
                         request.respond({
                             status: status,
-                            contentType: contentType.indexOf('image') === 0 ? contentType : `${contentType};charset=utf-8`,
                             body: body,
-                            headers: {
-                                "Access-Control-Allow-Origin": origin,
-                                "Content-Type": headers['content-type']
-                            }
+                            headers: header
                         });
                     } else {
                         request.continue()
