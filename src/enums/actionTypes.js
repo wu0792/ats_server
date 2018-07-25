@@ -1,5 +1,6 @@
 const Enum = require('enum')
 const ActionEntry = require('../analysis/actionEntryBase')
+const urlParser = require('url')
 
 const ACTION_TYPES = new Enum({
     NETWORK: {
@@ -49,24 +50,32 @@ const ACTION_TYPES = new Enum({
 
             //used to split user actions
             page.on('framenavigated', async frame => {
-                if (frame !== page.mainFrame())
+                if (frame !== page.mainFrame() || entryList.length === 0)
                     return
 
                 let url = frame.url(),
                     allNavigateId = entryList.map(entry => entry.id),
-                    currentNavigateId = entryList[0].id
+                    firstEntry = entryList[0],
+                    currentNavigateId = firstEntry.id,
+                    firstEntryUrl = firstEntry.url
 
-                if (url !== entryList[0].url) {
-                    console.error(`navigate url not matched with records, expected: ${entryList[0].url}, actual: ${url}`)
+                if (url !== firstEntryUrl) {
+                    const parsedPageUrl = urlParser.parse(firstEntryUrl),
+                        hash = parsedPageUrl.hash
+
+                    if (!hash || url !== firstEntryUrl.replace(hash, ''))
+                        console.error(`navigate url not matched with records, expected: ${entryList[0].url}, actual: ${url}`)
                 }
 
                 entryList.splice(0, 1)
 
                 page.once('domcontentloaded', () => {
-                    const currentNavigateIdIndex = allNavigateId.indexOf(currentNavigateId)
+                    const currentNavigateIdIndex = allNavigateId.indexOf(currentNavigateId),
+                        nextNavigateId = allNavigateId[currentNavigateIdIndex + 1] || Infinity
 
                     director.currentNavigateId = currentNavigateId
-                    director.onDomContentLoaded(currentNavigateId, allNavigateId[currentNavigateIdIndex + 1] || Infinity)
+                    director.nextNavigateId = nextNavigateId
+                    director.onDomContentLoaded()
                 })
             })
         }

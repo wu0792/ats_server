@@ -6,14 +6,15 @@ class Director {
         this.groupedList = groupedList
         this.flatList = flatList
         this.currentNavigateId = NaN
+        this.nextNavigateId = NaN
     }
 
-    async onDomContentLoaded(currentNavigateId, nextNavigateId) {
+    async onDomContentLoaded() {
         for (let i = 0; i < this.flatList.length; i++) {
             const entry = this.flatList[i],
-                id = entry.id
+                id = entry.data.id
 
-            if (id > currentNavigateId && id < nextNavigateId)
+            if (id > this.currentNavigateId && id < this.nextNavigateId)
                 await entry.process(this.page)
         }
     }

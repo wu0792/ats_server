@@ -11,7 +11,7 @@ const app = require('electron').remote.app,
 async function repeat(groupedList, flatList) {
     const browser = await puppeteer.launch({
         headless: false,
-        slowMo: 50,
+        slowMo: 10,
         executablePath:
             'node_modules/puppeteer/.local-chromium/win64-571375/chrome-win32/chrome.exe'
     })
@@ -25,7 +25,7 @@ async function repeat(groupedList, flatList) {
 }
 
 document.getElementById('start').addEventListener('click', function () {
-    let receiver = new Receiver(`C:\\Users\\wu0792\\Downloads\\ats_data (36).json`)
+    let receiver = new Receiver(`C:\\Users\\wu0792\\Downloads\\ats_data (41).json`)
     let groupPromise = receiver.dumpGroupedList()
 
     groupPromise.then(group => {
