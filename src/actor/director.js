@@ -8,18 +8,21 @@ class Director {
         this.currentNavigateId = NaN
     }
 
+    async onDomContentLoaded(currentNavigateId, nextNavigateId) {
+        for (let i = 0; i < this.flatList.length; i++) {
+            const entry = this.flatList[i],
+                id = entry.id
+
+            if (id > currentNavigateId && id < nextNavigateId)
+                await entry.process(this.page)
+        }
+    }
+
     async preProcess() {
         const actionTypes = ACTION_TYPES.enums
         actionTypes.forEach(async actionType => {
             await actionType.value.preProcess(this)
         })
-    }
-
-    async process() {
-        for (let i = 0; i < this.flatList.length; i++) {
-            const entry = this.flatList[i]
-            await entry.process(this.page)
-        }
     }
 }
 

@@ -22,7 +22,6 @@ async function repeat(groupedList, flatList) {
 
     const director = new Director(page, groupedList, flatList)
     await director.preProcess()
-    await director.process()
 }
 
 document.getElementById('start').addEventListener('click', function () {

@@ -41,16 +41,20 @@ const ACTION_TYPES = new Enum({
             let page = director.page,
                 entryList = director.groupedList[ACTION_TYPES.NAVIGATE.key]
 
-
+            if (entryList.length) {
+                new ActionEntry.NavigateActionEntry(entryList[0]).process(page)
+            } else {
+                console.error('no navigate action found, unable to launch.')
+            }
 
             //used to split user actions
             page.on('framenavigated', async frame => {
                 if (frame !== page.mainFrame())
                     return
 
-                let url = frame.url()
-
-                director.currentNavigateId = entryList[0].id
+                let url = frame.url(),
+                    allNavigateId = entryList.map(entry => entry.id),
+                    currentNavigateId = entryList[0].id
 
                 if (url !== entryList[0].url) {
                     console.error(`navigate url not matched with records, expected: ${entryList[0].url}, actual: ${url}`)
@@ -58,8 +62,11 @@ const ACTION_TYPES = new Enum({
 
                 entryList.splice(0, 1)
 
-                page.once('domcontentloaded', async theFrame => {
+                page.once('domcontentloaded', () => {
+                    const currentNavigateIdIndex = allNavigateId.indexOf(currentNavigateId)
 
+                    director.currentNavigateId = currentNavigateId
+                    director.onDomContentLoaded(currentNavigateId, allNavigateId[currentNavigateIdIndex + 1] || Infinity)
                 })
             })
         }
