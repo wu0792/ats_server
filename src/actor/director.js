@@ -5,12 +5,13 @@ class Director {
         this.page = page
         this.groupedList = groupedList
         this.flatList = flatList
+        this.currentNavigateId = NaN
     }
 
     async preProcess() {
         const actionTypes = ACTION_TYPES.enums
         actionTypes.forEach(async actionType => {
-            await actionType.value.preProcess(this.page, this.groupedList[actionType.key])
+            await actionType.value.preProcess(this)
         })
     }
 

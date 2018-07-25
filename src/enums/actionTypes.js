@@ -4,7 +4,10 @@ const ActionEntry = require('../analysis/actionEntryBase')
 const ACTION_TYPES = new Enum({
     NETWORK: {
         collect: (data) => new ActionEntry.NetworkActionEntry(data),
-        preProcess: async (page, entryList) => {
+        preProcess: async (director) => {
+            let page = director.page,
+                entryList = director.groupedList[ACTION_TYPES.NETWORK.key]
+
             if (entryList.length) {
                 await page.setRequestInterception(true)
                 page.on('request', request => {
@@ -34,31 +37,56 @@ const ACTION_TYPES = new Enum({
     },
     NAVIGATE: {
         collect: (data) => new ActionEntry.NavigateActionEntry(data),
-        preProcess: async (page, entryList) => { }
+        preProcess: async (director) => {
+            let page = director.page,
+                entryList = director.groupedList[ACTION_TYPES.NAVIGATE.key]
+
+
+
+            //used to split user actions
+            page.on('framenavigated', async frame => {
+                if (frame !== page.mainFrame())
+                    return
+
+                let url = frame.url()
+
+                director.currentNavigateId = entryList[0].id
+
+                if (url !== entryList[0].url) {
+                    console.error(`navigate url not matched with records, expected: ${entryList[0].url}, actual: ${url}`)
+                }
+
+                entryList.splice(0, 1)
+
+                page.once('domcontentloaded', async theFrame => {
+
+                })
+            })
+        }
     },
     MUTATION: {
         collect: (data) => new ActionEntry.MutationActionEntry(data),
-        preProcess: async (page, entryList) => { }
+        preProcess: async (director) => { }
     },
     KEYPRESS: {
         collect: (data) => new ActionEntry.KeyPressActionEntry(data),
-        preProcess: async (page, entryList) => { }
+        preProcess: async (director) => { }
     },
     MOUSEOVER: {
         collect: (data) => new ActionEntry.MouseOverActionEntry(data),
-        preProcess: async (page, entryList) => { }
+        preProcess: async (director) => { }
     },
     CLICK: {
         collect: (data) => new ActionEntry.ClickActionEntry(data),
-        preProcess: async (page, entryList) => { }
+        preProcess: async (director) => { }
     },
     SCROLL: {
         collect: (data) => new ActionEntry.ScrollActionEntry(data),
-        preProcess: async (page, entryList) => { }
+        preProcess: async (director) => { }
     },
     RESIZE: {
         collect: (data) => new ActionEntry.ResizeActionEntry(data),
-        preProcess: async (page, entryList) => { }
+        preProcess: async (director) => { }
     },
 })
 
