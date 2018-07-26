@@ -24,12 +24,14 @@ const ACTION_TYPES = new Enum({
 
                         entryList.splice(firstMatchedRequestIndex, 1)
 
+                        console.log(`request.response: ${url}`)
                         request.respond({
                             status: status,
                             body: body,
                             headers: header
                         });
                     } else {
+                        console.log(`request.continue: ${url}`)
                         request.continue()
                     }
                 })
