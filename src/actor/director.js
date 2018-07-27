@@ -19,16 +19,26 @@ class Director {
             if (id > this.currentNavigateId && id < this.nextNavigateId) {
                 const delayPromise = delay(i === 0 ? 0 : (new Date(this.flatList[i].data.time) - new Date(this.flatList[i - 1].data.time)))
                 if (id === this.nextNavigateId - 1) {
-                    await Promise.all([
-                        entry.process(this.page),
-                        this.page.waitForNavigation({ timeout: 2000 }),
-                        delayPromise
-                    ])
+                    await delayPromise
+                    try {
+                        await Promise.all([
+                            entry.process(this.page),
+                            this.page.waitForNavigation({ timeout: 2000 })
+                        ])
+                    } catch (ex) {
+                        console.warn(`entry.process exception:`)
+                        console.log(entry)
+                        console.log(ex)
+                    }
                 } else {
-                    await Promise.all([
-                        entry.process(this.page),
-                        delayPromise
-                    ])
+                    try {
+                        await delayPromise
+                        await entry.process(this.page)
+                    } catch (ex) {
+                        console.warn(`entry.process exception:`)
+                        console.log(entry)
+                        console.log(ex)
+                    }
                 }
             }
 
