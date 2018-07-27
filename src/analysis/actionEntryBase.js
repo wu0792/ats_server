@@ -2,6 +2,13 @@ const ACTION_TYPES = require('../enums/actionTypes')
 const expect = require('expect-puppeteer')
 const option = { timeout: 5000 }
 
+const resolveValidSelector = (page, selectors) => {
+    return Promise.race(selectors.map(selector => new Promise(async (resolve, reject) => {
+        await expect(page).toMatchElement(selector, option)
+        resolve(selector)
+    })))
+}
+
 class ActionEntryBase {
     constructor(data) {
         this.data = data
@@ -68,10 +75,10 @@ class KeyPressActionEntry extends ActionEntryBase {
         console.log('start key press.')
         console.log(this.data)
         const { target, code, shift } = this.data
-        await expect(page).toMatchElement(target, option)
-        await page.focus(target)
+        const validSelector = await resolveValidSelector(page, target)
+        await page.focus(validSelector)
         shift && await page.keyboard.down('Shift')
-        await page.keyboard.press(code)
+        code && await page.keyboard.press(code)
         shift && await page.keyboard.up('Shift')
         console.log('end key press')
     }
@@ -90,7 +97,8 @@ class MouseOverActionEntry extends ActionEntryBase {
         console.log('start mouse over.')
         console.log(this.data)
         const { target } = this.data
-        await expect(page).toMatchElement(target, option)
+        const validSelector = await resolveValidSelector(page, target)
+        await expect(page).toMatchElement(validSelector, option)
         await page.hover(target)
         console.log('end mouse over')
     }
@@ -109,8 +117,8 @@ class ClickActionEntry extends ActionEntryBase {
         console.log('start click.')
         console.log(this.data)
         const { target } = this.data
-        await expect(page).toMatchElement(target, option)
-        await page.click(target)
+        const validSelector = await resolveValidSelector(page, target)
+        await page.click(validSelector)
         console.log('end click')
     }
 }
