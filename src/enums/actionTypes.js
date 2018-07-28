@@ -86,8 +86,32 @@ const ACTION_TYPES = new Enum({
         collect: (data) => new ActionEntry.MutationActionEntry(data),
         preProcess: async (director) => { }
     },
-    KEYPRESS: {
-        collect: (data) => new ActionEntry.KeyPressActionEntry(data),
+    FOCUS: {
+        collect: (data) => new ActionEntry.FocusActionEntry(data),
+        preProcess: async (director) => { }
+    },
+    BLUR: {
+        collect: (data) => new ActionEntry.BlurActionEntry(data),
+        preProcess: async (director) => { }
+    },
+    CHANGE: {
+        collect: (data) => new ActionEntry.ChangeActionEntry(data),
+        preProcess: async (director) => { }
+    },
+    KEYDOWN: {
+        collect: (data) => new ActionEntry.KeyDownActionEntry(data),
+        preProcess: async (director) => { }
+    },
+    KEYUP: {
+        collect: (data) => new ActionEntry.KeyUpActionEntry(data),
+        preProcess: async (director) => { }
+    },
+    MOUSEDOWN: {
+        collect: (data) => new ActionEntry.MouseDownActionEntry(data),
+        preProcess: async (director) => { }
+    },
+    MOUSEUP: {
+        collect: (data) => new ActionEntry.MouseUpActionEntry(data),
         preProcess: async (director) => { }
     },
     MOUSEOVER: {

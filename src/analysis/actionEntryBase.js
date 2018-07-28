@@ -2,6 +2,12 @@ const ACTION_TYPES = require('../enums/actionTypes')
 const expect = require('expect-puppeteer')
 const option = { timeout: 2000 }
 
+const MOUSE_BUTTON_MAP = {
+    0: 'left',
+    1: 'middle',
+    2: 'right'
+}
+
 const resolveValidSelector = (page, selectors) => {
     return Promise.race(selectors.map(selector => new Promise(async (resolve, reject) => {
         const matchPromise = expect(page).toMatchElement(selector, option)
@@ -68,7 +74,77 @@ class MutationActionEntry extends ActionEntryBase {
     }
 }
 
-class KeyPressActionEntry extends ActionEntryBase {
+class FocusActionEntry extends ActionEntryBase {
+    constructor(data) {
+        super(data)
+    }
+
+    getActionType() {
+        return ACTION_TYPES.FOCUS
+    }
+
+    async process(page) {
+        console.log(this.data)
+        const { target } = this.data
+        const validSelector = await resolveValidSelector(page, target)
+
+        if (validSelector) {
+            console.log('start focus.')
+            await page.focus(target)
+            console.log('end focus')
+        }
+    }
+}
+
+class BlurActionEntry extends ActionEntryBase {
+    constructor(data) {
+        super(data)
+    }
+
+    getActionType() {
+        return ACTION_TYPES.BLUR
+    }
+
+    async process(page) {
+        console.log(this.data)
+        const { target } = this.data
+        const validSelector = await resolveValidSelector(page, target)
+
+        if (validSelector) {
+            console.log('start blur.')
+            await page.evaluate((selector) => {
+                document.querySelector(selector).blur()
+            }, validSelector)
+            console.log('end blur')
+        }
+    }
+}
+
+class ChangeActionEntry extends ActionEntryBase {
+    constructor(data) {
+        super(data)
+    }
+
+    getActionType() {
+        return ACTION_TYPES.CHANGE
+    }
+
+    async process(page) {
+        console.log(this.data)
+        const { target } = this.data
+        const validSelector = await resolveValidSelector(page, target)
+
+        if (validSelector) {
+            console.log('start change.')
+            await page.evaluate((selector) => {
+                document.querySelector(selector).dispatchEvent(new Event('change'))
+            }, validSelector)
+            console.log('end change')
+        }
+    }
+}
+
+class KeyDownActionEntry extends ActionEntryBase {
     constructor(data) {
         super(data)
     }
@@ -78,17 +154,80 @@ class KeyPressActionEntry extends ActionEntryBase {
     }
 
     async process(page) {
-        console.log('start key press.')
         console.log(this.data)
-        const { target, code, shift } = this.data
+        const { target, code } = this.data
         const validSelector = await resolveValidSelector(page, target)
 
         if (validSelector) {
-            await page.focus(validSelector)
-            shift && await page.keyboard.down('Shift')
-            code && await page.keyboard.press(code)
-            shift && await page.keyboard.up('Shift')
-            console.log('end key press')
+            console.log('start key down.')
+            await page.keyboard.down(code)
+            console.log('end key down')
+        }
+    }
+}
+
+class KeyUpActionEntry extends ActionEntryBase {
+    constructor(data) {
+        super(data)
+    }
+
+    getActionType() {
+        return ACTION_TYPES.KEYUP
+    }
+
+    async process(page) {
+        console.log(this.data)
+        const { target, code } = this.data
+        const validSelector = await resolveValidSelector(page, target)
+
+        if (validSelector) {
+            console.log('start key up.')
+            await page.keyboard.up(code)
+            console.log('end key up')
+        }
+    }
+}
+
+class MouseDownActionEntry extends ActionEntryBase {
+    constructor(data) {
+        super(data)
+    }
+
+    getActionType() {
+        return ACTION_TYPES.MOUSEDOWN
+    }
+
+    async process(page) {
+        console.log(this.data)
+        const { target, button } = this.data
+        const validSelector = await resolveValidSelector(page, target)
+
+        if (validSelector) {
+            console.log('start mouse down.')
+            await page.mouse.down({ button: MOUSE_BUTTON_MAP[button] })
+            console.log('end key down')
+        }
+    }
+}
+
+class MouseUpActionEntry extends ActionEntryBase {
+    constructor(data) {
+        super(data)
+    }
+
+    getActionType() {
+        return ACTION_TYPES.MOUSEUP
+    }
+
+    async process(page) {
+        console.log(this.data)
+        const { target, button } = this.data
+        const validSelector = await resolveValidSelector(page, target)
+
+        if (validSelector) {
+            console.log('start mouse up.')
+            await page.mouse.up({ button: MOUSE_BUTTON_MAP[button] })
+            console.log('end key up')
         }
     }
 }
@@ -163,7 +302,13 @@ module.exports = {
     NetworkActionEntry,
     NavigateActionEntry,
     MutationActionEntry,
-    KeyPressActionEntry,
+    FocusActionEntry,
+    BlurActionEntry,
+    ChangeActionEntry,
+    KeyDownActionEntry,
+    KeyUpActionEntry,
+    MouseDownActionEntry,
+    MouseUpActionEntry,
     MouseOverActionEntry,
     ClickActionEntry,
     ScrollActionEntry,

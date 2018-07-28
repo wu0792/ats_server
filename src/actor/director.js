@@ -27,8 +27,8 @@ class Director {
                         ])
                     } catch (ex) {
                         console.warn(`entry.process exception:`)
-                        console.log(entry)
-                        console.log(ex)
+                        console.warn(entry)
+                        console.warn(ex)
                     }
                 } else {
                     try {
@@ -36,8 +36,8 @@ class Director {
                         await entry.process(this.page)
                     } catch (ex) {
                         console.warn(`entry.process exception:`)
-                        console.log(entry)
-                        console.log(ex)
+                        console.warn(entry)
+                        console.warn(ex)
                     }
                 }
             }
