@@ -11,7 +11,7 @@ const app = require('electron').remote.app,
 async function repeat(groupedList, flatList) {
     const browser = await puppeteer.launch({
         headless: false,
-        slowMo: 50,
+        slowMo: 25,
         executablePath:
             'node_modules/puppeteer/.local-chromium/win64-571375/chrome-win32/chrome.exe'
     })

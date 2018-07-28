@@ -280,6 +280,22 @@ class ScrollActionEntry extends ActionEntryBase {
     getActionType() {
         return 'SCROLL'
     }
+
+    async process(page) {
+        console.log('start scroll.')
+        console.log(this.data)
+        const { x, y } = this.data
+        const scrollPosition = await page.evaluate(() => {
+            return { x: scrollX, y: scrollY }
+        })
+
+        if (scrollPosition.x - x || scrollPosition.y - y) {
+            await page.evaluate((x1, y1) => {
+                window.scrollTo(x1, y1)
+            }, x, y)
+            console.log('end scroll')
+        }
+    }
 }
 
 class ResizeActionEntry extends ActionEntryBase {
