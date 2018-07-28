@@ -267,28 +267,6 @@ class MouseOverActionEntry extends ActionEntryBase {
     }
 }
 
-class ClickActionEntry extends ActionEntryBase {
-    constructor(data) {
-        super(data)
-    }
-
-    getActionType() {
-        return ACTION_TYPES.CLICK
-    }
-
-    async process(page) {
-        console.log('start click.')
-        console.log(this.data)
-        const { target } = this.data
-        const validSelector = await resolveValidSelector(page, target)
-
-        if (validSelector) {
-            await page.click(validSelector)
-            console.log('end click')
-        }
-    }
-}
-
 class ScrollActionEntry extends ActionEntryBase {
     constructor(data) {
         super(data)
@@ -322,7 +300,6 @@ module.exports = {
     MouseDownActionEntry,
     MouseUpActionEntry,
     MouseOverActionEntry,
-    ClickActionEntry,
     ScrollActionEntry,
     ResizeActionEntry
 }

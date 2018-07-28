@@ -118,10 +118,6 @@ const ACTION_TYPES = new Enum({
         collect: (data) => new ActionEntry.MouseOverActionEntry(data),
         preProcess: async (director) => { }
     },
-    CLICK: {
-        collect: (data) => new ActionEntry.ClickActionEntry(data),
-        preProcess: async (director) => { }
-    },
     SCROLL: {
         collect: (data) => new ActionEntry.ScrollActionEntry(data),
         preProcess: async (director) => { }
