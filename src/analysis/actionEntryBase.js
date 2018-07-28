@@ -1,6 +1,6 @@
 const ACTION_TYPES = require('../enums/actionTypes')
 const expect = require('expect-puppeteer')
-const option = { timeout: 2000 }
+const option = { timeout: 2000, polling: 'mutation' }
 
 const MOUSE_BUTTON_MAP = {
     0: 'left',
@@ -8,13 +8,20 @@ const MOUSE_BUTTON_MAP = {
     2: 'right'
 }
 
-const resolveValidSelector = (page, selectors) => {
+const resolveValidSelector = (id, page, selectors) => {
     return Promise.race(selectors.map(selector => new Promise(async (resolve, reject) => {
         const matchPromise = expect(page).toMatchElement(selector, option)
-        matchPromise.catch(ex => {
-            console.warn('unable to match element:')
-            console.warn(selectors)
-            resolve(null)
+        matchPromise.catch(async ex => {
+            let matchedSelectorInEvaluate = await page.evaluate((theSelectors) => {
+                return theSelectors.find(selector => document.querySelector(selector))
+            }, selectors)
+
+            if (matchedSelectorInEvaluate) {
+                resolve(matchedSelectorInEvaluate)
+            } else {
+                console.warn(`invalid selectors: ${selectors.join(' | ')}, id: ${id}`)
+                console.warn(null)
+            }
         })
 
         resolve(selector)
@@ -86,11 +93,11 @@ class FocusActionEntry extends ActionEntryBase {
     async process(page) {
         console.log(this.data)
         const { target } = this.data
-        const validSelector = await resolveValidSelector(page, target)
+        const validSelector = await resolveValidSelector(this.data.id, page, target)
 
         if (validSelector) {
             console.log('start focus.')
-            await page.focus(target)
+            await page.focus(validSelector)
             console.log('end focus')
         }
     }
@@ -108,7 +115,7 @@ class BlurActionEntry extends ActionEntryBase {
     async process(page) {
         console.log(this.data)
         const { target } = this.data
-        const validSelector = await resolveValidSelector(page, target)
+        const validSelector = await resolveValidSelector(this.data.id, page, target)
 
         if (validSelector) {
             console.log('start blur.')
@@ -132,7 +139,7 @@ class ChangeActionEntry extends ActionEntryBase {
     async process(page) {
         console.log(this.data)
         const { target, value } = this.data
-        const validSelector = await resolveValidSelector(page, target)
+        const validSelector = await resolveValidSelector(this.data.id, page, target)
 
         if (validSelector) {
             console.log('start change.')
@@ -168,7 +175,7 @@ class KeyDownActionEntry extends ActionEntryBase {
     async process(page) {
         console.log(this.data)
         const { target, code } = this.data
-        const validSelector = await resolveValidSelector(page, target)
+        const validSelector = await resolveValidSelector(this.data.id, page, target)
 
         if (validSelector) {
             console.log('start key down.')
@@ -190,7 +197,7 @@ class KeyUpActionEntry extends ActionEntryBase {
     async process(page) {
         console.log(this.data)
         const { target, code } = this.data
-        const validSelector = await resolveValidSelector(page, target)
+        const validSelector = await resolveValidSelector(this.data.id, page, target)
 
         if (validSelector) {
             console.log('start key up.')
@@ -212,7 +219,7 @@ class MouseDownActionEntry extends ActionEntryBase {
     async process(page) {
         console.log(this.data)
         const { target, button } = this.data
-        const validSelector = await resolveValidSelector(page, target)
+        const validSelector = await resolveValidSelector(this.data.id, page, target)
 
         if (validSelector) {
             console.log('start mouse down.')
@@ -234,7 +241,7 @@ class MouseUpActionEntry extends ActionEntryBase {
     async process(page) {
         console.log(this.data)
         const { target, button } = this.data
-        const validSelector = await resolveValidSelector(page, target)
+        const validSelector = await resolveValidSelector(this.data.id, page, target)
 
         if (validSelector) {
             console.log('start mouse up.')
@@ -257,11 +264,10 @@ class MouseOverActionEntry extends ActionEntryBase {
         console.log('start mouse over.')
         console.log(this.data)
         const { target } = this.data
-        const validSelector = await resolveValidSelector(page, target)
+        const validSelector = await resolveValidSelector(this.data.id, page, target)
 
         if (validSelector) {
-            await expect(page).toMatchElement(validSelector, option)
-            await page.hover(target)
+            await page.hover(validSelector)
             console.log('end mouse over')
         }
     }
