@@ -131,14 +131,26 @@ class ChangeActionEntry extends ActionEntryBase {
 
     async process(page) {
         console.log(this.data)
-        const { target } = this.data
+        const { target, value } = this.data
         const validSelector = await resolveValidSelector(page, target)
 
         if (validSelector) {
             console.log('start change.')
-            await page.evaluate((selector) => {
-                document.querySelector(selector).dispatchEvent(new Event('change'))
-            }, validSelector)
+            await page.evaluate((theSelector, theValue) => {
+                // the change event may happen at input/textarea/select element,
+                // the input/textarea change event always fired after keydown, keyup, blur event,
+                // so the value always has been set to the element,
+                // while select element may happen after click the select elemnt, and
+                // the click on the option cann't be cauguth,
+                // so we should manualy set the select element's value and then trigger the
+                // change event
+                const theElement = document.querySelector(theSelector)
+                if (theElement.nodeName === 'SELECT') {
+                    theElement.value = theValue
+                }
+
+                theElement.dispatchEvent(new Event('change'))
+            }, validSelector, value)
             console.log('end change')
         }
     }
