@@ -1,4 +1,3 @@
-const ACTION_TYPES = require('../enums/actionTypes')
 const expect = require('expect-puppeteer')
 const option = { timeout: 2000, polling: 'mutation' }
 
@@ -52,7 +51,7 @@ class NetworkActionEntry extends ActionEntryBase {
     }
 
     getActionType() {
-        return ACTION_TYPES.NETWORK
+        return 'NETWORK'
     }
 }
 
@@ -62,7 +61,7 @@ class NavigateActionEntry extends ActionEntryBase {
     }
 
     getActionType() {
-        return ACTION_TYPES.NAVIGATE
+        return 'NAVIGATE'
     }
 
     async process(page) {
@@ -77,7 +76,7 @@ class MutationActionEntry extends ActionEntryBase {
     }
 
     getActionType() {
-        return ACTION_TYPES.MUTATION
+        return 'MUTATION'
     }
 }
 
@@ -87,7 +86,7 @@ class FocusActionEntry extends ActionEntryBase {
     }
 
     getActionType() {
-        return ACTION_TYPES.FOCUS
+        return 'FOCUS'
     }
 
     async process(page) {
@@ -109,7 +108,7 @@ class BlurActionEntry extends ActionEntryBase {
     }
 
     getActionType() {
-        return ACTION_TYPES.BLUR
+        return 'BLUR'
     }
 
     async process(page) {
@@ -133,7 +132,7 @@ class ChangeActionEntry extends ActionEntryBase {
     }
 
     getActionType() {
-        return ACTION_TYPES.CHANGE
+        return 'CHANGE'
     }
 
     async process(page) {
@@ -169,7 +168,7 @@ class KeyDownActionEntry extends ActionEntryBase {
     }
 
     getActionType() {
-        return ACTION_TYPES.KEYDOWN
+        return 'KEYDOWN'
     }
 
     async process(page) {
@@ -191,7 +190,7 @@ class KeyUpActionEntry extends ActionEntryBase {
     }
 
     getActionType() {
-        return ACTION_TYPES.KEYUP
+        return 'KEYUP'
     }
 
     async process(page) {
@@ -213,7 +212,7 @@ class MouseDownActionEntry extends ActionEntryBase {
     }
 
     getActionType() {
-        return ACTION_TYPES.MOUSEDOWN
+        return 'MOUSEDOWN'
     }
 
     async process(page) {
@@ -235,7 +234,7 @@ class MouseUpActionEntry extends ActionEntryBase {
     }
 
     getActionType() {
-        return ACTION_TYPES.MOUSEUP
+        return 'MOUSEUP'
     }
 
     async process(page) {
@@ -257,7 +256,7 @@ class MouseOverActionEntry extends ActionEntryBase {
     }
 
     getActionType() {
-        return ACTION_TYPES.MOUSEOVER
+        return 'MOUSEOVER'
     }
 
     async process(page) {
@@ -279,7 +278,7 @@ class ScrollActionEntry extends ActionEntryBase {
     }
 
     getActionType() {
-        return ACTION_TYPES.SCROLL
+        return 'SCROLL'
     }
 }
 
@@ -289,7 +288,7 @@ class ResizeActionEntry extends ActionEntryBase {
     }
 
     getActionType() {
-        return ACTION_TYPES.RESIZE
+        return 'RESIZE'
     }
 }
 

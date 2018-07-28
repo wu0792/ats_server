@@ -4,6 +4,7 @@ const urlParser = require('url')
 
 const ACTION_TYPES = new Enum({
     NETWORK: {
+        ignoreNavigateDelay: true,
         collect: (data) => new ActionEntry.NetworkActionEntry(data),
         preProcess: async (director) => {
             let page = director.page,
@@ -39,6 +40,7 @@ const ACTION_TYPES = new Enum({
         }
     },
     NAVIGATE: {
+        ignoreNavigateDelay: true,
         collect: (data) => new ActionEntry.NavigateActionEntry(data),
         preProcess: async (director) => {
             let page = director.page,
@@ -55,6 +57,7 @@ const ACTION_TYPES = new Enum({
                 if (frame !== page.mainFrame() || entryList.length === 0)
                     return
 
+                console.warn(`framenavigated, url:${frame.url()}`)
                 let url = frame.url(),
                     allNavigateId = entryList.map(entry => entry.id),
                     firstEntry = entryList[0],
@@ -71,58 +74,67 @@ const ACTION_TYPES = new Enum({
 
                 entryList.splice(0, 1)
 
-                page.once('domcontentloaded', () => {
-                    const currentNavigateIdIndex = allNavigateId.indexOf(currentNavigateId),
-                        nextNavigateId = allNavigateId[currentNavigateIdIndex + 1] || Infinity
+                const currentNavigateIdIndex = allNavigateId.indexOf(currentNavigateId),
+                    nextNavigateId = allNavigateId[currentNavigateIdIndex + 1] || Infinity
 
-                    director.currentNavigateId = currentNavigateId
-                    director.nextNavigateId = nextNavigateId
-                    director.onDomContentLoaded()
-                })
+                director.currentNavigateId = currentNavigateId
+                director.nextNavigateId = nextNavigateId
+                director.onDomContentLoaded()
             })
         }
     },
     MUTATION: {
+        ignoreNavigateDelay: true,
         collect: (data) => new ActionEntry.MutationActionEntry(data),
         preProcess: async (director) => { }
     },
     FOCUS: {
+        ignoreNavigateDelay: false,
         collect: (data) => new ActionEntry.FocusActionEntry(data),
         preProcess: async (director) => { }
     },
     BLUR: {
+        ignoreNavigateDelay: false,
         collect: (data) => new ActionEntry.BlurActionEntry(data),
         preProcess: async (director) => { }
     },
     CHANGE: {
+        ignoreNavigateDelay: false,
         collect: (data) => new ActionEntry.ChangeActionEntry(data),
         preProcess: async (director) => { }
     },
     KEYDOWN: {
+        ignoreNavigateDelay: false,
         collect: (data) => new ActionEntry.KeyDownActionEntry(data),
         preProcess: async (director) => { }
     },
     KEYUP: {
+        ignoreNavigateDelay: false,
         collect: (data) => new ActionEntry.KeyUpActionEntry(data),
         preProcess: async (director) => { }
     },
     MOUSEDOWN: {
+        ignoreNavigateDelay: false,
         collect: (data) => new ActionEntry.MouseDownActionEntry(data),
         preProcess: async (director) => { }
     },
     MOUSEUP: {
+        ignoreNavigateDelay: false,
         collect: (data) => new ActionEntry.MouseUpActionEntry(data),
         preProcess: async (director) => { }
     },
     MOUSEOVER: {
+        ignoreNavigateDelay: false,
         collect: (data) => new ActionEntry.MouseOverActionEntry(data),
         preProcess: async (director) => { }
     },
     SCROLL: {
+        ignoreNavigateDelay: false,
         collect: (data) => new ActionEntry.ScrollActionEntry(data),
         preProcess: async (director) => { }
     },
     RESIZE: {
+        ignoreNavigateDelay: false,
         collect: (data) => new ActionEntry.ResizeActionEntry(data),
         preProcess: async (director) => { }
     },
