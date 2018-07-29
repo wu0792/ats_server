@@ -78,6 +78,19 @@ class MutationActionEntry extends ActionEntryBase {
     getActionType() {
         return 'MUTATION'
     }
+
+    async process(page) {
+        console.log(this.data)
+        const { target } = this.data
+        const validSelector = await resolveValidSelector(this.data.id, page, target)
+
+        if (validSelector) {
+            console.log('start screenshot.')
+            let el = await page.$(validSelector)
+            await el.screenshot({ type: 'png', omitBackground: true, path: `./record/${this.data.id}.png` })
+            console.log('end screenshot')
+        }
+    }
 }
 
 class FocusActionEntry extends ActionEntryBase {
