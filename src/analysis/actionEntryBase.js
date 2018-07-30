@@ -88,22 +88,37 @@ class MutationActionEntry extends ActionEntryBase {
         if (validSelector) {
             console.log('start screenshot.')
             let el = await page.$(validSelector),
-                size = await page.evaluate(() => {
-                    const width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
-                        height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+                position = await page.evaluate((theSelector) => {
+                    let maxWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
+                        maxHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
+                        offsetLeftToRoot = 0,
+                        offsetTopToRoot = 0,
+                        calcOffsetToParent = (el) => {
+                            offsetLeftToRoot += el.offsetLeft
+                            offsetTopToRoot += el.offsetTop
+
+                            if (el.offsetParent) {
+                                el = el.offsetParent
+                            }
+                        }
+
+                    let targetEl = document.querySelector(theSelector)
+                    calcOffsetToParent(targetEl)
 
                     return {
-                        width,
-                        height
+                        width: Math.min(targetEl.offsetWidth, maxWidth),
+                        height: Math.min(targetEl.offsetHeight, maxHeight),
+                        left: offsetLeftToRoot,
+                        top: offsetTopToRoot
                     }
-                })
- 
+                }, validSelector)
+
             await Promise.race([
                 delay(5000),
                 el.screenshot({
                     type: 'png',
                     omitBackground: true,
-                    clip: { x: 0, y: 0, width: size.width, height: size.height },
+                    clip: { x: position.left, y: position.top, width: position.width, height: position.height },
                     path: `./record/${this.data.id}.png`
                 })
             ])
