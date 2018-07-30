@@ -71,6 +71,8 @@ class NavigateActionEntry extends ActionEntryBase {
     }
 }
 
+let lastMutationTarget = null,
+    lastMutationDateTime = null
 class MutationActionEntry extends ActionEntryBase {
     constructor(data) {
         super(data)
@@ -83,47 +85,70 @@ class MutationActionEntry extends ActionEntryBase {
     async process(page) {
         console.log(this.data)
         const { target } = this.data
-        const validSelector = await resolveValidSelector(this.data.id, page, target)
+
+        if (lastMutationTarget === null) {
+            lastMutationTarget = [...target]
+        }
+
+        if (lastMutationDateTime === null) {
+            lastMutationDateTime = new Date()
+        }
+
+        if (target.every(selector => lastMutationTarget.indexOf(selector) >= 0) && (new Date() - lastMutationDateTime < 1000)) {
+            return
+        }
+
+        const validSelector = await resolveValidSelector(this.data.id, page, lastMutationTarget)
 
         if (validSelector) {
             console.log('start screenshot.')
-            let el = await page.$(validSelector),
-                position = await page.evaluate((theSelector) => {
-                    let maxWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
-                        maxHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
-                        offsetLeftToRoot = 0,
-                        offsetTopToRoot = 0,
-                        calcOffsetToParent = (el) => {
-                            offsetLeftToRoot += el.offsetLeft
-                            offsetTopToRoot += el.offsetTop
+            let position = await page.evaluate((theSelector) => {
+                let maxWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
+                    maxHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
+                    offsetLeftToRoot = 0,
+                    offsetTopToRoot = 0,
+                    calcOffsetToParent = (el) => {
+                        offsetLeftToRoot += el.offsetLeft
+                        offsetTopToRoot += el.offsetTop
 
-                            if (el.offsetParent) {
-                                el = el.offsetParent
-                            }
+                        if (el.offsetParent) {
+                            calcOffsetToParent(el.offsetParent)
                         }
-
-                    let targetEl = document.querySelector(theSelector)
-                    calcOffsetToParent(targetEl)
-
-                    return {
-                        width: Math.min(targetEl.offsetWidth, maxWidth),
-                        height: Math.min(targetEl.offsetHeight, maxHeight),
-                        left: offsetLeftToRoot,
-                        top: offsetTopToRoot
                     }
-                }, validSelector)
 
-            await Promise.race([
-                delay(5000),
-                page.screenshot({
-                    type: 'png',
-                    omitBackground: true,
-                    clip: { x: position.left, y: position.top, width: position.width, height: position.height },
-                    path: `./record/${this.data.id}.png`
+                let targetEl = document.querySelector(theSelector)
+                if (targetEl) {
+                    calcOffsetToParent(targetEl)
+                } else {
+                    throw `invalid selector while screenshot: ${theSelector}`
+                }
+
+                return {
+                    width: Math.min(targetEl.offsetWidth, maxWidth),
+                    height: Math.min(targetEl.offsetHeight, maxHeight),
+                    left: offsetLeftToRoot,
+                    top: offsetTopToRoot
+                }
+            }, validSelector)
+
+            console.warn(`position:`)
+            console.warn(position)
+            const { left, top, width, height } = position
+            if (width > 0 && height > 0) {
+                await page.screenshot({
+                    quality: 100,
+                    type: 'jpeg',
+                    clip: { x: left, y: top, width: width, height: height },
+                    path: `./record/${this.data.id}.jpeg`
                 })
-            ])
+            } else {
+                console.warn(`empty position: ${JSON.stringify(position)}`)
+            }
 
             console.log('end screenshot')
+
+            lastMutationTarget = target
+            lastMutationDateTime = new Date()
         }
     }
 }
