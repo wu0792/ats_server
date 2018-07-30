@@ -1,3 +1,4 @@
+const { delay } = require('../common/delay')
 const expect = require('expect-puppeteer')
 const option = { timeout: 2000, polling: 'mutation' }
 
@@ -86,8 +87,27 @@ class MutationActionEntry extends ActionEntryBase {
 
         if (validSelector) {
             console.log('start screenshot.')
-            let el = await page.$(validSelector)
-            await el.screenshot({ type: 'png', omitBackground: true, path: `./record/${this.data.id}.png` })
+            let el = await page.$(validSelector),
+                size = await page.evaluate(() => {
+                    const width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
+                        height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+
+                    return {
+                        width,
+                        height
+                    }
+                })
+
+            await Promise.race([
+                delay(5000),
+                el.screenshot({
+                    type: 'png',
+                    omitBackground: true,
+                    clip: { x: 0, y: 0, width: size.width, height: size.height },
+                    path: `./record/${this.data.id}.png`
+                })
+            ])
+
             console.log('end screenshot')
         }
     }
