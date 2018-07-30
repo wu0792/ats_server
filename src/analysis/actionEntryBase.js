@@ -97,7 +97,7 @@ class MutationActionEntry extends ActionEntryBase {
                         height
                     }
                 })
-
+ 
             await Promise.race([
                 delay(5000),
                 el.screenshot({
