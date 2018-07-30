@@ -115,7 +115,7 @@ class MutationActionEntry extends ActionEntryBase {
 
             await Promise.race([
                 delay(5000),
-                el.screenshot({
+                page.screenshot({
                     type: 'png',
                     omitBackground: true,
                     clip: { x: position.left, y: position.top, width: position.width, height: position.height },
