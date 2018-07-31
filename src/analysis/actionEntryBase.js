@@ -37,7 +37,7 @@ class ActionEntryBase {
         throw 'should be override and never run here.'
     }
 
-    async process(page) {
+    async process(page, systemInfo) {
 
     }
 
@@ -65,7 +65,7 @@ class NavigateActionEntry extends ActionEntryBase {
         return 'NAVIGATE'
     }
 
-    async process(page) {
+    async process(page, systemInfo) {
         const { url } = this.data
         await page.goto(url)
     }
@@ -82,7 +82,7 @@ class MutationActionEntry extends ActionEntryBase {
         return 'MUTATION'
     }
 
-    async process(page) {
+    async process(page, systemInfo) {
         // console.log(this.data)
         const { target } = this.data
 
@@ -139,7 +139,7 @@ class MutationActionEntry extends ActionEntryBase {
                     quality: 100,
                     type: 'jpeg',
                     clip: { x: left, y: top, width: width, height: height },
-                    path: `./record/${this.data.id}.jpeg`
+                    path: `./record/${systemInfo.id}/${this.data.id}.jpeg`
                 })
             } else {
                 console.warn(`empty position: ${JSON.stringify(position)}`)
@@ -162,7 +162,7 @@ class FocusActionEntry extends ActionEntryBase {
         return 'FOCUS'
     }
 
-    async process(page) {
+    async process(page, systemInfo) {
         // console.log(this.data)
         const { target } = this.data
         const validSelector = await resolveValidSelector(this.data.id, page, target)
@@ -184,7 +184,7 @@ class BlurActionEntry extends ActionEntryBase {
         return 'BLUR'
     }
 
-    async process(page) {
+    async process(page, systemInfo) {
         // console.log(this.data)
         const { target } = this.data
         const validSelector = await resolveValidSelector(this.data.id, page, target)
@@ -208,7 +208,7 @@ class ChangeActionEntry extends ActionEntryBase {
         return 'CHANGE'
     }
 
-    async process(page) {
+    async process(page, systemInfo) {
         // console.log(this.data)
         const { target, value } = this.data
         const validSelector = await resolveValidSelector(this.data.id, page, target)
@@ -244,7 +244,7 @@ class KeyDownActionEntry extends ActionEntryBase {
         return 'KEYDOWN'
     }
 
-    async process(page) {
+    async process(page, systemInfo) {
         // console.log(this.data)
         const { target, code } = this.data
         const validSelector = await resolveValidSelector(this.data.id, page, target)
@@ -266,7 +266,7 @@ class KeyUpActionEntry extends ActionEntryBase {
         return 'KEYUP'
     }
 
-    async process(page) {
+    async process(page, systemInfo) {
         // console.log(this.data)
         const { target, code } = this.data
         const validSelector = await resolveValidSelector(this.data.id, page, target)
@@ -288,7 +288,7 @@ class MouseDownActionEntry extends ActionEntryBase {
         return 'MOUSEDOWN'
     }
 
-    async process(page) {
+    async process(page, systemInfo) {
         // console.log(this.data)
         const { target, button } = this.data
         const validSelector = await resolveValidSelector(this.data.id, page, target)
@@ -310,7 +310,7 @@ class MouseUpActionEntry extends ActionEntryBase {
         return 'MOUSEUP'
     }
 
-    async process(page) {
+    async process(page, systemInfo) {
         // console.log(this.data)
         const { target, button } = this.data
         const validSelector = await resolveValidSelector(this.data.id, page, target)
@@ -332,7 +332,7 @@ class MouseOverActionEntry extends ActionEntryBase {
         return 'MOUSEOVER'
     }
 
-    async process(page) {
+    async process(page, systemInfo) {
         // console.log('start mouse over.')
         // console.log(this.data)
         const { target } = this.data
@@ -354,7 +354,7 @@ class ScrollActionEntry extends ActionEntryBase {
         return 'SCROLL'
     }
 
-    async process(page) {
+    async process(page, systemInfo) {
         // console.log('start scroll.')
         // console.log(this.data)
         const { x, y } = this.data

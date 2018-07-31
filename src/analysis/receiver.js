@@ -1,11 +1,12 @@
 const ACTION_TYPES = require('../enums/actionTypes')
 const Collector = require('./collector')
 const readFilePromise = require('fs-readfile-promise')
+const SystemInfo = require('./systemInfo')
 
 class Receiver {
     constructor(path) {
         this.path = path
-        this.data = null
+        this.systemInfo = null
     }
 
     async init() {
@@ -13,11 +14,12 @@ class Receiver {
             let configText = await readFilePromise(this.path, { encoding: 'utf8' }),
                 configJson = JSON.parse(configText)
 
-            this.data = configJson
+            this.systemInfo = new SystemInfo(configJson.id, configJson.version, configJson.create_at)
+            this.data = configJson.data
         }
     }
 
-    async dumpGroupedList() {
+    async dumpGroupedListWrapper() {
         await this.init()
 
         const keys = Object.keys(this.data),
@@ -36,11 +38,15 @@ class Receiver {
             }
         }
 
-        return groupedList
+        return {
+            groupedList,
+            systemInfo: this.systemInfo
+        }
     }
 
     async dumpFlatList() {
-        const groupedList = await this.dumpGroupedList()
+        const wrapper = await this.dumpGroupedListWrapper(),
+            { groupedList } = wrapper
 
         const keys = ACTION_TYPES.enums.map(theEnum => theEnum.key),
             collector = new Collector()

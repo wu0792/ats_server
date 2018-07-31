@@ -1,6 +1,7 @@
 const Enum = require('enum')
 const ActionEntry = require('../analysis/actionEntryBase')
 const urlParser = require('url')
+const fs = require('fs')
 
 const ACTION_TYPES = new Enum({
     NETWORK: {
@@ -86,7 +87,12 @@ const ACTION_TYPES = new Enum({
     MUTATION: {
         ignoreNavigateDelay: true,
         collect: (data) => new ActionEntry.MutationActionEntry(data),
-        preProcess: async (director) => { }
+        preProcess: async (director) => {
+            let recordPath = `./record/${director.systemInfo.id}/`
+            if (!fs.existsSync(recordPath)) {
+                fs.mkdirSync(recordPath)
+            }
+        }
     },
     FOCUS: {
         ignoreNavigateDelay: false,

@@ -2,8 +2,9 @@ const ACTION_TYPES = require('../enums/actionTypes')
 const { delay } = require('../common/delay')
 
 class Director {
-    constructor(page, groupedList, flatList) {
+    constructor(page, groupedList, systemInfo, flatList) {
         this.page = page
+        this.systemInfo = systemInfo
         this.groupedList = groupedList
         this.flatList = flatList
         this.currentNavigateId = NaN
@@ -25,7 +26,7 @@ class Director {
                     // await delayPromise
                     console.log('start entry.id:' + entry.data.id)
                     console.log(entry)
-                    await entry.process(this.page)
+                    await entry.process(this.page, this.systemInfo)
                     console.log('finish entry.id:' + entry.data.id)
                 } catch (ex) {
                     // console.warn(`entry.process exception:`)
