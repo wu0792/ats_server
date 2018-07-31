@@ -20,7 +20,7 @@ const resolveValidSelector = (id, page, selectors) => {
                 resolve(matchedSelectorInEvaluate)
             } else {
                 console.warn(`invalid selectors: ${selectors.join(' | ')}, id: ${id}`)
-                console.warn(null)
+                resolve(null)
             }
         })
 
@@ -83,7 +83,7 @@ class MutationActionEntry extends ActionEntryBase {
     }
 
     async process(page) {
-        console.log(this.data)
+        // console.log(this.data)
         const { target } = this.data
 
         if (lastMutationTarget === null) {
@@ -101,7 +101,7 @@ class MutationActionEntry extends ActionEntryBase {
         const validSelector = await resolveValidSelector(this.data.id, page, lastMutationTarget)
 
         if (validSelector) {
-            console.log('start screenshot.')
+            // console.log('start screenshot.')
             let position = await page.evaluate((theSelector) => {
                 let maxWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
                     maxHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
@@ -131,8 +131,8 @@ class MutationActionEntry extends ActionEntryBase {
                 }
             }, validSelector)
 
-            console.warn(`position:`)
-            console.warn(position)
+            // console.warn(`position:`)
+            // console.warn(position)
             const { left, top, width, height } = position
             if (width > 0 && height > 0) {
                 await page.screenshot({
@@ -145,7 +145,7 @@ class MutationActionEntry extends ActionEntryBase {
                 console.warn(`empty position: ${JSON.stringify(position)}`)
             }
 
-            console.log('end screenshot')
+            // console.log('end screenshot')
 
             lastMutationTarget = target
             lastMutationDateTime = new Date()
@@ -163,14 +163,14 @@ class FocusActionEntry extends ActionEntryBase {
     }
 
     async process(page) {
-        console.log(this.data)
+        // console.log(this.data)
         const { target } = this.data
         const validSelector = await resolveValidSelector(this.data.id, page, target)
 
         if (validSelector) {
-            console.log('start focus.')
+            // console.log('start focus.')
             await page.focus(validSelector)
-            console.log('end focus')
+            // console.log('end focus')
         }
     }
 }
@@ -185,16 +185,16 @@ class BlurActionEntry extends ActionEntryBase {
     }
 
     async process(page) {
-        console.log(this.data)
+        // console.log(this.data)
         const { target } = this.data
         const validSelector = await resolveValidSelector(this.data.id, page, target)
 
         if (validSelector) {
-            console.log('start blur.')
+            // console.log('start blur.')
             await page.evaluate((selector) => {
                 document.querySelector(selector).blur()
             }, validSelector)
-            console.log('end blur')
+            // console.log('end blur')
         }
     }
 }
@@ -209,12 +209,12 @@ class ChangeActionEntry extends ActionEntryBase {
     }
 
     async process(page) {
-        console.log(this.data)
+        // console.log(this.data)
         const { target, value } = this.data
         const validSelector = await resolveValidSelector(this.data.id, page, target)
 
         if (validSelector) {
-            console.log('start change.')
+            // console.log('start change.')
             await page.evaluate((theSelector, theValue) => {
                 // the change event may happen at input/textarea/select element,
                 // the input/textarea change event always fired after keydown, keyup, blur event,
@@ -230,7 +230,7 @@ class ChangeActionEntry extends ActionEntryBase {
 
                 theElement.dispatchEvent(new Event('change'))
             }, validSelector, value)
-            console.log('end change')
+            // console.log('end change')
         }
     }
 }
@@ -245,14 +245,14 @@ class KeyDownActionEntry extends ActionEntryBase {
     }
 
     async process(page) {
-        console.log(this.data)
+        // console.log(this.data)
         const { target, code } = this.data
         const validSelector = await resolveValidSelector(this.data.id, page, target)
 
         if (validSelector) {
-            console.log('start key down.')
+            // console.log('start key down.')
             await page.keyboard.down(code)
-            console.log('end key down')
+            // console.log('end key down')
         }
     }
 }
@@ -267,14 +267,14 @@ class KeyUpActionEntry extends ActionEntryBase {
     }
 
     async process(page) {
-        console.log(this.data)
+        // console.log(this.data)
         const { target, code } = this.data
         const validSelector = await resolveValidSelector(this.data.id, page, target)
 
         if (validSelector) {
-            console.log('start key up.')
+            // console.log('start key up.')
             await page.keyboard.up(code)
-            console.log('end key up')
+            // console.log('end key up')
         }
     }
 }
@@ -289,14 +289,14 @@ class MouseDownActionEntry extends ActionEntryBase {
     }
 
     async process(page) {
-        console.log(this.data)
+        // console.log(this.data)
         const { target, button } = this.data
         const validSelector = await resolveValidSelector(this.data.id, page, target)
 
         if (validSelector) {
-            console.log('start mouse down.')
+            // console.log('start mouse down.')
             await page.mouse.down({ button: MOUSE_BUTTON_MAP[button] })
-            console.log('end key down')
+            // console.log('end key down')
         }
     }
 }
@@ -311,14 +311,14 @@ class MouseUpActionEntry extends ActionEntryBase {
     }
 
     async process(page) {
-        console.log(this.data)
+        // console.log(this.data)
         const { target, button } = this.data
         const validSelector = await resolveValidSelector(this.data.id, page, target)
 
         if (validSelector) {
-            console.log('start mouse up.')
+            // console.log('start mouse up.')
             await page.mouse.up({ button: MOUSE_BUTTON_MAP[button] })
-            console.log('end key up')
+            // console.log('end key up')
         }
     }
 }
@@ -333,14 +333,14 @@ class MouseOverActionEntry extends ActionEntryBase {
     }
 
     async process(page) {
-        console.log('start mouse over.')
-        console.log(this.data)
+        // console.log('start mouse over.')
+        // console.log(this.data)
         const { target } = this.data
         const validSelector = await resolveValidSelector(this.data.id, page, target)
 
         if (validSelector) {
             await page.hover(validSelector)
-            console.log('end mouse over')
+            // console.log('end mouse over')
         }
     }
 }
@@ -355,8 +355,8 @@ class ScrollActionEntry extends ActionEntryBase {
     }
 
     async process(page) {
-        console.log('start scroll.')
-        console.log(this.data)
+        // console.log('start scroll.')
+        // console.log(this.data)
         const { x, y } = this.data
         const scrollPosition = await page.evaluate(() => {
             return { x: scrollX, y: scrollY }
@@ -366,7 +366,7 @@ class ScrollActionEntry extends ActionEntryBase {
             await page.evaluate((x1, y1) => {
                 window.scrollTo(x1, y1)
             }, x, y)
-            console.log('end scroll')
+            // console.log('end scroll')
         }
     }
 }

@@ -11,7 +11,7 @@ class Director {
     }
 
     async onDomContentLoaded() {
-        console.log(`onDomContentLoaded:this.currentNavigateId(${this.currentNavigateId}),this.nextNavigateId(${this.nextNavigateId})`)
+        // console.log(`onDomContentLoaded:this.currentNavigateId(${this.currentNavigateId}),this.nextNavigateId(${this.nextNavigateId})`)
 
         let i = -1
         for (const entry of this.flatList) {
@@ -23,10 +23,13 @@ class Director {
 
                 try {
                     // await delayPromise
+                    console.log('start entry.id:' + entry.data.id)
+                    console.log(entry)
                     await entry.process(this.page)
+                    console.log('finish entry.id:' + entry.data.id)
                 } catch (ex) {
-                    console.warn(`entry.process exception:`)
-                    console.warn(entry)
+                    // console.warn(`entry.process exception:`)
+                    // console.warn(entry)
                     console.warn(ex)
                 }
             }

@@ -25,14 +25,14 @@ const ACTION_TYPES = new Enum({
 
                         entryList.splice(firstMatchedRequestIndex, 1)
 
-                        console.log(`request.response: ${url}`)
+                        // console.log(`request.response: ${url}`)
                         request.respond({
                             status: status,
                             body: body,
                             headers: header
                         });
                     } else {
-                        console.log(`request.continue: ${url}`)
+                        // console.log(`request.continue: ${url}`)
                         request.continue()
                     }
                 })
@@ -57,7 +57,7 @@ const ACTION_TYPES = new Enum({
                 if (frame !== page.mainFrame() || entryList.length === 0)
                     return
 
-                console.warn(`framenavigated, url:${frame.url()}`)
+                // console.warn(`framenavigated, url:${frame.url()}`)
                 let url = frame.url(),
                     allNavigateId = entryList.map(entry => entry.id),
                     firstEntry = entryList[0],
