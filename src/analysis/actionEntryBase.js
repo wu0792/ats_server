@@ -8,22 +8,32 @@ const MOUSE_BUTTON_MAP = {
 }
 
 const resolveValidSelector = (id, page, selectors) => {
+    let hasResolved = false
     return Promise.race(selectors.map(selector => new Promise(async (resolve, reject) => {
-        const matchPromise = expect(page).toMatchElement(selector, option)
-        matchPromise.catch(async ex => {
+        try {
+            const matchPromise = await expect(page).toMatchElement(selector, option)
+            if (hasResolved === false) {
+                hasResolved = true
+                resolve(selector)
+            }
+        } catch (error) {
             let matchedSelectorInEvaluate = await page.evaluate((theSelectors) => {
                 return theSelectors.find(selector => document.querySelector(selector))
             }, selectors)
 
             if (matchedSelectorInEvaluate) {
-                resolve(matchedSelectorInEvaluate)
+                if (hasResolved === false) {
+                    hasResolved = true
+                    resolve(matchedSelectorInEvaluate)
+                }
             } else {
-                console.warn(`invalid selectors: ${selectors.join(' | ')}, id: ${id}`)
-                resolve(null)
+                if (hasResolved === false) {
+                    hasResolved = true
+                    console.warn(`invalid selectors: ${selectors.join(' | ')}, id: ${id}`)
+                    resolve(null)
+                }
             }
-        })
-
-        resolve(selector)
+        }
     })))
 }
 
@@ -82,6 +92,7 @@ class MutationActionEntry extends ActionEntryBase {
     }
 
     async process(page, systemInfo) {
+        return
         // console.log(this.data)
         const { target } = this.data
 
