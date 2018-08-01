@@ -100,38 +100,25 @@ class MutationActionEntry extends ActionEntryBase {
         const validSelector = await resolveValidSelector(this.data.id, page, lastMutationTarget)
 
         if (validSelector) {
-            // console.log('start screenshot.')
             let position = await page.evaluate((theSelector, id) => {
                 let maxWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
                     maxHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
-                    offsetLeftToRoot = 0,
-                    offsetTopToRoot = 0,
-                    calcOffsetToParent = (el) => {
-                        offsetLeftToRoot += el.offsetLeft
-                        offsetTopToRoot += el.offsetTop
+                    targetEl = document.querySelector(theSelector)
 
-                        if (el.offsetParent) {
-                            calcOffsetToParent(el.offsetParent)
-                        }
-                    }
-
-                let targetEl = document.querySelector(theSelector)
-                if (targetEl) {
-                    calcOffsetToParent(targetEl)
-                } else {
+                if (!targetEl) {
                     throw `invalid selector while screenshot: ${theSelector}, id:${id}`
                 }
 
+                const { left, top, width, height } = targetEl.getBoundingClientRect()
+
                 return {
-                    width: Math.min(targetEl.offsetWidth, maxWidth),
-                    height: Math.min(targetEl.offsetHeight, maxHeight),
-                    left: offsetLeftToRoot,
-                    top: offsetTopToRoot
+                    width: Math.min(width, maxWidth),
+                    height: Math.min(height, maxHeight),
+                    left,
+                    top
                 }
             }, validSelector, this.data.id)
 
-            // console.warn(`position:`)
-            // console.warn(position)
             const { left, top, width, height } = position
             if (width > 0 && height > 0) {
                 await page.screenshot({
@@ -143,8 +130,6 @@ class MutationActionEntry extends ActionEntryBase {
             } else {
                 console.warn(`empty position: ${JSON.stringify(position)}`)
             }
-
-            // console.log('end screenshot')
 
             lastMutationTarget = target
             lastMutationDateTime = new Date()
