@@ -1,4 +1,3 @@
-const { delay } = require('../common/delay')
 const expect = require('expect-puppeteer')
 const option = { timeout: 2000, polling: 'mutation' }
 

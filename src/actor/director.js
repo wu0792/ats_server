@@ -1,5 +1,6 @@
 const ACTION_TYPES = require('../enums/actionTypes')
-const { delay } = require('../common/delay')
+const delay = require('../common/delay')
+const asyncForEach = require('../common/asyncForEach')
 
 class Director {
     constructor(page, groupedList, systemInfo, flatList) {
@@ -14,9 +15,7 @@ class Director {
     async onDomContentLoaded() {
         // console.log(`onDomContentLoaded:this.currentNavigateId(${this.currentNavigateId}),this.nextNavigateId(${this.nextNavigateId})`)
 
-        let i = -1
-        for (const entry of this.flatList) {
-            i++
+        await asyncForEach(this.flatList, async (entry, i) => {
             const id = entry.data.id
 
             if (id > this.currentNavigateId && id < this.nextNavigateId) {
@@ -38,7 +37,7 @@ class Director {
             if (i === this.flatList.length - 1) {
                 console.log('finish all process.')
             }
-        }
+        })
     }
 
     async preProcess() {
