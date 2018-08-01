@@ -101,7 +101,7 @@ class MutationActionEntry extends ActionEntryBase {
 
         if (validSelector) {
             // console.log('start screenshot.')
-            let position = await page.evaluate((theSelector) => {
+            let position = await page.evaluate((theSelector, id) => {
                 let maxWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
                     maxHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
                     offsetLeftToRoot = 0,
@@ -119,7 +119,7 @@ class MutationActionEntry extends ActionEntryBase {
                 if (targetEl) {
                     calcOffsetToParent(targetEl)
                 } else {
-                    throw `invalid selector while screenshot: ${theSelector}`
+                    throw `invalid selector while screenshot: ${theSelector}, id:${id}`
                 }
 
                 return {
@@ -128,7 +128,7 @@ class MutationActionEntry extends ActionEntryBase {
                     left: offsetLeftToRoot,
                     top: offsetTopToRoot
                 }
-            }, validSelector)
+            }, validSelector, this.data.id)
 
             // console.warn(`position:`)
             // console.warn(position)
