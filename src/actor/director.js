@@ -3,18 +3,17 @@ const delay = require('../common/delay')
 const asyncForEach = require('../common/asyncForEach')
 
 class Director {
-    constructor(page, groupedList, systemInfo, flatList) {
+    constructor(page, groupedList, systemInfo, flatList, url) {
         this.page = page
         this.systemInfo = systemInfo
         this.groupedList = groupedList
         this.flatList = flatList
+        this.url = url
         this.currentNavigateId = NaN
         this.nextNavigateId = NaN
     }
 
     async onDomContentLoaded() {
-        // console.log(`onDomContentLoaded:this.currentNavigateId(${this.currentNavigateId}),this.nextNavigateId(${this.nextNavigateId})`)
-
         await asyncForEach(this.flatList, async (entry, i) => {
             const id = entry.data.id
 

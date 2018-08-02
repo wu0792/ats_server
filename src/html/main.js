@@ -8,7 +8,7 @@ const app = require('electron').remote.app,
     BrowserWindow = require('electron').remote.BrowserWindow,
     puppeteer = require('puppeteer');
 
-async function repeat(groupedList, systemInfo, flatList) {
+async function repeat(groupedList, systemInfo, flatList, url) {
     const browser = await puppeteer.launch({
         headless: true,
         slowMo: 25,
@@ -20,7 +20,7 @@ async function repeat(groupedList, systemInfo, flatList) {
     await page.setRequestInterception(true)
     await page.setViewport({ width: 1366, height: 768 });
 
-    const director = new Director(page, groupedList, systemInfo, flatList)
+    const director = new Director(page, groupedList, systemInfo, flatList, url)
     await director.preProcess()
 }
 
@@ -31,13 +31,15 @@ document.getElementById('start').addEventListener('click', function () {
         return
     }
 
+    let url = document.getElementById('url').value.trim()
+
     let receiver = new Receiver(path)
     let groupPromise = receiver.dumpGroupedListWrapper()
 
     groupPromise.then(wrapper => {
         let listPromise = receiver.dumpFlatList()
         listPromise.then(list => {
-            repeat(wrapper.groupedList, wrapper.systemInfo, list)
+            repeat(wrapper.groupedList, wrapper.systemInfo, list, url)
         })
     })
 });

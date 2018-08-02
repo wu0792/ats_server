@@ -9,31 +9,35 @@ const ACTION_TYPES = new Enum({
         collect: (data) => new ActionEntry.NetworkActionEntry(data),
         preProcess: async (director) => {
             let page = director.page,
+                toIgnoreUrlRegex = director.url ? new RegExp(director.url) : null,
                 entryList = director.groupedList[ACTION_TYPES.NETWORK.key]
 
             if (entryList.length) {
                 await page.setRequestInterception(true)
                 page.on('request', request => {
                     const method = request.method(),
-                        url = request.url(),
-                        firstMatchedRequestIndex = entryList.findIndex(entry => {
+                        url = request.url()
+
+                    if (toIgnoreUrlRegex && !toIgnoreUrlRegex.test(url)) {
+                        const firstMatchedRequestIndex = entryList.findIndex(entry => {
                             return entry.url === url && entry.method === method
                         })
 
-                    if (firstMatchedRequestIndex >= 0) {
-                        const validRequest = entryList[firstMatchedRequestIndex],
-                            { body, form, status, header } = validRequest
+                        if (firstMatchedRequestIndex >= 0) {
+                            const validRequest = entryList[firstMatchedRequestIndex],
+                                { body, form, status, header } = validRequest
 
-                        entryList.splice(firstMatchedRequestIndex, 1)
+                            entryList.splice(firstMatchedRequestIndex, 1)
 
-                        // console.log(`request.response: ${url}`)
-                        request.respond({
-                            status: status,
-                            body: body,
-                            headers: header
-                        });
+                            request.respond({
+                                status: status,
+                                body: body,
+                                headers: header
+                            })
+                        } else {
+                            request.continue()
+                        }
                     } else {
-                        // console.log(`request.continue: ${url}`)
                         request.continue()
                     }
                 })
