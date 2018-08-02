@@ -6,11 +6,11 @@
 </head>
 
 <body>
-    <label for="path">path:</label>
-    <input type="text" id="path" style="width: 600px;">
+    <label for="path">ats data path:</label>
+    <input type="text" id="path" style="width: 600px;" value="D:\\Users\\wumm\\Downloads\\ats_data (25).json">
     <br>
-    <label for="url">to test url:</label>
-    <input type="text" id="url" style="width: 600px;">
+    <label for="url">no mock urls:</label>
+    <textarea rows="8" type="text" id="url" style="width: 600px;">http://webresource.c-ctrip.com/ResFltIntlOnline/R\d+/(.*)</textarea>
     <br>
     <button id="start">Start Puppeteer</button>
     <script>

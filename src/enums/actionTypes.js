@@ -9,7 +9,7 @@ const ACTION_TYPES = new Enum({
         collect: (data) => new ActionEntry.NetworkActionEntry(data),
         preProcess: async (director) => {
             let page = director.page,
-                toIgnoreUrlRegex = director.url ? new RegExp(director.url) : null,
+                noMockUrlRegexs = director.noMockUrls.length ? director.noMockUrls.map(url => new RegExp(director.url)) : null,
                 entryList = director.groupedList[ACTION_TYPES.NETWORK.key]
 
             if (entryList.length) {
@@ -18,7 +18,10 @@ const ACTION_TYPES = new Enum({
                     const method = request.method(),
                         url = request.url()
 
-                    if (toIgnoreUrlRegex && !toIgnoreUrlRegex.test(url)) {
+                    if (noMockUrlRegexs && noMockUrlRegexs.some(regex => regex.test(url))) {
+                        // not mock the url if match any of noMockUrlRegex
+                        request.continue()
+                    } else {
                         const firstMatchedRequestIndex = entryList.findIndex(entry => {
                             return entry.url === url && entry.method === method
                         })
@@ -37,8 +40,6 @@ const ACTION_TYPES = new Enum({
                         } else {
                             request.continue()
                         }
-                    } else {
-                        request.continue()
                     }
                 })
             }

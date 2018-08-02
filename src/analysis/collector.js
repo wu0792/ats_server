@@ -18,6 +18,9 @@ class Collector {
         }
 
         flatList.sort((prev, next) => prev.data.id - next.data.id)
+        flatList.forEach((entry, index) => {
+            entry.next = flatList[index + 1]
+        })
 
         return flatList
     }

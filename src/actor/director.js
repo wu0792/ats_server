@@ -3,12 +3,12 @@ const delay = require('../common/delay')
 const asyncForEach = require('../common/asyncForEach')
 
 class Director {
-    constructor(page, groupedList, systemInfo, flatList, url) {
+    constructor(page, groupedList, systemInfo, flatList, urls) {
         this.page = page
         this.systemInfo = systemInfo
         this.groupedList = groupedList
         this.flatList = flatList
-        this.url = url
+        this.noMockUrls = urls
         this.currentNavigateId = NaN
         this.nextNavigateId = NaN
     }
@@ -27,8 +27,6 @@ class Director {
                     await entry.process(this.page, this.systemInfo)
                     console.log('finish entry.id:' + entry.data.id)
                 } catch (ex) {
-                    // console.warn(`entry.process exception:`)
-                    // console.warn(entry)
                     console.warn(ex)
                 }
             }

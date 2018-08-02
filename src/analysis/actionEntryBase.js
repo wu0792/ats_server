@@ -1,5 +1,5 @@
 const expect = require('expect-puppeteer')
-const option = { timeout: 2000, polling: 'mutation' }
+const option = { timeout: 500, polling: 'mutation' }
 
 const MOUSE_BUTTON_MAP = {
     0: 'left',
@@ -92,25 +92,30 @@ class MutationActionEntry extends ActionEntryBase {
     }
 
     async process(page, systemInfo) {
-        return
-        // console.log(this.data)
-        const { target } = this.data
+        const { target: currentTarget, time: currentTime } = this.data
 
         if (lastMutationTarget === null) {
-            lastMutationTarget = [...target]
+            lastMutationTarget = [...currentTarget]
         }
 
         if (lastMutationDateTime === null) {
             lastMutationDateTime = new Date()
         }
 
-        if (target.every(selector => lastMutationTarget.indexOf(selector) >= 0) && (new Date() - lastMutationDateTime < 1000)) {
+        if (currentTarget.every(selector => lastMutationTarget.indexOf(selector) >= 0) && (new Date() - lastMutationDateTime < 1000)) {
             return
         }
 
-        const validSelector = await resolveValidSelector(this.data.id, page, lastMutationTarget)
+        // skip current process if the target is the same as next entry, and interval is short enough
+        // consider as the frames of animation
+        const { target: nextTarget, time: nextTime } = this.next.data
+        if (this.next.getActionType() === this.getActionType() && currentTarget.every(selector => nextTarget.indexOf(selector) >= 0 && (new Date(nextTime) - new Date(currentTime) <= 50))) {
+            return
+        }
 
-        if (validSelector) {
+        const currentValidSelector = await resolveValidSelector(this.data.id, page, lastMutationTarget)
+
+        if (currentValidSelector) {
             let position = await page.evaluate((theSelector, id) => {
                 let maxWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
                     maxHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
@@ -128,7 +133,7 @@ class MutationActionEntry extends ActionEntryBase {
                     left,
                     top
                 }
-            }, validSelector, this.data.id)
+            }, currentValidSelector, this.data.id)
 
             const { left, top, width, height } = position
             if (width > 0 && height > 0) {
@@ -142,7 +147,7 @@ class MutationActionEntry extends ActionEntryBase {
                 console.warn(`empty position: ${JSON.stringify(position)}`)
             }
 
-            lastMutationTarget = target
+            lastMutationTarget = currentTarget
             lastMutationDateTime = new Date()
         }
     }
