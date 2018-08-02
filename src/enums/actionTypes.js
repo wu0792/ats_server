@@ -93,9 +93,25 @@ const ACTION_TYPES = new Enum({
         ignoreNavigateDelay: true,
         collect: (data) => new ActionEntry.MutationActionEntry(data),
         preProcess: async (director) => {
-            let recordPath = `./record/${director.systemInfo.id}/`
-            if (!fs.existsSync(recordPath)) {
-                fs.mkdirSync(recordPath)
+            const expectRoot = './expect/',
+                actualRoot = './actual/',
+                expectPath = `./expect/${director.systemInfo.id}/`,
+                actualPath = `./actual/${director.systemInfo.id}/`
+
+            if (!fs.existsSync(actualRoot)) {
+                fs.mkdirSync(actualRoot)
+            }
+
+            if (!fs.existsSync(expectRoot)) {
+                fs.mkdirSync(expectRoot)
+            }
+
+            if (!fs.existsSync(actualPath)) {
+                fs.mkdirSync(actualPath)
+            }
+
+            if (!fs.existsSync(expectPath)) {
+                fs.mkdirSync(expectPath)
             }
         }
     },

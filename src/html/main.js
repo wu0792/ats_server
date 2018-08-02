@@ -1,5 +1,6 @@
 const Receiver = require('../analysis/receiver')
 const Director = require('../actor/director')
+const compare = require('../analysis/compare')
 
 const app = require('electron').remote.app,
     path = require('path'),
@@ -25,13 +26,13 @@ async function repeat(groupedList, systemInfo, flatList, urls) {
 }
 
 document.getElementById('start').addEventListener('click', function () {
-    let path = document.getElementById('path').value.trim()
+    let path = document.getElementById('path').value.trim(),
+        urls = document.getElementById('url').value.trim().split('\n').filter(val => val)
+
     if (!path) {
         alert('path is required.')
         return
     }
-
-    let urls = document.getElementById('url').value.trim().split('\n').filter(val => val)
 
     let receiver = new Receiver(path)
     let groupPromise = receiver.dumpGroupedListWrapper()
@@ -42,4 +43,14 @@ document.getElementById('start').addEventListener('click', function () {
             repeat(wrapper.groupedList, wrapper.systemInfo, list, urls)
         })
     })
-});
+})
+
+async function doCompare() {
+    await compare()
+}
+
+document.getElementById('compare').addEventListener('click', function () {
+    const id = document.getElementById('id').value.trim()
+
+    doCompare()
+})

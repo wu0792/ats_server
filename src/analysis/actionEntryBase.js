@@ -80,8 +80,6 @@ class NavigateActionEntry extends ActionEntryBase {
     }
 }
 
-let lastMutationTarget = null,
-    lastMutationDateTime = null
 class MutationActionEntry extends ActionEntryBase {
     constructor(data) {
         super(data)
@@ -94,18 +92,6 @@ class MutationActionEntry extends ActionEntryBase {
     async process(page, systemInfo) {
         const { target: currentTarget, time: currentTime } = this.data
 
-        if (lastMutationTarget === null) {
-            lastMutationTarget = [...currentTarget]
-        }
-
-        if (lastMutationDateTime === null) {
-            lastMutationDateTime = new Date()
-        }
-
-        if (currentTarget.every(selector => lastMutationTarget.indexOf(selector) >= 0) && (new Date() - lastMutationDateTime < 1000)) {
-            return
-        }
-
         // skip current process if the target is the same as next entry, and interval is short enough
         // consider as the frames of animation
         const { target: nextTarget, time: nextTime } = this.next.data
@@ -113,7 +99,7 @@ class MutationActionEntry extends ActionEntryBase {
             return
         }
 
-        const currentValidSelector = await resolveValidSelector(this.data.id, page, lastMutationTarget)
+        const currentValidSelector = await resolveValidSelector(this.data.id, page, currentTarget)
 
         if (currentValidSelector) {
             let position = await page.evaluate((theSelector, id) => {
@@ -141,14 +127,11 @@ class MutationActionEntry extends ActionEntryBase {
                     quality: 100,
                     type: 'jpeg',
                     clip: { x: left, y: top, width: width, height: height },
-                    path: `./record/${systemInfo.id}/${this.data.id}.jpeg`
+                    path: `./actual/${systemInfo.id}/${this.data.id}.jpeg`
                 })
             } else {
                 console.warn(`empty position: ${JSON.stringify(position)}`)
             }
-
-            lastMutationTarget = currentTarget
-            lastMutationDateTime = new Date()
         }
     }
 }
