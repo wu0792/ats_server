@@ -1,6 +1,6 @@
 const Receiver = require('../analysis/receiver')
 const Director = require('../actor/director')
-const compare = require('../analysis/compare')
+const startCompare = require('../analysis/compare')
 
 const app = require('electron').remote.app,
     path = require('path'),
@@ -45,12 +45,12 @@ document.getElementById('start').addEventListener('click', function () {
     })
 })
 
-async function doCompare() {
-    await compare()
+function doCompare(id) {
+    startCompare(id)
 }
 
 document.getElementById('compare').addEventListener('click', function () {
     const id = document.getElementById('id').value.trim()
 
-    doCompare()
+    doCompare(id)
 })

@@ -93,26 +93,13 @@ const ACTION_TYPES = new Enum({
         ignoreNavigateDelay: true,
         collect: (data) => new ActionEntry.MutationActionEntry(data),
         preProcess: async (director) => {
-            const expectRoot = './expect/',
-                actualRoot = './actual/',
-                expectPath = `./expect/${director.systemInfo.id}/`,
-                actualPath = `./actual/${director.systemInfo.id}/`
+            const dirNames = ['expect', 'actual', 'compare']
 
-            if (!fs.existsSync(actualRoot)) {
-                fs.mkdirSync(actualRoot)
-            }
-
-            if (!fs.existsSync(expectRoot)) {
-                fs.mkdirSync(expectRoot)
-            }
-
-            if (!fs.existsSync(actualPath)) {
-                fs.mkdirSync(actualPath)
-            }
-
-            if (!fs.existsSync(expectPath)) {
-                fs.mkdirSync(expectPath)
-            }
+            dirNames.forEach(dirName => {
+                if (!fs.existsSync(`./${dirName}/${director.systemInfo.id}/`)) {
+                    fs.mkdirSync(`./${dirName}/${director.systemInfo.id}/`)
+                }
+            })
         }
     },
     FOCUS: {

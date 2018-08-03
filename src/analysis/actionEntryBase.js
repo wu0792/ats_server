@@ -124,13 +124,11 @@ class MutationActionEntry extends ActionEntryBase {
             const { left, top, width, height } = position
             if (width > 0 && height > 0) {
                 await page.screenshot({
-                    quality: 100,
-                    type: 'jpeg',
                     clip: { x: left, y: top, width: width, height: height },
-                    path: `./actual/${systemInfo.id}/${this.data.id}.jpeg`
+                    path: `./actual/${systemInfo.id}/${this.data.id}.png`
                 })
             } else {
-                console.warn(`empty position: ${JSON.stringify(position)}`)
+                console.log(`no sized element, ${currentValidSelector}: ${JSON.stringify(position)}`)
             }
         }
     }

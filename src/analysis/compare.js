@@ -1,52 +1,44 @@
-const compareImages = require("resemblejs/compareImages");
-const resemble = require('resemblejs')
-const fs = require("mz/fs");
+const fs = require('fs'),
+    PNG = require('pngjs').PNG,
+    pixelmatch = require('pixelmatch')
 
-async function compare() {
-    const options = {
-        output: {
-            errorColor: {
-                red: 255,
-                green: 0,
-                blue: 255
-            },
-            errorType: "movement",
-            transparency: 0.3,
-            // largeImageThreshold: 1200,
-            // useCrossOrigin: false,
-            outputDiff: true
-        },
-        // scaleToSameSize: true,
-        // ignore: "antialiasing"
-    };
+function doCompare(id, fileName,index,count) {
+    let img1 = fs.createReadStream(`./expect/${id}/${fileName}`).pipe(new PNG()).on('parsed', compare),
+        img2 = fs.createReadStream(`./actual/${id}/${fileName}`).pipe(new PNG()).on('parsed', compare),
+        filesRead = 0;
 
-    try {
-        let file1 = await fs.readFile("./expect/1533218989193/46.jpeg"),
-            file2 = await fs.readFile("./actual/1533218989193/46.jpeg")
+    function compare() {
+        if (++filesRead < 2) return;
+        let diff = new PNG({ width: img1.width, height: img1.height })
 
-        resemble(file1).compareTo(file2).onComplete(async function (data) {
-            // return data;
-            fs.writeFileSync("./compare/1533218989193/46.jpeg", data.getBuffer())
-            // await fs.writeFile("./compare/1533218989193/46.jpeg", data.getBuffer());
-            /*
-            {
-              misMatchPercentage : 100, // %
-              isSameDimensions: true, // or false
-              getImageDataUrl: function(){}
-            }
-            */
-        });
+        const differentPixelCount = pixelmatch(img1.data, img2.data, diff.data, img1.width, img1.height, { threshold: 0.1 });
+        if (differentPixelCount === 0) {
+            console.log(`[√] ${index+1}/${count} ${fileName} equal.`)
+        } else {
+            console.log(`[×] ${index+1}/${count} ${fileName} has ${differentPixelCount} pixels difference.`)
+        }
 
-        // const data = await compareImages(
-        //     file1,
-        //     file2,
-        //     options
-        // );
-
-        // await fs.writeFile("./compare/1533218989193/46.jpeg", data.getBuffer());
-    } catch (error) {
-        console.error(error)
+        if (differentPixelCount > 0) {
+            diff.pack().pipe(fs.createWriteStream(`./compare/${id}/${fileName}`))
+        }
     }
 }
 
-module.exports = compare
+function startCompare(id) {
+    const root = `./expect/${id}`
+
+    fs.readdir(root, (err, files) => {
+        if (err) {
+            console.error(err)
+        } else {
+            const count = files.length
+            files.forEach((file, index) => {
+                doCompare(id, file, index,count)
+            })
+        }
+    })
+
+
+}
+
+module.exports = startCompare

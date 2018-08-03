@@ -7,6 +7,3 @@ build/ext/icon.png
 build/ext/manifest.json
 build/ext/panel.html
 build/ext/panel.js
-/record
-/expect
-/actual
