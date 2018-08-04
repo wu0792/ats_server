@@ -14,7 +14,7 @@ class Receiver {
             let configText = await readFilePromise(this.path, { encoding: 'utf8' }),
                 configJson = JSON.parse(configText)
 
-            this.systemInfo = new SystemInfo(configJson.id, configJson.version, configJson.create_at)
+            this.systemInfo = new SystemInfo(configJson)
             this.data = configJson.data
         }
     }

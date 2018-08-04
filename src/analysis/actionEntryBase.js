@@ -1,4 +1,5 @@
 const expect = require('expect-puppeteer')
+const asyncSome = require('../common/asyncSome')
 const option = { timeout: 500, polling: 'mutation' }
 
 const MOUSE_BUTTON_MAP = {
@@ -35,6 +36,32 @@ const resolveValidSelector = (id, page, selectors) => {
             }
         }
     })))
+}
+
+const ifElIsChildOf = async (page, childSelector, parentSelector) => {
+    if (childSelector && parentSelector) {
+        let insideParent = await page.evaluate((theChildSelector, theParentSelector) => {
+            const parentEl = document.querySelector(theParentSelector),
+                ifElIsChildOfByEl = (childEl) => {
+                    if (childEl) {
+                        return childEl === parentEl || childEl.parentElement === parentEl || ifElIsChildOfByEl(childEl.parentElement)
+                    } else {
+                        return false
+                    }
+                }
+
+            let childEl = document.querySelector(theChildSelector)
+            if (childEl && parentEl) {
+                return ifElIsChildOfByEl(childEl)
+            } else {
+                return false
+            }
+        }, childSelector, parentSelector)
+
+        return insideParent
+    } else {
+        return false
+    }
 }
 
 class ActionEntryBase {
@@ -99,9 +126,14 @@ class MutationActionEntry extends ActionEntryBase {
             return
         }
 
-        const currentValidSelector = await resolveValidSelector(this.data.id, page, currentTarget)
+        const currentValidSelector = await resolveValidSelector(this.data.id, page, currentTarget),
+            targetSelectors = systemInfo.rootTargets,
+            isInTargets = currentValidSelector && (targetSelectors.length === 0 || await asyncSome(targetSelectors, async targetSelector => {
+                let isInsideTarget = await ifElIsChildOf(page, currentValidSelector, targetSelector)
+                return isInsideTarget
+            }))
 
-        if (currentValidSelector) {
+        if (currentValidSelector && isInTargets) {
             let position = await page.evaluate((theSelector, id) => {
                 let maxWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
                     maxHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),

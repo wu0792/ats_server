@@ -1,8 +1,10 @@
 class SystemInfo {
-    constructor(id, version, createAt) {
-        this.id = id
-        this.version = version
-        this.createAt = createAt
+    constructor(configJson) {
+
+        this.id = configJson.id
+        this.version = configJson.version
+        this.createAt = configJson.createAt
+        this.rootTargets = configJson.rootTargets
     }
 }
 
