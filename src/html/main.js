@@ -2,12 +2,7 @@ const Receiver = require('../analysis/receiver')
 const Director = require('../actor/director')
 const startCompare = require('../analysis/compare')
 
-const app = require('electron').remote.app,
-    path = require('path'),
-    fs = require('fs'),
-    dialog = require('electron').remote.dialog,
-    BrowserWindow = require('electron').remote.BrowserWindow,
-    puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer');
 
 async function repeat(groupedList, systemInfo, flatList, urls) {
     const browser = await puppeteer.launch({
