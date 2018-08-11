@@ -23,6 +23,7 @@ async function repeat(mode, groupedList, systemInfo, flatList, urls) {
 }
 
 function getDataFilePath() { return document.getElementById('path').value.trim(); }
+function getRemark() { return document.getElementById('remark').value.trim(); }
 function getNoMockUrls() { return document.getElementById('url').value.trim().split('\n').map(val => val.trim()).filter(val => val); }
 
 function prepareRepeat(mode) {
@@ -65,7 +66,8 @@ document.getElementById('compare').addEventListener('click', function () {
 
 document.getElementById('save').addEventListener('click', function () {
     let dataFilePath = getDataFilePath(),
-        noMockUrls = getNoMockUrls()
+        noMockUrls = getNoMockUrls(),
+        remark = getRemark()
 
     if (!dataFilePath) {
         alert('path is required.')
@@ -74,6 +76,7 @@ document.getElementById('save').addEventListener('click', function () {
 
     let data = {
         path: dataFilePath,
+        remark,
         noMockUrls
     }
 
