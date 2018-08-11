@@ -14,7 +14,7 @@ const readFilePromise = require('fs-readfile-promise')
  * @param {the flat data retrieved from data file} flatList 
  * @param {urls that config the mock} noMockUrls
  */
-async function runPuppeteer(mode, groupedList, systemInfo, flatList, noMockUrls) {
+async function runPuppeteer(mode, notifier, groupedList, systemInfo, flatList, noMockUrls) {
     const browser = await puppeteer.launch({
         headless: false,
         slowMo: 25,
@@ -26,7 +26,7 @@ async function runPuppeteer(mode, groupedList, systemInfo, flatList, noMockUrls)
     await page.setRequestInterception(true)
     await page.setViewport({ width: 1366, height: 768 })
 
-    const director = new Director(mode, page, groupedList, systemInfo, flatList, noMockUrls)
+    const director = new Director(mode, notifier, page, groupedList, systemInfo, flatList, noMockUrls)
     await director.preProcess()
 }
 
@@ -64,7 +64,7 @@ async function readConfigFrom(configFilePath) {
 /**
  * prepare for runing the puppeteer
  */
-async function prepare(configFilePath, mode) {
+async function prepare(configFilePath, mode, notifier) {
     const configJson = await readConfigFrom(configFilePath),
         { dataFilePath, title, noMockUrls } = configJson,
         receiver = new Receiver(dataFilePath),
@@ -72,7 +72,7 @@ async function prepare(configFilePath, mode) {
         wrapper = await groupPromise,
         list = await receiver.dumpFlatList()
 
-    runPuppeteer(mode, wrapper.groupedList, wrapper.systemInfo, list, noMockUrls)
+    runPuppeteer(mode, notifier, wrapper.groupedList, wrapper.systemInfo, list, noMockUrls)
 }
 
 //tab2.run expect
@@ -87,10 +87,18 @@ document.getElementById('runExpect').addEventListener('click', async function ()
         return
     }
 
-    await prepare(configFilePathOfExpect, START_MODE.expect)
+    await prepare(configFilePathOfExpect, START_MODE.expect, { onNotifyCompareProgress: null })
 })
 
 //tab3.run actual
+const onNotifyCompareProgress = (index, count, fileName, differentPixelCount) => {
+    if (differentPixelCount === 0) {
+        console.log(`[√] ${index + 1}/${count} ${fileName} equal.`)
+    } else {
+        console.log(`[×] ${index + 1}/${count} ${fileName} has ${differentPixelCount} pixels difference.`)
+    }
+}
+
 document.getElementById('runActual').addEventListener('click', async function () {
     const actualError = document.getElementById('actualError'),
         configFilePathOfActual = document.getElementById('configFilePathOfActual').value.trim()
@@ -102,5 +110,5 @@ document.getElementById('runActual').addEventListener('click', async function ()
         return
     }
 
-    await prepare(configFilePathOfActual, START_MODE.actual)
+    await prepare(configFilePathOfActual, START_MODE.actual, { onNotifyCompareProgress })
 })

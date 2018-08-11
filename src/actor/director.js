@@ -4,8 +4,9 @@ const asyncForEach = require('../common/asyncForEach')
 const startCompare = require('../analysis/compare')
 
 class Director {
-    constructor(mode, page, groupedList, systemInfo, flatList, noMockUrls) {
+    constructor(mode, notifier, page, groupedList, systemInfo, flatList, noMockUrls) {
         this.mode = mode
+        this.notifier = notifier
         this.page = page
         this.systemInfo = systemInfo
         this.groupedList = groupedList
@@ -27,14 +28,6 @@ class Director {
         })
         this.currentNavigateId = NaN
         this.nextNavigateId = NaN
-    }
-
-    notifyCompareProgress(index, count, fileName, differentPixelCount) {
-        if (differentPixelCount === 0) {
-            console.log(`[√] ${index + 1}/${count} ${fileName} equal.`)
-        } else {
-            console.log(`[×] ${index + 1}/${count} ${fileName} has ${differentPixelCount} pixels difference.`)
-        }
     }
 
     async onDomContentLoaded() {
@@ -59,7 +52,7 @@ class Director {
                 console.log('finish all process.')
 
                 if (this.mode.value.needCompare) {
-                    startCompare(this.systemInfo.id, this.notifyCompareProgress)
+                    startCompare(this.systemInfo.id, this.notifier.onNotifyCompareProgress)
                 }
             }
         })
