@@ -39,7 +39,7 @@ class Director {
                     // await delayPromise
                     console.log('start entry.id:' + entry.data.id)
                     console.log(entry)
-                    await entry.process(this.page, this.systemInfo)
+                    await entry.process(this.page, this.systemInfo, this.mode)
                     console.log('finish entry.id:' + entry.data.id)
                 } catch (ex) {
                     console.warn(ex)
