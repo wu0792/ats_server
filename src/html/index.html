@@ -1,0 +1,63 @@
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <title>Document</title>
+    <link rel="stylesheet" href="./tabs.css">
+    <link rel="stylesheet" href="./theme.css">
+</head>
+
+<body>
+    <div class="tabs">
+        <input type="radio" name="tabs" id="tabone" checked="checked">
+        <label for="tabone">新增配置</label>
+        <div class="tab">
+            <form>
+                <div>
+                    <label class="desc" for="remark">
+                        配置描述：
+                    </label>
+                    <div>
+                        <input id="remark" name="remark" value="" tabindex="1" type="text">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="desc" for="dataFilePath">数据文件：</label>
+                    <div>
+                        <input id="dataFilePath" name="dataFilePath" type="text" class="field text fn" value="" size="8" tabindex="2">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="desc" for="noMockUrls"> URL映射： </label>
+                    <div>
+                        <textarea id="noMockUrls" name="noMockUrls" rows="5" tabindex="3"></textarea>
+                    </div>
+                </div>
+
+                <div>
+                    <div>
+                        <input id="saveConfig" name="saveConfig" type="button" value="保存配置">
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <input type="radio" name="tabs" id="tabtwo">
+        <label for="tabtwo">录制(expect)</label>
+        <div class="tab">
+
+        </div>
+
+        <input type="radio" name="tabs" id="tabthree">
+        <label for="tabthree">测试(actual)</label>
+        <div class="tab">
+
+        </div>
+    </div>
+
+    <script src="./index.js"></script>
+</body>
+
+</html>
