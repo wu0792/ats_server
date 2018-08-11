@@ -1,6 +1,7 @@
 const Receiver = require('../analysis/receiver')
 const Director = require('../actor/director')
 const startCompare = require('../analysis/compare')
+const SaveFile = require('../common/saveFile')
 
 const puppeteer = require('puppeteer');
 
@@ -20,9 +21,12 @@ async function repeat(groupedList, systemInfo, flatList, urls) {
     await director.preProcess()
 }
 
+function getDataFilePath() { return document.getElementById('path').value.trim(); }
+function getNoMockUrls() { return document.getElementById('url').value.trim().split('\n').map(val => val.trim()).filter(val => val); }
+
 document.getElementById('start').addEventListener('click', function () {
-    let path = document.getElementById('path').value.trim(),
-        urls = document.getElementById('url').value.trim().split('\n').map(val => val.trim()).filter(val => val)
+    let path = getDataFilePath(),
+        urls = getNoMockUrls()
 
     if (!path) {
         alert('path is required.')
@@ -48,4 +52,21 @@ document.getElementById('compare').addEventListener('click', function () {
     const id = document.getElementById('id').value.trim()
 
     doCompare(id)
+})
+
+document.getElementById('save').addEventListener('click', function () {
+    let dataFilePath = getDataFilePath(),
+        noMockUrls = getNoMockUrls()
+
+    if (!dataFilePath) {
+        alert('path is required.')
+        return
+    }
+
+    let data = {
+        path: dataFilePath,
+        noMockUrls
+    }
+
+    SaveFile.saveJson(data, document, 'ats_config.json')
 })
