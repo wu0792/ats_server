@@ -114,3 +114,43 @@ textarea:focus {
         text-align: right;
     }
 }
+
+.btn {
+    display: inline-block;
+    padding: 0 14px;
+    margin: 0;
+    height: 24px;
+    font-size: 13px;
+    filter: chroma(color=#000000);
+    border: 1px solid #d8d8d8;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    background-color: #f9f9f9;
+    overflow: hidden;
+    outline: 0;
+}
+
+.btn:disabled {
+    background-color: #8892a0;
+    border-color: #3e434a #a3b3ca #767f8c;
+}
+
+.btn-primary {
+    background-color: #388bff;
+    border-color: #3c8dff #408ffe #3680e6;
+    color: #fff !important;
+}
+
+.btn-primary:hover {
+    border-color: #2678ec #2575e7 #1c6fe2 #2677e7;
+    background-color: #388bff;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAMAAACuX0YVAAAABlBMVEVnpv85i/9PO5r4AAAAD0lEQVR42gEEAPv/AAAAAQAFAAIros7PAAAAAElFTkSuQmCC);
+    background-repeat: repeat-x;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, .4);
+    -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, .4);
+    -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0, .4);
+    -o-box-shadow: 1px 1px 1px rgba(0, 0, 0, .4);
+}
