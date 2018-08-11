@@ -10,7 +10,7 @@ const getNowString = () => {
         min = now.getMinutes(),
         sec = now.getSeconds()
 
-    let date = `${year}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`,
+    let date = `${year}${month < 10 ? '0' : ''}${month}${day < 10 ? '0' : ''}${day}`,
         time = `${hour < 10 ? '0' : ''}${hour}${min < 10 ? '0' : ''}${min}${sec < 10 ? '0' : ''}${sec}`
 
     return `${date}_${time}`
