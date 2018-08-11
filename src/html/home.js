@@ -6,7 +6,15 @@ const puppeteer = require('puppeteer')
 const getNowString = require('../common/getNowString')
 const readFilePromise = require('fs-readfile-promise')
 
-async function runPuppeteer(mode, groupedList, systemInfo, flatList, urls) {
+/**
+ * 
+ * @param {run mode: expect/actual} mode 
+ * @param {the grouped data retrieved from data file} groupedList 
+ * @param {some system info like version, id etc} systemInfo 
+ * @param {the flat data retrieved from data file} flatList 
+ * @param {urls that config the mock} noMockUrls
+ */
+async function runPuppeteer(mode, groupedList, systemInfo, flatList, noMockUrls) {
     const browser = await puppeteer.launch({
         headless: false,
         slowMo: 25,
@@ -18,14 +26,14 @@ async function runPuppeteer(mode, groupedList, systemInfo, flatList, urls) {
     await page.setRequestInterception(true)
     await page.setViewport({ width: 1366, height: 768 })
 
-    const director = new Director(mode, page, groupedList, systemInfo, flatList, urls)
+    const director = new Director(mode, page, groupedList, systemInfo, flatList, noMockUrls)
     await director.preProcess()
 }
 
 //tab1.saveConfig
 document.getElementById('saveConfig').addEventListener('click', function () {
     let dataFilePath = document.getElementById('dataFilePath').value.trim(),
-        noMockUrls = document.getElementById('noMockUrls').value.trim(),
+        noMockUrls = document.getElementById('noMockUrls').value.trim().split('\n').map(val => val.trim()).filter(val => val),
         title = document.getElementById('title').value.trim()
 
     if (!dataFilePath) {
@@ -46,7 +54,7 @@ document.getElementById('saveConfig').addEventListener('click', function () {
  * read config data from path
  * @param {config file path}} configFilePath 
  */
-function readConfigFrom(configFilePath) {
+async function readConfigFrom(configFilePath) {
     let configText = await readFilePromise(configFilePath, { encoding: 'utf8' }),
         configJson = JSON.parse(configText)
 
@@ -56,21 +64,19 @@ function readConfigFrom(configFilePath) {
 /**
  * prepare for runing the puppeteer
  */
-function prepare(configFilePath, mode) {
-    const configJson = readConfigFrom(configFilePath),
+async function prepare(configFilePath, mode) {
+    const configJson = await readConfigFrom(configFilePath),
         { dataFilePath, title, noMockUrls } = configJson,
         receiver = new Receiver(dataFilePath),
-        groupPromise = receiver.dumpGroupedListWrapper()
+        groupPromise = receiver.dumpGroupedListWrapper(),
+        wrapper = await groupPromise,
+        list = await receiver.dumpFlatList()
 
-    groupPromise.then(wrapper => {
-        receiver.dumpFlatList().then(list => {
-            runPuppeteer(mode, wrapper.groupedList, wrapper.systemInfo, list, noMockUrls)
-        })
-    })
+    runPuppeteer(mode, wrapper.groupedList, wrapper.systemInfo, list, noMockUrls)
 }
 
 //tab2.run expect
-document.getElementById('runExpect').addEventListener('click', function () {
+document.getElementById('runExpect').addEventListener('click', async function () {
     const expectError = document.getElementById('expectError'),
         configFilePathOfExpect = document.getElementById('configFilePathOfExpect').value.trim()
 
@@ -81,11 +87,11 @@ document.getElementById('runExpect').addEventListener('click', function () {
         return
     }
 
-    prepare(configFilePathOfExpect, START_MODE.expect)
+    await prepare(configFilePathOfExpect, START_MODE.expect)
 })
 
 //tab3.run actual
-document.getElementById('runActual').addEventListener('click', function () {
+document.getElementById('runActual').addEventListener('click', async function () {
     const actualError = document.getElementById('actualError'),
         configFilePathOfActual = document.getElementById('configFilePathOfActual').value.trim()
 
@@ -96,5 +102,5 @@ document.getElementById('runActual').addEventListener('click', function () {
         return
     }
 
-    prepare(configFilePathOfActual, START_MODE.actual)
+    await prepare(configFilePathOfActual, START_MODE.actual)
 })
