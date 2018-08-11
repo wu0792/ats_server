@@ -2,10 +2,11 @@ const Receiver = require('../analysis/receiver')
 const Director = require('../actor/director')
 const startCompare = require('../analysis/compare')
 const SaveFile = require('../common/saveFile')
+const START_MODE = require('../enums/startMode')
 
 const puppeteer = require('puppeteer');
 
-async function repeat(groupedList, systemInfo, flatList, urls) {
+async function repeat(mode, groupedList, systemInfo, flatList, urls) {
     const browser = await puppeteer.launch({
         headless: false,
         slowMo: 25,
@@ -17,14 +18,14 @@ async function repeat(groupedList, systemInfo, flatList, urls) {
     await page.setRequestInterception(true)
     await page.setViewport({ width: 1366, height: 768 });
 
-    const director = new Director(page, groupedList, systemInfo, flatList, urls)
+    const director = new Director(mode, page, groupedList, systemInfo, flatList, urls)
     await director.preProcess()
 }
 
 function getDataFilePath() { return document.getElementById('path').value.trim(); }
 function getNoMockUrls() { return document.getElementById('url').value.trim().split('\n').map(val => val.trim()).filter(val => val); }
 
-document.getElementById('start').addEventListener('click', function () {
+function prepareRepeat(mode) {
     let path = getDataFilePath(),
         urls = getNoMockUrls()
 
@@ -39,9 +40,17 @@ document.getElementById('start').addEventListener('click', function () {
     groupPromise.then(wrapper => {
         let listPromise = receiver.dumpFlatList()
         listPromise.then(list => {
-            repeat(wrapper.groupedList, wrapper.systemInfo, list, urls)
+            repeat(mode, wrapper.groupedList, wrapper.systemInfo, list, urls)
         })
     })
+}
+
+document.getElementById('expect').addEventListener('click', function () {
+    prepareRepeat(START_MODE.expect)
+})
+
+document.getElementById('actual').addEventListener('click', function () {
+    prepareRepeat(START_MODE.actual)
 })
 
 function doCompare(id) {

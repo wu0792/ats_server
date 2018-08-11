@@ -3,7 +3,8 @@ const delay = require('../common/delay')
 const asyncForEach = require('../common/asyncForEach')
 
 class Director {
-    constructor(page, groupedList, systemInfo, flatList, urls) {
+    constructor(mode, page, groupedList, systemInfo, flatList, urls) {
+        this.mode = mode
         this.page = page
         this.systemInfo = systemInfo
         this.groupedList = groupedList

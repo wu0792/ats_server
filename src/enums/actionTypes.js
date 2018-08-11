@@ -10,7 +10,8 @@ const ACTION_TYPES = new Enum({
         preProcess: async (director) => {
             let page = director.page,
                 noMockUrlRegexs = director.noMockUrls.length ? director.noMockUrls.map(urlArray => new RegExp(urlArray[0])) : null,
-                entryList = director.groupedList[ACTION_TYPES.NETWORK.key]
+                entryList = director.groupedList[ACTION_TYPES.NETWORK.key],
+                canMock = director.mode.value.canMock
 
             if (entryList.length) {
                 await page.setRequestInterception(true)
@@ -19,7 +20,7 @@ const ACTION_TYPES = new Enum({
                     const method = request.method(),
                         url = request.url()
 
-                    if (noMockUrlRegexs && noMockUrlRegexs.some((regex, index) => {
+                    if (canMock && noMockUrlRegexs && noMockUrlRegexs.some((regex, index) => {
                         let targetUrl = url,
                             noMockUrl = regex.source
 
