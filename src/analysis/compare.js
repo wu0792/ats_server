@@ -2,7 +2,7 @@ const fs = require('fs'),
     PNG = require('pngjs').PNG,
     pixelmatch = require('pixelmatch')
 
-function doCompare(id, fileName, index, count) {
+function doCompare(id, fileName, index, count, notifier) {
     let img1Path = `./expect/${id}/${fileName}`,
         img2Path = `./actual/${id}/${fileName}`,
         valid = true
@@ -31,9 +31,9 @@ function doCompare(id, fileName, index, count) {
 
         const differentPixelCount = pixelmatch(img1.data, img2.data, diff.data, img1.width, img1.height, { threshold: 0.1 });
         if (differentPixelCount === 0) {
-            console.log(`[√] ${index + 1}/${count} ${fileName} equal.`)
+            notifier(index, count, fileName, 0)
         } else {
-            console.log(`[×] ${index + 1}/${count} ${fileName} has ${differentPixelCount} pixels difference.`)
+            notifier(index, count, fileName, differentPixelCount)
         }
 
         if (differentPixelCount > 0) {
@@ -42,7 +42,7 @@ function doCompare(id, fileName, index, count) {
     }
 }
 
-function startCompare(id) {
+function startCompare(id, notifier = () => { }) {
     const root = `./expect/${id}`
 
     fs.readdir(root, (err, files) => {
@@ -50,8 +50,8 @@ function startCompare(id) {
             console.error(err)
         } else {
             const count = files.length
-            files.forEach((file, index) => {
-                doCompare(id, file, index, count)
+            files.sort().forEach((file, index) => {
+                doCompare(id, file, index, count, notifier)
             })
         }
     })

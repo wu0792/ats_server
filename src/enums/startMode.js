@@ -2,10 +2,12 @@ const Enum = require('enum')
 
 const START_MODE = new Enum({
     expect: {
-        canMock: false
+        canMock: false,
+        needCompare: false
     },
     actual: {
-        canMock: true
+        canMock: true,
+        needCompare: true
     }
 })
 

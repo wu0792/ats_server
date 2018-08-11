@@ -1,9 +1,10 @@
 const ACTION_TYPES = require('../enums/actionTypes')
 const delay = require('../common/delay')
 const asyncForEach = require('../common/asyncForEach')
+const startCompare = require('../analysis/compare')
 
 class Director {
-    constructor(mode, page, groupedList, systemInfo, flatList, urls) {
+    constructor(mode, page, groupedList, systemInfo, flatList, noMockUrls) {
         this.mode = mode
         this.page = page
         this.systemInfo = systemInfo
@@ -15,17 +16,25 @@ class Director {
         //  'oldurl.com/old/(.*).js=>newUrl.com/new/$1.js']
         // previous one just let the network go as real request, 
         // while the next one redirect to specific url : 
-        this.noMockUrls = urls.map(url => {
+        this.noMockUrls = noMockUrls.map(noMockUrl => {
             //universal the format
-            let arrowSplitIndex = url.indexOf('=>')
+            let arrowSplitIndex = noMockUrl.indexOf('=>')
             if (arrowSplitIndex >= 0) {
-                return [url.substring(0, arrowSplitIndex), url.substring(arrowSplitIndex + 2)]
+                return [noMockUrl.substring(0, arrowSplitIndex), noMockUrl.substring(arrowSplitIndex + 2)]
             } else {
-                return [url, '']
+                return [noMockUrl, '']
             }
         })
         this.currentNavigateId = NaN
         this.nextNavigateId = NaN
+    }
+
+    notifyCompareProgress(index, count, fileName, differentPixelCount) {
+        if (differentPixelCount === 0) {
+            console.log(`[√] ${index + 1}/${count} ${fileName} equal.`)
+        } else {
+            console.log(`[×] ${index + 1}/${count} ${fileName} has ${differentPixelCount} pixels difference.`)
+        }
     }
 
     async onDomContentLoaded() {
@@ -33,7 +42,7 @@ class Director {
             const id = entry.data.id
 
             if (id > this.currentNavigateId && id < this.nextNavigateId) {
-                const delayPromise = delay(i === 0 ? 0 : (new Date(this.flatList[i].data.time) - new Date(this.flatList[i - 1].data.time)))
+                // const delayPromise = delay(i === 0 ? 0 : (new Date(this.flatList[i].data.time) - new Date(this.flatList[i - 1].data.time)))
 
                 try {
                     // await delayPromise
@@ -48,6 +57,10 @@ class Director {
 
             if (i === this.flatList.length - 1) {
                 console.log('finish all process.')
+
+                if (this.mode.value.needCompare) {
+                    startCompare(this.systemInfo.id, this.notifyCompareProgress)
+                }
             }
         })
     }
