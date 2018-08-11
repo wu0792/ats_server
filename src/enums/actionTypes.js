@@ -9,18 +9,44 @@ const ACTION_TYPES = new Enum({
         collect: (data) => new ActionEntry.NetworkActionEntry(data),
         preProcess: async (director) => {
             let page = director.page,
-                noMockUrlRegexs = director.noMockUrls.length ? director.noMockUrls.map(url => new RegExp(director.url)) : null,
+                noMockUrlRegexs = director.noMockUrls.length ? director.noMockUrls.map(urlArray => new RegExp(urlArray[0])) : null,
                 entryList = director.groupedList[ACTION_TYPES.NETWORK.key]
 
             if (entryList.length) {
                 await page.setRequestInterception(true)
                 page.on('request', request => {
+                    let redirectUrl = ''
                     const method = request.method(),
                         url = request.url()
 
-                    if (noMockUrlRegexs && noMockUrlRegexs.some(regex => regex.test(url))) {
-                        // not mock the url if match any of noMockUrlRegex
-                        request.continue()
+                    if (noMockUrlRegexs && noMockUrlRegexs.some((regex, index) => {
+                        let targetUrl = url,
+                            noMockUrl = regex.source
+
+                        if (noMockUrl.indexOf('http') < 0) {
+                            let parsedUrl = urlParser.parse(targetUrl)
+                            targetUrl = `${parsedUrl.host}${parsedUrl.pathname}`
+                        }
+
+                        let matched = regex.test(targetUrl)
+                        if (matched) {
+                            if (director.noMockUrls[index].length === 2) {
+                                redirectUrl = url.replace(new RegExp(noMockUrl), director.noMockUrls[index][1])
+                            }
+                            return true
+                        } else {
+                            return false
+                        }
+                    })) {
+                        if (redirectUrl) {
+                            // redirect url
+                            console.log(`redirect url: ${url} => ${redirectUrl}`)
+                            request.continue({ url: redirectUrl })
+                        } else {
+                            // not mock the url if match any of noMockUrlRegex
+                            console.log(`no mock url: ${url}`)
+                            request.continue()
+                        }
                     } else {
                         const firstMatchedRequestIndex = entryList.findIndex(entry => {
                             return entry.url === url && entry.method === method

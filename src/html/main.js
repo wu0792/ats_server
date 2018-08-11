@@ -6,7 +6,7 @@ const puppeteer = require('puppeteer');
 
 async function repeat(groupedList, systemInfo, flatList, urls) {
     const browser = await puppeteer.launch({
-        headless: true,
+        headless: false,
         slowMo: 25,
         executablePath:
             'node_modules/puppeteer/.local-chromium/win64-571375/chrome-win32/chrome.exe'
@@ -22,7 +22,7 @@ async function repeat(groupedList, systemInfo, flatList, urls) {
 
 document.getElementById('start').addEventListener('click', function () {
     let path = document.getElementById('path').value.trim(),
-        urls = document.getElementById('url').value.trim().split('\n').filter(val => val)
+        urls = document.getElementById('url').value.trim().split('\n').map(val => val.trim()).filter(val => val)
 
     if (!path) {
         alert('path is required.')

@@ -8,7 +8,21 @@ class Director {
         this.systemInfo = systemInfo
         this.groupedList = groupedList
         this.flatList = flatList
-        this.noMockUrls = urls
+        // the urls has two formats:
+        // ['oldurl.com/old/path1.js']
+        // ['oldurl.com/old/path2.js=>newUrl.com/new/path2.js',
+        //  'oldurl.com/old/(.*).js=>newUrl.com/new/$1.js']
+        // previous one just let the network go as real request, 
+        // while the next one redirect to specific url : 
+        this.noMockUrls = urls.map(url => {
+            //universal the format
+            let arrowSplitIndex = url.indexOf('=>')
+            if (arrowSplitIndex >= 0) {
+                return [url.substring(0, arrowSplitIndex), url.substring(arrowSplitIndex + 2)]
+            } else {
+                return [url, '']
+            }
+        })
         this.currentNavigateId = NaN
         this.nextNavigateId = NaN
     }
