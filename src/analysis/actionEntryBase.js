@@ -90,6 +90,10 @@ class NetworkActionEntry extends ActionEntryBase {
     getActionType() {
         return 'NETWORK'
     }
+
+    render() {
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon network' title='[network]网络请求'></span><div class='entry network'>${this.data.url}</div>`
+    }
 }
 
 class NavigateActionEntry extends ActionEntryBase {
@@ -104,6 +108,10 @@ class NavigateActionEntry extends ActionEntryBase {
     async process(page, systemInfo, mode) {
         const { url } = this.data
         await page.goto(url)
+    }
+
+    render() {
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon navigate' title='[navigate]页面跳转'></span><div class='entry navigate'>${this.data.url}</div>`
     }
 }
 
@@ -164,6 +172,10 @@ class MutationActionEntry extends ActionEntryBase {
             }
         }
     }
+
+    render() {
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon mutation' title='[mutation]页面DOM元素变化'></span><div class='entry mutation'>${this.data.target}</div>`
+    }
 }
 
 class FocusActionEntry extends ActionEntryBase {
@@ -185,6 +197,10 @@ class FocusActionEntry extends ActionEntryBase {
             await page.focus(validSelector)
             // console.log('end focus')
         }
+    }
+
+    render() {
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon focus' title='[focus]元素得到焦点'></span><div class='entry focus'>${this.data.target}</div>`
     }
 }
 
@@ -209,6 +225,10 @@ class BlurActionEntry extends ActionEntryBase {
             }, validSelector)
             // console.log('end blur')
         }
+    }
+
+    render() {
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon blur' title='[blur]元素丢失焦点'></span><div class='entry blur'>${this.data.target}</div>`
     }
 }
 
@@ -246,6 +266,10 @@ class ChangeActionEntry extends ActionEntryBase {
             // console.log('end change')
         }
     }
+
+    render() {
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon change' title='[change]内容改变'></span><div class='entry change'>${this.data.target}</div>`
+    }
 }
 
 class KeyDownActionEntry extends ActionEntryBase {
@@ -267,6 +291,10 @@ class KeyDownActionEntry extends ActionEntryBase {
             await page.keyboard.down(code)
             // console.log('end key down')
         }
+    }
+
+    render() {
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon keydown' title='[keydown]键盘按下'></span><div class='entry keydown'>${this.data.target}</div>`
     }
 }
 
@@ -290,6 +318,10 @@ class KeyUpActionEntry extends ActionEntryBase {
             // console.log('end key up')
         }
     }
+
+    render() {
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon keyup' title='[keyup]键盘弹起'></span><div class='entry keyup'>${this.data.target}</div>`
+    }
 }
 
 class MouseDownActionEntry extends ActionEntryBase {
@@ -311,6 +343,10 @@ class MouseDownActionEntry extends ActionEntryBase {
             await page.mouse.down({ button: MOUSE_BUTTON_MAP[button] })
             // console.log('end key down')
         }
+    }
+
+    render() {
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon mousedown' title='[mousedown]鼠标键按下'></span><div class='entry mousedown'>${this.data.target}</div>`
     }
 }
 
@@ -334,6 +370,10 @@ class MouseUpActionEntry extends ActionEntryBase {
             // console.log('end key up')
         }
     }
+
+    render() {
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon mouseup' title='[mouseup]鼠标键弹起'></span><div class='entry mouseup'>${this.data.target}</div>`
+    }
 }
 
 class MouseOverActionEntry extends ActionEntryBase {
@@ -355,6 +395,10 @@ class MouseOverActionEntry extends ActionEntryBase {
             await page.hover(validSelector)
             // console.log('end mouse over')
         }
+    }
+
+    render() {
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon mouseover' title='[mouseover]鼠标HOVER'></span><div class='entry mouseover'>${this.data.target}</div>`
     }
 }
 
@@ -382,6 +426,10 @@ class ScrollActionEntry extends ActionEntryBase {
             // console.log('end scroll')
         }
     }
+
+    render() {
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon scroll' title='[scroll]屏幕滚动'></span><div class='entry scroll'>(x: ${this.data.x}, y:${this.data.y})</div>`
+    }
 }
 
 class ResizeActionEntry extends ActionEntryBase {
@@ -391,6 +439,10 @@ class ResizeActionEntry extends ActionEntryBase {
 
     getActionType() {
         return 'RESIZE'
+    }
+
+    render() {
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon resize' title='[resize]屏幕尺寸改变'></span><div class='entry resize'>(width: ${this.data.width}, height: ${this.data.height})</div>`
     }
 }
 

@@ -1,0 +1,78 @@
+.icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    font-size: 12px;
+    line-height: 16px;
+    vertical-align: middle;
+    margin-left: 5px;
+}
+
+.entry {
+    margin-left: 5px;
+    display: inline-block;
+    max-width: 80%;
+    max-height: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+li:hover {
+    background-color: #b1dcff;
+}
+
+.icon.focus {
+    background: url(./icons.png) -0px -0px no-repeat;
+}
+
+.icon.navigate {
+    background: url(./icons.png) -16px -0px no-repeat;
+}
+
+.icon.resize {
+    background: url(./icons.png) -32px -0px no-repeat;
+}
+
+.icon.scroll {
+    background: url(./icons.png) -48px -0px no-repeat;
+}
+
+.icon.blur {
+    background: url(./icons.png) -64px -0px no-repeat;
+}
+
+.icon.change {
+    background: url(./icons.png) -80px -0px no-repeat;
+}
+
+.icon.network {
+    background: url(./icons.png) -96px -0px no-repeat;
+}
+
+.icon.keydown {
+    background: url(./icons.png) -112px -0px no-repeat;
+}
+
+.icon.keyup {
+    background: url(./icons.png) -128px -0px no-repeat;
+}
+
+.icon.mousedown {
+    background: url(./icons.png) -144px -0px no-repeat;
+}
+
+.icon.mouseover {
+    background: url(./icons.png) -160px -0px no-repeat;
+}
+
+.icon.mouseup {
+    background: url(./icons.png) -176px -0px no-repeat;
+}
+
+.icon.mutation {
+    background: url(./icons.png) -192px -0px no-repeat;
+}

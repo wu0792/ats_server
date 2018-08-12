@@ -16,7 +16,7 @@ const readFilePromise = require('fs-readfile-promise')
  */
 async function runPuppeteer(mode, notifier, groupedList, systemInfo, flatList, noMockUrls) {
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         slowMo: 25,
         executablePath:
             'node_modules/puppeteer/.local-chromium/win64-571375/chrome-win32/chrome.exe'
@@ -75,8 +75,8 @@ async function prepare(configFilePath, mode, notifier) {
     const { onStartProcess, onExpectEntryFailure, onStartExpectEntry, onFinishExpectEntry } = notifier
     !onStartProcess && (notifier.onStartProcess = () => { })
     !onExpectEntryFailure && (notifier.onExpectEntryFailure = () => { })
-    !onStartExpectEntry && (notifier.onExpectEntryFailure = () => { })
-    !onFinishExpectEntry && (notifier.onExpectEntryFailure = () => { })
+    !onStartExpectEntry && (notifier.onStartExpectEntry = () => { })
+    !onFinishExpectEntry && (notifier.onFinishExpectEntry = () => { })
     !onNotifyCompareProgress && (notifier.onNotifyCompareProgress = () => { })
 
     runPuppeteer(mode, notifier, wrapper.groupedList, wrapper.systemInfo, list, noMockUrls)
@@ -109,17 +109,17 @@ const getExpectSummaryEl = () => document.getElementById('expectSummary'),
             failureEntry = expectFailureMap[id]
 
         if (finishEntry || failureEntry) {
-            const span = document.createElement('span')
+            const li = document.createElement('li')
 
             if (finishEntry) {
-                span.className = 'expect_entry finish'
-                span.innerText = JSON.stringify(finishEntry)
+                li.className = 'expect_entry finish'
+                li.innerHTML = finishEntry.render()
             } else {
-                span.className = 'expect_entry error'
-                span.innerText = JSON.stringify(finishEntry)
+                li.className = 'expect_entry error'
+                li.innerHTML = failureEntry.render()
             }
 
-            getExpectDetailEl().appendChild(span)
+            getExpectDetailEl().appendChild(li)
             getExpectDetailEl().children[0].style.display = 'none'
         }
     },
