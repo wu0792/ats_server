@@ -30,7 +30,12 @@ class Director {
         this.nextNavigateId = NaN
     }
 
-    async onDomContentLoaded() {
+    async onDomContentLoaded(navigateId) {
+        const navigateEntry = this.flatList.find(entry => entry.data.id === navigateId)
+        if (navigateEntry) {
+            this.notifier.onFinishExpectEntry(navigateEntry)
+        }
+
         await asyncForEach(this.flatList, async (entry, i) => {
             const id = entry.data.id
 
@@ -39,12 +44,12 @@ class Director {
 
                 try {
                     // await delayPromise
-                    console.log('start entry.id:' + entry.data.id)
-                    console.log(entry)
+
+                    this.notifier.onStartExpectEntry(entry)
                     await entry.process(this.page, this.systemInfo, this.mode)
-                    console.log('finish entry.id:' + entry.data.id)
+                    this.notifier.onFinishExpectEntry(entry)
                 } catch (ex) {
-                    console.warn(ex)
+                    this.notifier.onExpectEntryFailure(entry, ex)
                 }
             }
 
@@ -59,6 +64,9 @@ class Director {
     }
 
     async preProcess() {
+        const totalCount = this.flatList.length
+        this.notifier.onStartProcess(totalCount)
+
         const actionTypes = ACTION_TYPES.enums
         for (const actionType of actionTypes) {
             await actionType.value.preProcess(this)

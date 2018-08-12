@@ -57,6 +57,23 @@
                 <div>
                     <input id='runExpect' class='btn btn-primary' name='runExpect' type='button' value='开始录制'>
                 </div>
+
+                <div id='expectProgress'>
+                    <div id="expectSummary" style="display: none;">
+                        完成进度：
+                        <a class="toggler" href="javascript:void(0);">
+                            (
+                            <span id="finishExpectCount" class="finish"></span>
+                            +
+                            <span id="failureExpectCount" class="error"></span>
+                            )/
+                            <span id="totalExpectCount"></span>
+                        </a>
+                    </div>
+                    <div id="expectDetail" style="display: none;">
+                        <span class="expect_entry empty">[空]</span>
+                    </div>
+                </div>
             </form>
         </div>
 
@@ -76,9 +93,9 @@
                     <input id='runActual' class='btn btn-primary' name='runActual' type='button' value='开始测试'>
                 </div>
 
-                <div id='compareProgress' total-count='0' equals-count='0' not-equals-count='0'>
+                <div id='compareProgress'>
                     <div id="compareEqualsSummary" style="display: none;">
-                        完全匹配数：
+                        相同截图：
                         <a class="toggler" href="javascript:void(0);">
                             <span id="equalsCount"></span>/
                             <span id="totalCountOfEqual"></span>
@@ -88,7 +105,7 @@
                         <span class="equal_entry empty">[空]</span>
                     </div>
                     <div id="compareNotEqualsSummary" style="display: none;">
-                        不完全匹配数：
+                        不同截图：
                         <a class="toggler" href="javascript:void(0);">
                             <span id="notEqualsCount"></span>/
                             <span id="totalCountOfNotEqual"></span>

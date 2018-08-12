@@ -42,7 +42,7 @@ function doCompare(id, fileName, index, count, notifier) {
     }
 }
 
-function startCompare(id, notifier = () => { }) {
+function startCompare(id, notifier) {
     const root = `./expect/${id}`
 
     fs.readdir(root, (err, files) => {

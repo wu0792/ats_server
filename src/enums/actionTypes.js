@@ -112,7 +112,7 @@ const ACTION_TYPES = new Enum({
 
                 director.currentNavigateId = currentNavigateId
                 director.nextNavigateId = nextNavigateId
-                director.onDomContentLoaded()
+                director.onDomContentLoaded(currentNavigateId)
             })
         }
     },

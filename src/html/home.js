@@ -72,13 +72,83 @@ async function prepare(configFilePath, mode, notifier) {
         wrapper = await groupPromise,
         list = await receiver.dumpFlatList()
 
+    const { onStartProcess, onExpectEntryFailure, onStartExpectEntry, onFinishExpectEntry } = notifier
+    !onStartProcess && (notifier.onStartProcess = () => { })
+    !onExpectEntryFailure && (notifier.onExpectEntryFailure = () => { })
+    !onStartExpectEntry && (notifier.onExpectEntryFailure = () => { })
+    !onFinishExpectEntry && (notifier.onExpectEntryFailure = () => { })
+    !onNotifyCompareProgress && (notifier.onNotifyCompareProgress = () => { })
+
     runPuppeteer(mode, notifier, wrapper.groupedList, wrapper.systemInfo, list, noMockUrls)
 }
 
 //tab2.run expect
+let expectFinishMap = {},
+    expectFailureMap = {},
+    totalExpectCount = 0,
+    finishExpectCount = 0,
+    failureExpectCount = 0
+
+const getExpectSummaryEl = () => document.getElementById('expectSummary'),
+    getExpectTogglerEl = () => getExpectSummaryEl().querySelector('.toggler'),
+    getExpectDetailEl = () => document.getElementById('expectDetail'),
+    getFinishExpectCountEl = () => document.getElementById('finishExpectCount'),
+    getFailureExpectCountEl = () => document.getElementById('failureExpectCount'),
+    getTotalExpectCountEl = () => document.getElementById('totalExpectCount'),
+    toggleExpectDetail = () => {
+        let expectDetail = getExpectDetailEl()
+        expectDetail.style.display = expectDetail.style.display === 'none' ? 'block' : 'none'
+    },
+    renderExpectSummary = () => {
+        getFinishExpectCountEl().innerText = finishExpectCount
+        getFailureExpectCountEl().innerText = failureExpectCount
+        getTotalExpectCountEl().innerText = totalExpectCount
+    },
+    renderExpectDetail = (id) => {
+        const finishEntry = expectFinishMap[id],
+            failureEntry = expectFailureMap[id]
+
+        if (finishEntry || failureEntry) {
+            const span = document.createElement('span')
+
+            if (finishEntry) {
+                span.className = 'expect_entry finish'
+                span.innerText = JSON.stringify(finishEntry)
+            } else {
+                span.className = 'expect_entry error'
+                span.innerText = JSON.stringify(finishEntry)
+            }
+
+            getExpectDetailEl().appendChild(span)
+            getExpectDetailEl().children[0].style.display = 'none'
+        }
+    },
+    onStartProcess = (count) => {
+        totalExpectCount = count
+    },
+    onStartExpectEntry = (entry) => {
+    },
+    onFinishExpectEntry = (entry) => {
+        const id = entry.data.id
+        expectFinishMap[id] = entry
+        finishExpectCount++
+
+        renderExpectSummary()
+        renderExpectDetail(id)
+    },
+    onExpectEntryFailure = (entry, ex) => {
+        const id = entry.data.id
+        expectFailureMap[id] = entry
+        failureExpectCount++
+
+        renderExpectSummary()
+        renderExpectDetail(id)
+    }
+
 document.getElementById('runExpect').addEventListener('click', async function () {
     const expectError = document.getElementById('expectError'),
-        configFilePathOfExpect = document.getElementById('configFilePathOfExpect').value.trim()
+        configFilePathOfExpect = document.getElementById('configFilePathOfExpect').value.trim(),
+        expectDetailEl = getExpectDetailEl()
 
     expectError.innerText = ''
 
@@ -87,18 +157,33 @@ document.getElementById('runExpect').addEventListener('click', async function ()
         return
     }
 
-    await prepare(configFilePathOfExpect, START_MODE.expect, { onNotifyCompareProgress: null })
+    expectFinishMap = {}
+    totalExpectCount = 0
+    finishExpectCount = 0
+    failureExpectCount = 0
+
+    expectDetailEl.children[0].style.display = 'block'
+    while (expectDetailEl.children.length > 1) {
+        expectDetailEl.children[1].remove()
+    }
+
+    getExpectSummaryEl().style.display = 'block'
+    getExpectDetailEl().style.display = 'none'
+
+    getExpectTogglerEl().removeEventListener('click', toggleExpectDetail)
+    getExpectTogglerEl().addEventListener('click', toggleExpectDetail)
+
+    await prepare(configFilePathOfExpect, START_MODE.expect, { onStartProcess, onExpectEntryFailure, onStartExpectEntry, onFinishExpectEntry })
 })
 
 //tab3.run actual
 let equalsMap = {},
     notEqualsMap = {},
-    totalCount = 0,
+    totalComparCount = 0,
     equalsCount = 0,
     notEqualsCount = 0
 
-const getCompareProgressEl = () => document.getElementById('compareProgress'),
-    getEqualsSummaryEl = () => document.getElementById('compareEqualsSummary'),
+const getEqualsSummaryEl = () => document.getElementById('compareEqualsSummary'),
     getEqualsTogglerEl = () => getEqualsSummaryEl().querySelector('a.toggler'),
     getEqualsDetailEl = () => document.getElementById('compareEqualsDetail'),
     getNotEqualsSummaryEl = () => document.getElementById('compareNotEqualsSummary'),
@@ -120,7 +205,7 @@ const toggleNotEquaslDetail = () => {
 }
 
 const onNotifyCompareProgress = (index, count, fileName, differentPixelCount) => {
-    totalCount = count
+    totalComparCount = count
 
     if (differentPixelCount === 0) {
         equalsCount++
@@ -138,12 +223,12 @@ const onNotifyCompareProgress = (index, count, fileName, differentPixelCount) =>
 
 const renderEqualsSummary = () => {
     getEqualsCountEl().innerText = equalsCount
-    getTotalCountOfEqualEl().innerText = totalCount
+    getTotalCountOfEqualEl().innerText = totalComparCount
 }
 
 const renderNotEqualsSummary = () => {
     getNotEqualsEl().innerText = notEqualsCount
-    getTotalCountOfNotEqualEl().innerText = totalCount
+    getTotalCountOfNotEqualEl().innerText = totalComparCount
 }
 
 const renderEqualsDetail = (index) => {
@@ -181,11 +266,11 @@ document.getElementById('runActual').addEventListener('click', async function ()
         notEqualsDetailEl = getNotEqualsDetailEl()
 
     actualError.innerText = ''
-    totalCount = 0
+    totalComparCount = 0
     equalsCount = 0
     notEqualsCount = 0
-    equalsMap = []
-    notEqualsMap = []
+    equalsMap = {}
+    notEqualsMap = {}
 
     if (!configFilePathOfActual) {
         actualError.innerText = '请输入配置文件路径'
