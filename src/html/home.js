@@ -163,7 +163,7 @@ const renderEqualsDetail = (index) => {
 const renderNotEqualsDetail = (index) => {
     const theNotEqualItem = notEqualsMap[index]
     if (theNotEqualItem) {
-        const { count, fileName } = theNotEqualItem,
+        const { count, fileName, differentPixelCount } = theNotEqualItem,
             span = document.createElement('span')
 
         span.className = 'equal_entry'
