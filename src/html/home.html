@@ -3,87 +3,106 @@
 <head>
     <meta charset='UTF-8'>
     <title>Document</title>
-    <link rel="stylesheet" href="./tabs.css">
-    <link rel="stylesheet" href="./theme.css">
+    <link rel='stylesheet' href='./tabs.css'>
+    <link rel='stylesheet' href='./theme.css'>
 </head>
 
 <body>
-    <div class="tabs">
-        <input type="radio" name="tabs" id="tabone" checked="checked">
-        <label for="tabone">新增配置</label>
-        <div class="tab">
+    <div class='tabs'>
+        <input type='radio' name='tabs' id='tabone' checked='checked'>
+        <label for='tabone'>新增配置</label>
+        <div class='tab'>
             <form>
                 <div>
-                    <label class="desc" for="title">
+                    <label class='desc' for='title'>
                         配置描述：
                     </label>
                     <div>
-                        <input id="title" name="title" value="" tabindex="1" type="text">
+                        <input id='title' name='title' value='' tabindex='1' type='text'>
                     </div>
                 </div>
 
                 <div>
-                    <label class="desc" for="dataFilePath">数据文件：</label>
+                    <label class='desc' for='dataFilePath'>数据文件：</label>
                     <div>
-                        <input id="dataFilePath" name="dataFilePath" type="text" class="field text fn" value="" tabindex="2">
+                        <input id='dataFilePath' name='dataFilePath' type='text' class='field text fn' value='' tabindex='2'>
                     </div>
                 </div>
 
                 <div>
-                    <label class="desc" for="noMockUrls"> URL映射： </label>
+                    <label class='desc' for='noMockUrls'> URL映射： </label>
                     <div>
-                        <textarea id="noMockUrls" name="noMockUrls" rows="5" tabindex="3"></textarea>
+                        <textarea id='noMockUrls' name='noMockUrls' rows='5' tabindex='3'></textarea>
                     </div>
                 </div>
 
                 <div>
-                    <input id="saveConfig" class="btn btn-primary" name="saveConfig" type="button" value="保存配置">
+                    <input id='saveConfig' class='btn btn-primary' name='saveConfig' type='button' value='保存配置'>
                 </div>
             </form>
         </div>
 
-        <input type="radio" name="tabs" id="tabtwo">
-        <label for="tabtwo">录制(expect)</label>
-        <div class="tab">
+        <input type='radio' name='tabs' id='tabtwo'>
+        <label for='tabtwo'>录制(expect)</label>
+        <div class='tab'>
             <form>
                 <div>
-                    <label class="desc" for="configFilePathOfExpect">配置文件：</label>
+                    <label class='desc' for='configFilePathOfExpect'>配置文件：</label>
                     <div>
-                        <input id="configFilePathOfExpect" name="configFilePathOfExpect" type="text" class="field text fn" value="" size="8" tabindex="2">
-                        <span id="expectError" class="error"></span>
+                        <input id='configFilePathOfExpect' name='configFilePathOfExpect' type='text' class='field text fn' value='' size='8' tabindex='2'>
+                        <span id='expectError' class='error'></span>
                     </div>
                 </div>
 
                 <div>
-                    <input id="runExpect" class="btn btn-primary" name="runExpect" type="button" value="开始录制">
+                    <input id='runExpect' class='btn btn-primary' name='runExpect' type='button' value='开始录制'>
                 </div>
             </form>
         </div>
 
-        <input type="radio" name="tabs" id="tabthree">
-        <label for="tabthree">测试(actual)</label>
-        <div class="tab">
+        <input type='radio' name='tabs' id='tabthree'>
+        <label for='tabthree'>测试(actual)</label>
+        <div class='tab'>
             <form>
                 <div>
-                    <label class="desc" for="configFilePathOfActual">配置文件：</label>
+                    <label class='desc' for='configFilePathOfActual'>配置文件：</label>
                     <div>
-                        <input id="configFilePathOfActual" name="configFilePathOfActual" type="text" class="field text fn" value="" size="8" tabindex="2">
-                        <span id="actualError" class="error"></span>
+                        <input id='configFilePathOfActual' name='configFilePathOfActual' type='text' class='field text fn' value='' size='8' tabindex='2'>
+                        <span id='actualError' class='error'></span>
                     </div>
                 </div>
 
                 <div>
-                    <input id="runActual" class="btn btn-primary" name="runActual" type="button" value="开始测试">
+                    <input id='runActual' class='btn btn-primary' name='runActual' type='button' value='开始测试'>
                 </div>
 
-                <div id="progress">
-                    
+                <div id='compareProgress' total-count='0' equals-count='0' not-equals-count='0'>
+                    <div id="compareEqualsSummary" style="display: none;">
+                        完全匹配数：
+                        <a class="toggler" href="javascript:void(0);">
+                            <span id="equalsCount"></span>/
+                            <span id="totalCountOfEqual"></span>
+                        </a>
+                    </div>
+                    <div id="compareEqualsDetail" style="display: none;">
+                        <span class="equal_entry empty">[空]</span>
+                    </div>
+                    <div id="compareNotEqualsSummary" style="display: none;">
+                        不完全匹配数：
+                        <a class="toggler" href="javascript:void(0);">
+                            <span id="notEqualsCount"></span>/
+                            <span id="totalCountOfNotEqual"></span>
+                        </a>
+                    </div>
+                    <div id="compareNotEqualsDetail" style="display: none;">
+                        <span class="equal_entry empty">[空]</span>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 
-    <script src="./home.js"></script>
+    <script src='./home.js'></script>
 </body>
 
 </html>

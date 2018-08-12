@@ -91,24 +91,128 @@ document.getElementById('runExpect').addEventListener('click', async function ()
 })
 
 //tab3.run actual
+let equalsMap = {},
+    notEqualsMap = {},
+    totalCount = 0,
+    equalsCount = 0,
+    notEqualsCount = 0
+
+const getCompareProgressEl = () => document.getElementById('compareProgress'),
+    getEqualsSummaryEl = () => document.getElementById('compareEqualsSummary'),
+    getEqualsTogglerEl = () => getEqualsSummaryEl().querySelector('a.toggler'),
+    getEqualsDetailEl = () => document.getElementById('compareEqualsDetail'),
+    getNotEqualsSummaryEl = () => document.getElementById('compareNotEqualsSummary'),
+    getNotEqualsTogglerEl = () => getNotEqualsSummaryEl().querySelector('a.toggler'),
+    getNotEqualsDetailEl = () => document.getElementById('compareNotEqualsDetail'),
+    getEqualsCountEl = () => document.getElementById('equalsCount'),
+    getTotalCountOfEqualEl = () => document.getElementById('totalCountOfEqual'),
+    getNotEqualsEl = () => document.getElementById('notEqualsCount'),
+    getTotalCountOfNotEqualEl = () => document.getElementById('totalCountOfNotEqual')
+
+const toggleEquaslDetail = () => {
+    let detailEl = getEqualsDetailEl()
+    detailEl.style.display = detailEl.style.display === 'none' ? 'block' : 'none'
+}
+
+const toggleNotEquaslDetail = () => {
+    let detailEl = getNotEqualsDetailEl()
+    detailEl.style.display = detailEl.style.display === 'none' ? 'block' : 'none'
+}
+
 const onNotifyCompareProgress = (index, count, fileName, differentPixelCount) => {
+    totalCount = count
+
     if (differentPixelCount === 0) {
-        console.log(`[√] ${index + 1}/${count} ${fileName} equal.`)
+        equalsCount++
+        equalsMap[index] = { count, fileName, differentPixelCount }
+        renderEqualsDetail(index)
     } else {
-        console.log(`[×] ${index + 1}/${count} ${fileName} has ${differentPixelCount} pixels difference.`)
+        notEqualsCount++
+        notEqualsMap[index] = { count, fileName, differentPixelCount }
+        renderNotEqualsDetail(index)
+    }
+
+    renderEqualsSummary()
+    renderNotEqualsSummary()
+}
+
+const renderEqualsSummary = () => {
+    getEqualsCountEl().innerText = equalsCount
+    getTotalCountOfEqualEl().innerText = totalCount
+}
+
+const renderNotEqualsSummary = () => {
+    getNotEqualsEl().innerText = notEqualsCount
+    getTotalCountOfNotEqualEl().innerText = totalCount
+}
+
+const renderEqualsDetail = (index) => {
+    const theEqualItem = equalsMap[index]
+    if (theEqualItem) {
+        const { count, fileName } = theEqualItem,
+            span = document.createElement('span')
+
+        span.className = 'equal_entry'
+        span.innerText = `[√] ${index + 1}/${count} ${fileName} equal.`
+
+        getEqualsDetailEl().appendChild(span)
+        getEqualsDetailEl().children[0].style.display = 'none'
+    }
+}
+
+const renderNotEqualsDetail = (index) => {
+    const theNotEqualItem = notEqualsMap[index]
+    if (theNotEqualItem) {
+        const { count, fileName } = theNotEqualItem,
+            span = document.createElement('span')
+
+        span.className = 'equal_entry'
+        span.innerText = `[×] ${index + 1}/${count} ${fileName} has ${differentPixelCount} pixels difference.`
+
+        getNotEqualsDetailEl().appendChild(span)
+        getNotEqualsDetailEl().children[0].style.display = 'none'
     }
 }
 
 document.getElementById('runActual').addEventListener('click', async function () {
     const actualError = document.getElementById('actualError'),
-        configFilePathOfActual = document.getElementById('configFilePathOfActual').value.trim()
+        configFilePathOfActual = document.getElementById('configFilePathOfActual').value.trim(),
+        equalsDetailEl = getEqualsDetailEl(),
+        notEqualsDetailEl = getNotEqualsDetailEl()
 
     actualError.innerText = ''
+    totalCount = 0
+    equalsCount = 0
+    notEqualsCount = 0
+    equalsMap = []
+    notEqualsMap = []
 
     if (!configFilePathOfActual) {
         actualError.innerText = '请输入配置文件路径'
         return
     }
+
+    getEqualsSummaryEl().style.display = 'block'
+    getNotEqualsSummaryEl().style.display = 'block'
+    renderEqualsSummary()
+    renderNotEqualsSummary()
+
+    equalsDetailEl.children[0].style.display = 'block'
+    while (equalsDetailEl.children.length > 1) {
+        equalsDetailEl.children[1].remove()
+    }
+
+    notEqualsDetailEl.children[0].style.display = 'block'
+    while (notEqualsDetailEl.children.length > 1) {
+        notEqualsDetailEl.children[1].remove()
+    }
+
+    equalsDetailEl.style.display = 'none'
+    notEqualsDetailEl.style.display = 'none'
+    getEqualsTogglerEl().removeEventListener('click', toggleEquaslDetail)
+    getEqualsTogglerEl().addEventListener('click', toggleEquaslDetail)
+    getNotEqualsTogglerEl().removeEventListener('click', toggleNotEquaslDetail)
+    getNotEqualsTogglerEl().addEventListener('click', toggleNotEquaslDetail)
 
     await prepare(configFilePathOfActual, START_MODE.actual, { onNotifyCompareProgress })
 })
