@@ -161,5 +161,6 @@ textarea:focus {
 
 .equal_entry {
     display: block;
-    font-style: 14px;
+    font-size: 14px;
+    margin-left: 15px;
 }
