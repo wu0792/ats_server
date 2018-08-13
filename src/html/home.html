@@ -48,9 +48,9 @@
         <div class='tab'>
             <form>
                 <div>
-                    <label class='desc' for='configFilePathOfExpect'>配置文件：</label>
+                    <label class='desc' for='expectConfigFilePath'>配置文件：</label>
                     <div>
-                        <input id='configFilePathOfExpect' name='configFilePathOfExpect' type='text' class='field text fn' value='' size='8' tabindex='2'>
+                        <input id='expectConfigFilePath' name='expectConfigFilePath' type='text' class='field text fn' value='' size='8' tabindex='2'>
                         <span id='expectError' class='error'></span>
                     </div>
                 </div>
@@ -63,12 +63,12 @@
                     <div id="expectSummary" style="display: none;">
                         完成进度：
                         <a class="toggler" href="javascript:void(0);">
-                            (
-                            成功：<span id="finishExpectCount" class="finish"></span>
-                            +
-                            失败：<span id="failureExpectCount" class="error"></span>
-                            )/
-                            总数：<span id="totalExpectCount"></span>
+                            ( 成功：
+                            <span id="expectFinishCount" class="finish">0</span>
+                            + 失败：
+                            <span id="expectFailureCount" class="error">0</span>
+                            )/ 总数：
+                            <span id="expectTotalCount">0</span>
                         </a>
                     </div>
                     <div id="expectDetail" style="display: none;">
@@ -83,15 +83,32 @@
         <div class='tab'>
             <form>
                 <div>
-                    <label class='desc' for='configFilePathOfActual'>配置文件：</label>
+                    <label class='desc' for='actualConfigFilePath'>配置文件：</label>
                     <div>
-                        <input id='configFilePathOfActual' name='configFilePathOfActual' type='text' class='field text fn' value='' size='8' tabindex='2'>
+                        <input id='actualConfigFilePath' name='actualConfigFilePath' type='text' class='field text fn' value='' size='8' tabindex='2'>
                         <span id='actualError' class='error'></span>
                     </div>
                 </div>
 
                 <div>
                     <input id='runActual' class='btn btn-primary' name='runActual' type='button' value='开始测试'>
+                </div>
+
+                <div id='actualProgress'>
+                    <div id="actualSummary" style="display: none;">
+                        完成进度：
+                        <a class="toggler" href="javascript:void(0);">
+                            ( 成功：
+                            <span id="actualFinishCount" class="finish">0</span>
+                            + 失败：
+                            <span id="actualFailureCount" class="error">0</span>
+                            )/ 总数：
+                            <span id="actualTotalCount">0</span>
+                        </a>
+                    </div>
+                    <div id="actualDetail" style="display: none;">
+                        <span class="actual_entry empty">[空]</span>
+                    </div>
                 </div>
 
                 <div id='compareProgress'>

@@ -33,7 +33,7 @@ class Director {
     async onDomContentLoaded(navigateId) {
         const navigateEntry = this.flatList.find(entry => entry.data.id === navigateId)
         if (navigateEntry) {
-            this.notifier.onFinishExpectEntry(navigateEntry)
+            this.notifier.onFinishEntry(navigateEntry)
         }
 
         await asyncForEach(this.flatList, async (entry, i) => {
@@ -45,11 +45,11 @@ class Director {
                 try {
                     // await delayPromise
 
-                    this.notifier.onStartExpectEntry(entry)
+                    this.notifier.onStartEntry(entry)
                     await entry.process(this.page, this.systemInfo, this.mode)
-                    this.notifier.onFinishExpectEntry(entry)
+                    this.notifier.onFinishEntry(entry)
                 } catch (ex) {
-                    this.notifier.onExpectEntryFailure(entry, ex)
+                    this.notifier.onEntryFailure(entry, ex)
                 }
             }
 

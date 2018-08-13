@@ -72,115 +72,134 @@ async function prepare(configFilePath, mode, notifier) {
         wrapper = await groupPromise,
         list = await receiver.dumpFlatList()
 
-    const { onStartProcess, onExpectEntryFailure, onStartExpectEntry, onFinishExpectEntry } = notifier
+    const { onStartProcess, onEntryFailure, onStartEntry, onFinishEntry } = notifier
     !onStartProcess && (notifier.onStartProcess = () => { })
-    !onExpectEntryFailure && (notifier.onExpectEntryFailure = () => { })
-    !onStartExpectEntry && (notifier.onStartExpectEntry = () => { })
-    !onFinishExpectEntry && (notifier.onFinishExpectEntry = () => { })
+    !onEntryFailure && (notifier.onEntryFailure = () => { })
+    !onStartEntry && (notifier.onStartEntry = () => { })
+    !onFinishEntry && (notifier.onFinishEntry = () => { })
     !onNotifyCompareProgress && (notifier.onNotifyCompareProgress = () => { })
 
     runPuppeteer(mode, notifier, wrapper.groupedList, wrapper.systemInfo, list, noMockUrls)
 }
 
 //tab2.run expect
-let expectFinishMap = {},
-    expectFailureMap = {},
-    totalExpectCount = 0,
-    finishExpectCount = 0,
-    failureExpectCount = 0
+const EXPECT = 'expect',
+    ACTUAL = 'actual'
 
-const getExpectSummaryEl = () => document.getElementById('expectSummary'),
-    getExpectTogglerEl = () => getExpectSummaryEl().querySelector('.toggler'),
-    getExpectDetailEl = () => document.getElementById('expectDetail'),
-    getFinishExpectCountEl = () => document.getElementById('finishExpectCount'),
-    getFailureExpectCountEl = () => document.getElementById('failureExpectCount'),
-    getTotalExpectCountEl = () => document.getElementById('totalExpectCount'),
+let finishMap = { [EXPECT]: {}, [ACTUAL]: {} },
+    failureMap = { [EXPECT]: {}, [ACTUAL]: {} },
+    totalCount = { [EXPECT]: 0, [ACTUAL]: 0 },
+    finishCount = { [EXPECT]: 0, [ACTUAL]: 0 },
+    failureCount = { [EXPECT]: 0, [ACTUAL]: 0 }
+
+const getSummaryEl = (type) => document.getElementById(`${type}Summary`),
+    getTogglerEl = (type) => getSummaryEl(type).querySelector('.toggler'),
+    getDetailEl = (type) => document.getElementById(`${type}Detail`),
+    getFinishCountEl = (type) => document.getElementById(`${type}FinishCount`),
+    getFailureCountEl = (type) => document.getElementById(`${type}FailureCount`),
+    getTotalCountEl = (type) => document.getElementById(`${type}TotalCount`),
+    toggleDetail = (type) => {
+        let detail = getDetailEl(type)
+        detail.style.display = detail.style.display === 'none' ? 'block' : 'none'
+    },
     toggleExpectDetail = () => {
-        let expectDetail = getExpectDetailEl()
-        expectDetail.style.display = expectDetail.style.display === 'none' ? 'block' : 'none'
+        toggleDetail(EXPECT)
     },
-    renderExpectSummary = () => {
-        getFinishExpectCountEl().innerText = finishExpectCount
-        getFailureExpectCountEl().innerText = failureExpectCount
-        getTotalExpectCountEl().innerText = totalExpectCount
+    toggleActualDetail = () => {
+        toggleDetail(ACTUAL)
     },
-    renderExpectDetail = (id) => {
-        const finishEntry = expectFinishMap[id],
-            failureEntry = expectFailureMap[id]
+    renderSummary = (type) => {
+        getFinishCountEl(type).innerText = finishCount[type]
+        getFailureCountEl(type).innerText = failureCount[type]
+        getTotalCountEl(type).innerText = totalCount[type]
+    },
+    renderDetail = (type, id) => {
+        const finishEntry = finishMap[type][id],
+            failureEntry = failureMap[type][id]
 
         if (finishEntry || failureEntry) {
             const li = document.createElement('li')
 
             if (finishEntry) {
-                li.className = 'expect_entry finish'
+                li.className = 'progress_entry finish'
                 li.innerHTML = finishEntry.render()
             } else {
-                li.className = 'expect_entry error'
+                li.className = 'progress_entry error'
                 li.innerHTML = failureEntry.render()
                 li.setAttribute('title', failureEntry.error ? failureEntry.error.message : '')
             }
 
-            getExpectDetailEl().appendChild(li)
-            getExpectDetailEl().children[0].style.display = 'none'
+            getDetailEl(type).appendChild(li)
+            getDetailEl(type).children[0].style.display = 'none'
         }
     },
-    onStartProcess = (count) => {
-        totalExpectCount = count
+    onStartProcess = (type, count) => {
+        totalCount[type] = count
     },
-    onStartExpectEntry = (entry) => {
+    onStartEntry = (type, entry) => {
     },
-    onFinishExpectEntry = (entry) => {
+    onFinishEntry = (type, entry) => {
         if (entry.error) {
-            onExpectEntryFailure(entry, new Error(entry.error))
+            onEntryFailure(type, entry, new Error(entry.error))
         } else {
             const id = entry.data.id
-            expectFinishMap[id] = entry
-            finishExpectCount++
+            finishMap[type][id] = entry
+            finishCount[type]++
 
-            renderExpectSummary()
-            renderExpectDetail(id)
+            renderSummary(type)
+            renderDetail(type, id)
         }
     },
-    onExpectEntryFailure = (entry, ex) => {
+    onEntryFailure = (type, entry, ex) => {
         const id = entry.data.id
         entry.error = ex
-        expectFailureMap[id] = entry
-        failureExpectCount++
+        failureMap[type][id] = entry
+        failureCount[type]++
 
-        renderExpectSummary()
-        renderExpectDetail(id)
+        renderSummary(type)
+        renderDetail(type, id)
     }
 
 document.getElementById('runExpect').addEventListener('click', async function () {
-    const expectError = document.getElementById('expectError'),
-        configFilePathOfExpect = document.getElementById('configFilePathOfExpect').value.trim(),
-        expectDetailEl = getExpectDetailEl()
+    initForRepeatProgress(EXPECT, {
+        onStartProcess: entry => onStartProcess(EXPECT, entry),
+        onEntryFailure: (entry, ex) => onEntryFailure(EXPECT, entry, ex),
+        onStartEntry: entry => onStartEntry(EXPECT, entry),
+        onFinishEntry: (entry) => onFinishEntry(EXPECT, entry)
+    })
+})
 
-    expectError.innerText = ''
+async function initForRepeatProgress(type, notifier) {
+    const error = document.getElementById(`${type}Error`),
+        configFilePath = document.getElementById(`${type}ConfigFilePath`).value.trim()
 
-    if (!configFilePathOfExpect) {
-        expectError.innerText = '请输入配置文件路径'
+    error.innerText = ''
+
+    if (!configFilePath) {
+        error.innerText = '请输入配置文件路径'
         return
     }
 
-    expectFinishMap = {}
-    totalExpectCount = 0
-    finishExpectCount = 0
-    failureExpectCount = 0
+    finishMap[type] = {}
+    totalCount[type] = 0
+    finishCount[type] = 0
+    failureCount[type] = 0
 
-    expectDetailEl.children[0].style.display = 'block'
-    while (expectDetailEl.children.length > 1) {
-        expectDetailEl.children[1].remove()
+    let detailEl = getDetailEl(type)
+    detailEl.children[0].style.display = 'block'
+    while (detailEl.children.length > 1) {
+        detailEl.children[1].remove()
     }
 
-    getExpectSummaryEl().style.display = 'block'
-    getExpectDetailEl().style.display = 'none'
+    getSummaryEl(type).style.display = 'block'
+    getDetailEl(type).style.display = 'none'
 
-    getExpectTogglerEl().removeEventListener('click', toggleExpectDetail)
-    getExpectTogglerEl().addEventListener('click', toggleExpectDetail)
+    const theToggleDetail = type === EXPECT ? toggleExpectDetail : toggleActualDetail
+    getTogglerEl(type).removeEventListener('click', theToggleDetail)
+    getTogglerEl(type).addEventListener('click', theToggleDetail)
 
-    await prepare(configFilePathOfExpect, START_MODE.expect, { onStartProcess, onExpectEntryFailure, onStartExpectEntry, onFinishExpectEntry })
-})
+    await prepare(configFilePath, START_MODE.get(type), notifier)
+}
 
 //tab3.run actual
 let equalsMap = {},
@@ -265,23 +284,15 @@ const renderNotEqualsDetail = (index) => {
     }
 }
 
-document.getElementById('runActual').addEventListener('click', async function () {
-    const actualError = document.getElementById('actualError'),
-        configFilePathOfActual = document.getElementById('configFilePathOfActual').value.trim(),
-        equalsDetailEl = getEqualsDetailEl(),
+function initForCompareResult() {
+    const equalsDetailEl = getEqualsDetailEl(),
         notEqualsDetailEl = getNotEqualsDetailEl()
 
-    actualError.innerText = ''
     totalComparCount = 0
     equalsCount = 0
     notEqualsCount = 0
     equalsMap = {}
     notEqualsMap = {}
-
-    if (!configFilePathOfActual) {
-        actualError.innerText = '请输入配置文件路径'
-        return
-    }
 
     getEqualsSummaryEl().style.display = 'block'
     getNotEqualsSummaryEl().style.display = 'block'
@@ -304,6 +315,15 @@ document.getElementById('runActual').addEventListener('click', async function ()
     getEqualsTogglerEl().addEventListener('click', toggleEquaslDetail)
     getNotEqualsTogglerEl().removeEventListener('click', toggleNotEquaslDetail)
     getNotEqualsTogglerEl().addEventListener('click', toggleNotEquaslDetail)
+}
 
-    await prepare(configFilePathOfActual, START_MODE.actual, { onNotifyCompareProgress })
+document.getElementById('runActual').addEventListener('click', async function () {
+    initForCompareResult()
+    await initForRepeatProgress(ACTUAL, {
+        onNotifyCompareProgress,
+        onStartProcess: entry => onStartProcess(ACTUAL, entry),
+        onEntryFailure: (entry, ex) => onEntryFailure(ACTUAL, entry, ex),
+        onStartEntry: entry => onStartEntry(ACTUAL, entry),
+        onFinishEntry: (entry) => onFinishEntry(ACTUAL, entry)
+    })
 })
