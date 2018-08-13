@@ -117,6 +117,7 @@ const getExpectSummaryEl = () => document.getElementById('expectSummary'),
             } else {
                 li.className = 'expect_entry error'
                 li.innerHTML = failureEntry.render()
+                li.setAttribute('title', failureEntry.error ? failureEntry.error.message : '')
             }
 
             getExpectDetailEl().appendChild(li)
@@ -129,15 +130,20 @@ const getExpectSummaryEl = () => document.getElementById('expectSummary'),
     onStartExpectEntry = (entry) => {
     },
     onFinishExpectEntry = (entry) => {
-        const id = entry.data.id
-        expectFinishMap[id] = entry
-        finishExpectCount++
+        if (entry.error) {
+            onExpectEntryFailure(entry, new Error(entry.error))
+        } else {
+            const id = entry.data.id
+            expectFinishMap[id] = entry
+            finishExpectCount++
 
-        renderExpectSummary()
-        renderExpectDetail(id)
+            renderExpectSummary()
+            renderExpectDetail(id)
+        }
     },
     onExpectEntryFailure = (entry, ex) => {
         const id = entry.data.id
+        entry.error = ex
         expectFailureMap[id] = entry
         failureExpectCount++
 
