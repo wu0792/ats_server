@@ -57,7 +57,7 @@ class Director {
                 console.log('finish all process.')
 
                 if (this.mode.value.needCompare) {
-                    startCompare(this.systemInfo.id, this.notifier.onNotifyCompareProgress)
+                    await startCompare(this.systemInfo.id, this.notifier.onNotifyCompareProgress)
                 }
             }
         })
