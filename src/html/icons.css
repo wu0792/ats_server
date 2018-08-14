@@ -25,6 +25,10 @@ li:hover {
     background-color: #b1dcff;
 }
 
+.icon.loading{
+    background: url(./loading.gif) no-repeat;
+}
+
 .icon.focus {
     background: url(./icons.png) -0px -0px no-repeat;
 }

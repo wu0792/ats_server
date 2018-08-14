@@ -67,7 +67,7 @@
                             <span id="expectFinishCount" class="finish">0</span>
                             + 失败：
                             <span id="expectFailureCount" class="error">0</span>
-                            )/ 总数：
+                            ) / 总数：
                             <span id="expectTotalCount">0</span>
                         </a>
                     </div>
@@ -96,13 +96,14 @@
 
                 <div id='actualProgress'>
                     <div id="actualSummary" style="display: none;">
-                        完成进度：
+                        <span class="icon loading"></span>
+                        回放进度：
                         <a class="toggler" href="javascript:void(0);">
                             ( 成功：
-                            <span id="actualFinishCount" class="finish">0</span>
+                            <span id="actualFinishCount" class="correct">0</span>
                             + 失败：
                             <span id="actualFailureCount" class="error">0</span>
-                            )/ 总数：
+                            ) / 总数：
                             <span id="actualTotalCount">0</span>
                         </a>
                     </div>
@@ -112,22 +113,24 @@
                 </div>
 
                 <div id='compareProgress'>
-                    <div id="compareEqualsSummary" style="display: none;">
-                        相同截图：
-                        <a class="toggler" href="javascript:void(0);">
-                            <span id="equalsCount"></span>/
-                            <span id="totalCountOfEqual"></span>
+                    <div id="compareSummary" style="display: none;">
+                        <span class="icon loading"></span>
+                        对比进度： (
+                        <a class="equalDetailToggler" href="javascript:void(0);">
+                            成功：
+                            <span id="equalsCount" class="correct">0</span>
                         </a>
+                        +
+                        <a class="notEqualDetailToggler" href="javascript:void(0);">
+                            失败：
+                            <span id="notEqualsCount" class="error">0</span>
+                        </a>
+                        ) / 总数：
+                        <span id="totalCountOfEqual">0</span>
                     </div>
+
                     <div id="compareEqualsDetail" style="display: none;">
                         <span class="equal_entry empty">[空]</span>
-                    </div>
-                    <div id="compareNotEqualsSummary" style="display: none;">
-                        不同截图：
-                        <a class="toggler" href="javascript:void(0);">
-                            <span id="notEqualsCount"></span>/
-                            <span id="totalCountOfNotEqual"></span>
-                        </a>
                     </div>
                     <div id="compareNotEqualsDetail" style="display: none;">
                         <span class="equal_entry empty">[空]</span>

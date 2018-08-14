@@ -208,16 +208,14 @@ let equalsMap = {},
     equalsCount = 0,
     notEqualsCount = 0
 
-const getEqualsSummaryEl = () => document.getElementById('compareEqualsSummary'),
-    getEqualsTogglerEl = () => getEqualsSummaryEl().querySelector('a.toggler'),
+const getEqualsTogglerEl = () => document.querySelector('.equalDetailToggler'),
     getEqualsDetailEl = () => document.getElementById('compareEqualsDetail'),
-    getNotEqualsSummaryEl = () => document.getElementById('compareNotEqualsSummary'),
-    getNotEqualsTogglerEl = () => getNotEqualsSummaryEl().querySelector('a.toggler'),
+    getCompareSummaryEl = () => document.getElementById('compareSummary'),
+    getNotEqualsTogglerEl = () => document.querySelector('.notEqualDetailToggler'),
     getNotEqualsDetailEl = () => document.getElementById('compareNotEqualsDetail'),
     getEqualsCountEl = () => document.getElementById('equalsCount'),
     getTotalCountOfEqualEl = () => document.getElementById('totalCountOfEqual'),
-    getNotEqualsEl = () => document.getElementById('notEqualsCount'),
-    getTotalCountOfNotEqualEl = () => document.getElementById('totalCountOfNotEqual')
+    getNotEqualsEl = () => document.getElementById('notEqualsCount')
 
 const toggleEquaslDetail = () => {
     let detailEl = getEqualsDetailEl()
@@ -242,18 +240,13 @@ const onNotifyCompareProgress = (index, count, fileName, differentPixelCount) =>
         renderNotEqualsDetail(index)
     }
 
-    renderEqualsSummary()
-    renderNotEqualsSummary()
+    renderCompareSummary()
 }
 
-const renderEqualsSummary = () => {
+const renderCompareSummary = () => {
     getEqualsCountEl().innerText = equalsCount
-    getTotalCountOfEqualEl().innerText = totalComparCount
-}
-
-const renderNotEqualsSummary = () => {
     getNotEqualsEl().innerText = notEqualsCount
-    getTotalCountOfNotEqualEl().innerText = totalComparCount
+    getTotalCountOfEqualEl().innerText = totalComparCount
 }
 
 const renderEqualsDetail = (index) => {
@@ -263,7 +256,7 @@ const renderEqualsDetail = (index) => {
             span = document.createElement('span')
 
         span.className = 'equal_entry'
-        span.innerText = `[√] ${index + 1}/${count} ${fileName} equal.`
+        span.innerText = `[<span class='correct'>√</span>] ${fileName}`
 
         getEqualsDetailEl().appendChild(span)
         getEqualsDetailEl().children[0].style.display = 'none'
@@ -277,7 +270,7 @@ const renderNotEqualsDetail = (index) => {
             span = document.createElement('span')
 
         span.className = 'equal_entry'
-        span.innerText = `[×] ${index + 1}/${count} ${fileName} has ${differentPixelCount} pixels difference.`
+        span.innerText = `[<span class='error'>×</span>] ${fileName} ${differentPixelCount} 不同像素点`
 
         getNotEqualsDetailEl().appendChild(span)
         getNotEqualsDetailEl().children[0].style.display = 'none'
@@ -294,11 +287,9 @@ function regEventForCompareResult() {
     equalsMap = {}
     notEqualsMap = {}
 
-    getEqualsSummaryEl().style.display = 'block'
-    getNotEqualsSummaryEl().style.display = 'block'
-    renderEqualsSummary()
-    renderNotEqualsSummary()
-
+    getCompareSummaryEl().style.display = 'block'
+    renderCompareSummary()
+    
     equalsDetailEl.children[0].style.display = 'block'
     while (equalsDetailEl.children.length > 1) {
         equalsDetailEl.children[1].remove()

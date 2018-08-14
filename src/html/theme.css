@@ -4,8 +4,20 @@
     box-sizing: border-box;
 }
 
-body {
-    /* padding: 20px 15%; */
+.hidden {
+    visibility: hidden;
+}
+
+.none {
+    display: none;
+}
+
+#actualProgress>div {
+    width: auto;
+}
+
+#compareProgress>div {
+    width: auto;
 }
 
 form header {
@@ -162,6 +174,10 @@ li {
     -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, .4);
     -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0, .4);
     -o-box-shadow: 1px 1px 1px rgba(0, 0, 0, .4);
+}
+
+.correct{
+    color: green;
 }
 
 .error {
