@@ -256,7 +256,7 @@ const renderEqualsDetail = (index) => {
             span = document.createElement('span')
 
         span.className = 'equal_entry'
-        span.innerText = `[<span class='correct'>√</span>] ${fileName}`
+        span.innerHTML = `[<span class='correct'>√</span>] ${fileName}`
 
         getEqualsDetailEl().appendChild(span)
         getEqualsDetailEl().children[0].style.display = 'none'
@@ -270,7 +270,7 @@ const renderNotEqualsDetail = (index) => {
             span = document.createElement('span')
 
         span.className = 'equal_entry'
-        span.innerText = `[<span class='error'>×</span>] ${fileName} ${differentPixelCount} 不同像素点`
+        span.innerHTML = `[<span class='error'>×</span>] ${fileName} ${differentPixelCount} 不同像素点`
 
         getNotEqualsDetailEl().appendChild(span)
         getNotEqualsDetailEl().children[0].style.display = 'none'
