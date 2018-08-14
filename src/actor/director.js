@@ -31,27 +31,27 @@ class Director {
     }
 
     async onDomContentLoaded(navigateId) {
-        const navigateEntry = this.flatList.find(entry => entry.data.id === navigateId)
-        if (navigateEntry) {
-            this.notifier.onFinishEntry(navigateEntry)
-        }
+        // const navigateEntry = this.flatList.find(entry => entry.data.id === navigateId)
+        // if (navigateEntry) {
+        //     this.notifier.onFinishEntry(navigateEntry)
+        // }
 
         await asyncForEach(this.flatList, async (entry, i) => {
             const id = entry.data.id
 
-            if (id > this.currentNavigateId && id < this.nextNavigateId) {
-                // const delayPromise = delay(i === 0 ? 0 : (new Date(this.flatList[i].data.time) - new Date(this.flatList[i - 1].data.time)))
+            // if (id > this.currentNavigateId && id < this.nextNavigateId) {
+            //     // const delayPromise = delay(i === 0 ? 0 : (new Date(this.flatList[i].data.time) - new Date(this.flatList[i - 1].data.time)))
 
-                try {
-                    // await delayPromise
+            //     try {
+            //         // await delayPromise
 
-                    this.notifier.onStartEntry(entry)
-                    await entry.process(this.page, this.systemInfo, this.mode)
-                    this.notifier.onFinishEntry(entry)
-                } catch (ex) {
-                    this.notifier.onEntryFailure(entry, ex)
-                }
-            }
+            //         this.notifier.onStartEntry(entry)
+            //         await entry.process(this.page, this.systemInfo, this.mode)
+            //         this.notifier.onFinishEntry(entry)
+            //     } catch (ex) {
+            //         this.notifier.onEntryFailure(entry, ex)
+            //     }
+            // }
 
             if (i === this.flatList.length - 1) {
                 console.log('finish all process.')

@@ -50,7 +50,17 @@ function startCompare(id, notifier) {
             console.error(err)
         } else {
             const count = files.length
-            files.sort().forEach((file, index) => {
+            files.sort((prev, next) => {
+                const match = /(\d+)\.\w+/i,
+                    prevMatch = prev.match(match),
+                    nextMatch = next.match(match)
+
+                if (prevMatch.length === 2 && nextMatch.length === 2) {
+                    return (+prevMatch[1]) - (+nextMatch[1])
+                } else {
+                    return 0
+                }
+            }).forEach((file, index) => {
                 doCompare(id, file, index, count, notifier)
             })
         }

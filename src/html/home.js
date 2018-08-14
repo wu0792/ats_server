@@ -284,7 +284,7 @@ const renderNotEqualsDetail = (index) => {
     }
 }
 
-function initForCompareResult() {
+function regEventForCompareResult() {
     const equalsDetailEl = getEqualsDetailEl(),
         notEqualsDetailEl = getNotEqualsDetailEl()
 
@@ -318,7 +318,7 @@ function initForCompareResult() {
 }
 
 document.getElementById('runActual').addEventListener('click', async function () {
-    initForCompareResult()
+    regEventForCompareResult()
     await initForRepeatProgress(ACTUAL, {
         onNotifyCompareProgress,
         onStartProcess: entry => onStartProcess(ACTUAL, entry),
