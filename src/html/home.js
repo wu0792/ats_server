@@ -16,7 +16,7 @@ const readFilePromise = require('fs-readfile-promise')
  */
 async function runPuppeteer(mode, notifier, groupedList, systemInfo, flatList, noMockUrls) {
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         slowMo: 25,
         executablePath:
             'node_modules/puppeteer/.local-chromium/win64-571375/chrome-win32/chrome.exe'
