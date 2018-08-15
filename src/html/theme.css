@@ -20,6 +20,14 @@
     width: auto;
 }
 
+div#div#expectSummary {
+    width: auto;
+}
+
+div#expectDetail {
+    width: auto;
+}
+
 form header {
     margin: 0 0 20px 0;
 }
@@ -176,7 +184,11 @@ li {
     -o-box-shadow: 1px 1px 1px rgba(0, 0, 0, .4);
 }
 
-.correct{
+.skip {
+    color: gray;
+}
+
+.correct {
     color: green;
 }
 

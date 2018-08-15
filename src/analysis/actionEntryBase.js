@@ -133,6 +133,7 @@ class MutationActionEntry extends ActionEntryBase {
         // consider as the frames of animation
         const { target: nextTarget, time: nextTime } = this.next.data
         if (this.next.getActionType() === this.getActionType() && currentTarget.every(selector => nextTarget.indexOf(selector) >= 0 && (new Date(nextTime) - new Date(currentTime) <= 50))) {
+            this.skip = true
             return
         }
 
@@ -176,7 +177,7 @@ class MutationActionEntry extends ActionEntryBase {
     }
 
     render() {
-        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon mutation' title='[mutation]页面DOM元素变化'></span><div class='entry mutation'>${this.data.target}</div>`
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon mutation' title='[mutation]页面DOM元素变化'></span><div class='entry mutation'>${this.data.target.join(' | ')}</div>`
     }
 }
 
@@ -202,7 +203,7 @@ class FocusActionEntry extends ActionEntryBase {
     }
 
     render() {
-        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon focus' title='[focus]元素得到焦点'></span><div class='entry focus'>${this.data.target}</div>`
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon focus' title='[focus]元素得到焦点'></span><div class='entry focus'>${this.data.target.join(' | ')}</div>`
     }
 }
 
@@ -230,7 +231,7 @@ class BlurActionEntry extends ActionEntryBase {
     }
 
     render() {
-        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon blur' title='[blur]元素丢失焦点'></span><div class='entry blur'>${this.data.target}</div>`
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon blur' title='[blur]元素丢失焦点'></span><div class='entry blur'>${this.data.target.join(' | ')}</div>`
     }
 }
 
@@ -270,7 +271,7 @@ class ChangeActionEntry extends ActionEntryBase {
     }
 
     render() {
-        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon change' title='[change]内容改变'></span><div class='entry change'>${this.data.target}</div>`
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon change' title='[change]内容改变'></span><div class='entry change'>${this.data.target.join(' | ')}</div>`
     }
 }
 
@@ -296,7 +297,7 @@ class KeyDownActionEntry extends ActionEntryBase {
     }
 
     render() {
-        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon keydown' title='[keydown]键盘按下'></span><div class='entry keydown'>${this.data.target}</div>`
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon keydown' title='[keydown]键盘按下'></span><div class='entry keydown'>${this.data.target.join(' | ')}</div>`
     }
 }
 
@@ -322,7 +323,7 @@ class KeyUpActionEntry extends ActionEntryBase {
     }
 
     render() {
-        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon keyup' title='[keyup]键盘弹起'></span><div class='entry keyup'>${this.data.target}</div>`
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon keyup' title='[keyup]键盘弹起'></span><div class='entry keyup'>${this.data.target.join(' | ')}</div>`
     }
 }
 
@@ -348,7 +349,7 @@ class MouseDownActionEntry extends ActionEntryBase {
     }
 
     render() {
-        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon mousedown' title='[mousedown]鼠标键按下'></span><div class='entry mousedown'>${this.data.target}</div>`
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon mousedown' title='[mousedown]鼠标键按下'></span><div class='entry mousedown'>${this.data.target.join(' | ')}</div>`
     }
 }
 
@@ -374,7 +375,7 @@ class MouseUpActionEntry extends ActionEntryBase {
     }
 
     render() {
-        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon mouseup' title='[mouseup]鼠标键弹起'></span><div class='entry mouseup'>${this.data.target}</div>`
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon mouseup' title='[mouseup]鼠标键弹起'></span><div class='entry mouseup'>${this.data.target.join(' | ')}</div>`
     }
 }
 
@@ -400,7 +401,7 @@ class MouseOverActionEntry extends ActionEntryBase {
     }
 
     render() {
-        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon mouseover' title='[mouseover]鼠标HOVER'></span><div class='entry mouseover'>${this.data.target}</div>`
+        return `<span class='seq entry'>[${this.data.id}]</span><span class='icon mouseover' title='[mouseover]鼠标HOVER'></span><div class='entry mouseover'>${this.data.target.join(' | ')}</div>`
     }
 }
 

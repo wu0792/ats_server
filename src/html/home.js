@@ -16,7 +16,7 @@ const readFilePromise = require('fs-readfile-promise')
  */
 async function runPuppeteer(mode, notifier, groupedList, systemInfo, flatList, noMockUrls) {
     const browser = await puppeteer.launch({
-        headless: true,
+        headless: false,
         slowMo: 25,
         executablePath:
             'node_modules/puppeteer/.local-chromium/win64-571375/chrome-win32/chrome.exe'
@@ -121,7 +121,7 @@ const getSummaryEl = (type) => document.getElementById(`${type}Summary`),
             const li = document.createElement('li')
 
             if (finishEntry) {
-                li.className = 'progress_entry finish'
+                li.className = `progress_entry finish ${finishEntry.skip ? 'skip' : ''}`
                 li.innerHTML = finishEntry.render()
             } else {
                 li.className = 'progress_entry error'
@@ -289,7 +289,7 @@ function regEventForCompareResult() {
 
     getCompareSummaryEl().style.display = 'block'
     renderCompareSummary()
-    
+
     equalsDetailEl.children[0].style.display = 'block'
     while (equalsDetailEl.children.length > 1) {
         equalsDetailEl.children[1].remove()
