@@ -1,5 +1,6 @@
 const expect = require('expect-puppeteer')
 const asyncSome = require('../common/asyncSome')
+const delay = require('../common/delay')
 const option = { timeout: 500, polling: 'mutation' }
 
 const MOUSE_BUTTON_MAP = {
@@ -127,7 +128,7 @@ class MutationActionEntry extends ActionEntryBase {
     }
 
     async process(page, systemInfo, mode) {
-        const { target: currentTarget, time: currentTime } = this.data
+        const { type: currentMutationType, target: currentTarget, time: currentTime } = this.data
 
         // skip current process if the target is the same as next entry, and interval is short enough
         // consider as the frames of animation
@@ -135,6 +136,14 @@ class MutationActionEntry extends ActionEntryBase {
         if (this.next.getActionType() === this.getActionType() && currentTarget.every(selector => nextTarget.indexOf(selector) >= 0 && (new Date(nextTime) - new Date(currentTime) <= 50))) {
             this.skip = true
             return
+        }
+
+        // if the mutation type is 'init'
+        // we can delay and wait for some time retrieving the network response
+
+        if (currentMutationType === 'init') {
+            console.log('delay for network.')
+            await delay(2000)
         }
 
         const currentValidSelector = await resolveValidSelector(this, page, currentTarget),
