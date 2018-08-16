@@ -453,6 +453,11 @@ class ResizeActionEntry extends ActionEntryBase {
         return 'RESIZE'
     }
 
+    async process(page, systemInfo, mode) {
+        const { width, height } = this.data
+        await page.setViewport({ width, height })
+    }
+
     render() {
         return `<span class='seq entry'>[${this.data.id}]</span><span class='icon resize' title='[resize]屏幕尺寸改变'></span><div class='entry resize'>(width: ${this.data.width}, height: ${this.data.height})</div>`
     }

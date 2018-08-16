@@ -17,7 +17,7 @@ const path = require('path')
  */
 async function runPuppeteer(mode, notifier, groupedList, systemInfo, flatList, noMockUrls) {
     const browser = await puppeteer.launch({
-        headless: true,
+        headless: false,
         slowMo: 25,
         executablePath:
             'node_modules/puppeteer/.local-chromium/win64-571375/chrome-win32/chrome.exe'
@@ -310,21 +310,21 @@ function regEventForCompareResult() {
 }
 
 document.getElementById('runActual').addEventListener('click', async function () {
-    let filePath = `C:\\Src\\ats_server\\compare\\1534376738010\\74.png`
-    let buffer = await readFilePromise(filePath)
+    // let filePath = `C:\\Src\\ats_server\\compare\\1534376738010\\74.png`
+    // let buffer = await readFilePromise(filePath)
 
-    //get image file extension name
-    let extensionName = path.extname(filePath);
+    // //get image file extension name
+    // let extensionName = path.extname(filePath);
 
-    //convert image file to base64-encoded string
-    let base64Image = new Buffer(buffer, 'binary').toString('base64');
+    // //convert image file to base64-encoded string
+    // let base64Image = new Buffer(buffer, 'binary').toString('base64');
 
-    //combine all strings
-    let imgSrcString = `data:image/${extensionName.split('.').pop()};base64,${base64Image}`;
+    // //combine all strings
+    // let imgSrcString = `data:image/${extensionName.split('.').pop()};base64,${base64Image}`;
 
-    document.getElementById("myimage").src = imgSrcString;
+    // document.getElementById("myimage").src = imgSrcString;
 
-    return
+    // return
     regEventForCompareResult()
     await initForRepeatProgress(ACTUAL, {
         onNotifyCompareProgress,
