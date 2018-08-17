@@ -110,7 +110,7 @@ class NavigateActionEntry extends ActionEntryBase {
 
     async process(page, systemInfo, mode) {
         const { url } = this.data
-        await page.goto(url)
+        await page.goto(url, { waitUntil: 'networkidle0' })
     }
 
     render() {
@@ -143,7 +143,7 @@ class MutationActionEntry extends ActionEntryBase {
 
         if (currentMutationType === 'init') {
             console.log('delay for network.')
-            await delay(2000)
+            await delay(5000)
         }
 
         const currentValidSelector = await resolveValidSelector(this, page, currentTarget),
