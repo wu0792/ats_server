@@ -168,8 +168,8 @@ class MutationActionEntry extends ActionEntryBase {
                 return {
                     width: Math.min(width, maxWidth),
                     height: Math.min(height, maxHeight),
-                    left,
-                    top
+                    left: left + scrollX,
+                    top: top + scrollY
                 }
             }, currentValidSelector, this.data.id)
 
