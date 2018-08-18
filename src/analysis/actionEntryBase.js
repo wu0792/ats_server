@@ -110,7 +110,7 @@ class NavigateActionEntry extends ActionEntryBase {
 
     async process(page, systemInfo, mode) {
         const { url } = this.data
-        await page.goto(url, { waitUntil: 'networkidle0' })
+        await page.goto(url)
     }
 
     render() {
@@ -136,14 +136,6 @@ class MutationActionEntry extends ActionEntryBase {
         if (this.next.getActionType() === this.getActionType() && currentTarget.every(selector => nextTarget.indexOf(selector) >= 0 && (new Date(nextTime) - new Date(currentTime) <= 50))) {
             this.skip = true
             return
-        }
-
-        // if the mutation type is 'init'
-        // we can delay and wait for some time retrieving the network response
-
-        if (currentMutationType === 'init') {
-            console.log('delay for network.')
-            await delay(5000)
         }
 
         const currentValidSelector = await resolveValidSelector(this, page, currentTarget),

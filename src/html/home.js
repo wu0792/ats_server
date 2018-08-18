@@ -5,8 +5,9 @@ const START_MODE = require('../enums/startMode')
 const puppeteer = require('puppeteer')
 const getNowString = require('../common/getNowString')
 const readFilePromise = require('fs-readfile-promise')
-const path = require('path')
+const getImageBase64 = require('../common/getImageBase64')
 
+let systemInfo
 /**
  * 
  * @param {run mode: expect/actual} mode 
@@ -79,6 +80,8 @@ async function prepare(configFilePath, mode, notifier) {
     !onStartEntry && (notifier.onStartEntry = () => { })
     !onFinishEntry && (notifier.onFinishEntry = () => { })
     !onNotifyCompareProgress && (notifier.onNotifyCompareProgress = () => { })
+
+    systemInfo = wrapper.systemInfo
 
     runPuppeteer(mode, notifier, wrapper.groupedList, wrapper.systemInfo, list, noMockUrls)
 }
@@ -267,14 +270,54 @@ const renderEqualsDetail = (index) => {
 const renderNotEqualsDetail = (index) => {
     const theNotEqualItem = notEqualsMap[index]
     if (theNotEqualItem) {
-        const { count, fileName, differentPixelCount } = theNotEqualItem,
-            span = document.createElement('span')
+        const { fileName, differentPixelCount } = theNotEqualItem,
+            span = document.createElement('span'),
+            fileNameReg = /(\d+)\.[A-Z]+/i,
+            fileNameMatch = fileName.match(fileNameReg),
+            id = fileNameMatch.length === 2 ? fileNameMatch[1] : 0
 
         span.className = 'equal_entry'
-        span.innerHTML = `[<span class='error'>×</span>] ${fileName} ${differentPixelCount} 不同像素点`
+        span.innerHTML = `[<span class='error'>×</span>] ${fileName} ${differentPixelCount} 不同像素点<a href='javascript:void(0);'><span class='viewNotEqualImage' fileId='${id}'>...</span></a>`
+        span.querySelector('.viewNotEqualImage').addEventListener('click', (ev) => toggleNotEqualImage(ev))
 
         getNotEqualsDetailEl().appendChild(span)
         getNotEqualsDetailEl().children[0].style.display = 'none'
+    }
+}
+
+async function toggleNotEqualImage(ev) {
+    const target = ev.target,
+        next = target.parentElement.parentElement.nextElementSibling,
+        expand = next && next.nodeName === 'DIV' && next.getAttribute('imageRoot')
+
+    if (expand) {
+        next.remove()
+    } else {
+        const fileId = target.getAttribute('fileId'),
+            dataId = systemInfo.id,
+            expectPath = `./expect/${dataId}/${fileId}.png`,
+            actualPath = `./actual/${dataId}/${fileId}.png`,
+            comparePath = `./compare/${dataId}/${fileId}.png`
+
+        let expectImage = new Image(),
+            actualImage = new Image(),
+            compareImage = new Image()
+
+        const imageRoot = document.createElement('div')
+        imageRoot.setAttribute('imageRoot', '1')
+        imageRoot.appendChild(expectImage)
+        imageRoot.appendChild(actualImage)
+        imageRoot.appendChild(compareImage)
+
+        target.parentElement.parentElement.after(imageRoot)
+
+        const base64Expect = await getImageBase64(expectPath)
+        const base64Actual = await getImageBase64(actualPath)
+        const base64Compare = await getImageBase64(comparePath)
+
+        expectImage.src = base64Expect
+        actualImage.src = base64Actual
+        compareImage.src = base64Compare
     }
 }
 
@@ -310,21 +353,6 @@ function regEventForCompareResult() {
 }
 
 document.getElementById('runActual').addEventListener('click', async function () {
-    // let filePath = `C:\\Src\\ats_server\\compare\\1534376738010\\74.png`
-    // let buffer = await readFilePromise(filePath)
-
-    // //get image file extension name
-    // let extensionName = path.extname(filePath);
-
-    // //convert image file to base64-encoded string
-    // let base64Image = new Buffer(buffer, 'binary').toString('base64');
-
-    // //combine all strings
-    // let imgSrcString = `data:image/${extensionName.split('.').pop()};base64,${base64Image}`;
-
-    // document.getElementById("myimage").src = imgSrcString;
-
-    // return
     regEventForCompareResult()
     await initForRepeatProgress(ACTUAL, {
         onNotifyCompareProgress,
