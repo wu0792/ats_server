@@ -303,11 +303,24 @@ async function toggleNotEqualImage(ev) {
             actualImage = new Image(),
             compareImage = new Image()
 
+        let expectImageDiv = document.createElement('div'),
+            actualImageDiv = document.createElement('div'),
+            compareImageDiv = document.createElement('div')
+
+        expectImageDiv.className = 'expectImage'
+        actualImageDiv.className = 'actualImage'
+        compareImageDiv.className = 'compareImage'
+
         const imageRoot = document.createElement('div')
         imageRoot.setAttribute('imageRoot', '1')
-        imageRoot.appendChild(expectImage)
-        imageRoot.appendChild(actualImage)
-        imageRoot.appendChild(compareImage)
+
+        imageRoot.appendChild(expectImageDiv)
+        imageRoot.appendChild(actualImageDiv)
+        imageRoot.appendChild(compareImageDiv)
+
+        expectImageDiv.appendChild(expectImage)
+        actualImageDiv.appendChild(actualImage)
+        compareImageDiv.appendChild(compareImage)
 
         target.parentElement.parentElement.after(imageRoot)
 

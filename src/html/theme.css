@@ -201,3 +201,20 @@ li {
     font-size: 14px;
     margin-left: 15px;
 }
+
+.expectImage {
+    padding: 10px;
+    border: solid 1px #6495ed;
+}
+
+.actualImage {
+    padding: 10px;
+    border: solid 1px #6495ed;
+    margin-top: 5px;
+}
+
+.compareImage {
+    padding: 10px;
+    border: solid 1px #6495ed;
+    margin-top: 5px;
+}
