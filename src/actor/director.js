@@ -11,6 +11,7 @@ class Director {
         this.systemInfo = systemInfo
         this.groupedList = groupedList
         this.flatList = flatList
+        this.finishedCount = 0
         // the urls has two formats:
         // ['oldurl.com/old/path1.js']
         // ['oldurl.com/old/path2.js=>newUrl.com/new/path2.js',
@@ -28,6 +29,16 @@ class Director {
         })
         this.currentNavigateId = NaN
         this.nextNavigateId = NaN
+    }
+
+    async checkFinish() {
+        if (this.finishedCount === this.flatList.length) {
+            console.log('finish all process.')
+
+            if (this.mode.value.needCompare) {
+                await startCompare(this.systemInfo.id, this.notifier.onNotifyCompareProgress)
+            }
+        }
     }
 
     async onDomContentLoaded(navigateId) {
@@ -48,16 +59,12 @@ class Director {
                     this.notifier.onStartEntry(entry)
                     await entry.process(this.page, this.systemInfo, this.mode)
                     this.notifier.onFinishEntry(entry)
+                    this.finishedCount++
+                    await this.checkFinish()
                 } catch (ex) {
                     this.notifier.onEntryFailure(entry, ex)
-                }
-            }
-
-            if (i === this.flatList.length - 1) {
-                console.log('finish all process.')
-
-                if (this.mode.value.needCompare) {
-                    await startCompare(this.systemInfo.id, this.notifier.onNotifyCompareProgress)
+                    this.finishedCount++
+                    await this.checkFinish()
                 }
             }
         })
