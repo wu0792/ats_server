@@ -128,6 +128,7 @@ class MutationActionEntry extends ActionEntryBase {
     }
 
     async process(page, systemInfo, mode) {
+        return
         const { type: currentMutationType, target: currentTarget, time: currentTime } = this.data
 
         // skip current process if the target is the same as next entry, and interval is short enough
@@ -339,11 +340,12 @@ class MouseDownActionEntry extends ActionEntryBase {
 
     async process(page, systemInfo, mode) {
         // console.log(this.data)
-        const { target, button } = this.data
+        const { target, button, x, y } = this.data
         const validSelector = await resolveValidSelector(this, page, target)
 
         if (validSelector) {
             // console.log('start mouse down.')
+            await page.mouse.move(x, y)
             await page.mouse.down({ button: MOUSE_BUTTON_MAP[button] })
             // console.log('end key down')
         }
@@ -365,11 +367,12 @@ class MouseUpActionEntry extends ActionEntryBase {
 
     async process(page, systemInfo, mode) {
         // console.log(this.data)
-        const { target, button } = this.data
+        const { target, button, x, y } = this.data
         const validSelector = await resolveValidSelector(this, page, target)
 
         if (validSelector) {
             // console.log('start mouse up.')
+            await page.mouse.move(x, y)
             await page.mouse.up({ button: MOUSE_BUTTON_MAP[button] })
             // console.log('end key up')
         }
