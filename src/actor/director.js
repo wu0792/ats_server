@@ -2,6 +2,7 @@ const ACTION_TYPES = require('../enums/actionTypes')
 const delay = require('../common/delay')
 const asyncForEach = require('../common/asyncForEach')
 const startCompare = require('../analysis/compare')
+const MarkCursor = require('../common/markCursor')
 
 class Director {
     constructor(mode, notifier, page, groupedList, systemInfo, flatList, noMockUrls) {
@@ -42,6 +43,7 @@ class Director {
     }
 
     async onDomContentLoaded(navigateId) {
+        await MarkCursor(this.page)
         const navigateEntry = this.flatList.find(entry => entry.data.id === navigateId)
         if (navigateEntry) {
             this.notifier.onFinishEntry(navigateEntry)
