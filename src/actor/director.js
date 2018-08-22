@@ -5,13 +5,14 @@ const startCompare = require('../analysis/compare')
 const MarkCursor = require('../common/markCursor')
 
 class Director {
-    constructor(mode, notifier, page, groupedList, systemInfo, flatList, noMockUrls) {
+    constructor(mode, notifier, page, groupedList, systemInfo, flatList, noMockUrls, isPreview) {
         this.mode = mode
         this.notifier = notifier
         this.page = page
         this.systemInfo = systemInfo
         this.groupedList = groupedList
         this.flatList = flatList
+        this.isPreview = isPreview
         this.finishedCount = 0
         // the urls has two formats:
         // ['oldurl.com/old/path1.js']
@@ -43,7 +44,10 @@ class Director {
     }
 
     async onDomContentLoaded(navigateId) {
-        await MarkCursor(this.page)
+        if (this.isPreview) {
+            await MarkCursor(this.page)
+        }
+
         const navigateEntry = this.flatList.find(entry => entry.data.id === navigateId)
         if (navigateEntry) {
             this.notifier.onFinishEntry(navigateEntry)
@@ -59,7 +63,7 @@ class Director {
                     // await delayPromise
 
                     this.notifier.onStartEntry(entry)
-                    await entry.process(this.page, this.systemInfo, this.mode)
+                    await entry.process(this.page, this.systemInfo, this.mode, this.isPreview)
                     this.notifier.onFinishEntry(entry)
                     this.finishedCount++
                     await this.checkFinish()

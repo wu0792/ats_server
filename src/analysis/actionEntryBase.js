@@ -76,7 +76,7 @@ class ActionEntryBase {
         throw 'should be override and never run here.'
     }
 
-    async process(page, systemInfo, mode) {
+    async process(page, systemInfo, mode, isPreview) {
 
     }
 
@@ -108,7 +108,7 @@ class NavigateActionEntry extends ActionEntryBase {
         return 'NAVIGATE'
     }
 
-    async process(page, systemInfo, mode) {
+    async process(page, systemInfo, mode, isPreview) {
         const { url } = this.data
         await page.goto(url)
     }
@@ -127,8 +127,11 @@ class MutationActionEntry extends ActionEntryBase {
         return 'MUTATION'
     }
 
-    async process(page, systemInfo, mode) {
+    async process(page, systemInfo, mode, isPreview) {
         return
+        // preview mode doesn't capture images.
+        if (isPreview) return
+
         const { type: currentMutationType, target: currentTarget, time: currentTime } = this.data
 
         // skip current process if the target is the same as next entry, and interval is short enough
@@ -192,7 +195,7 @@ class FocusActionEntry extends ActionEntryBase {
         return 'FOCUS'
     }
 
-    async process(page, systemInfo, mode) {
+    async process(page, systemInfo, mode, isPreview) {
         // console.log(this.data)
         const { target } = this.data
         const validSelector = await resolveValidSelector(this, page, target)
@@ -218,7 +221,7 @@ class BlurActionEntry extends ActionEntryBase {
         return 'BLUR'
     }
 
-    async process(page, systemInfo, mode) {
+    async process(page, systemInfo, mode, isPreview) {
         // console.log(this.data)
         const { target } = this.data
         const validSelector = await resolveValidSelector(this, page, target)
@@ -246,7 +249,7 @@ class ChangeActionEntry extends ActionEntryBase {
         return 'CHANGE'
     }
 
-    async process(page, systemInfo, mode) {
+    async process(page, systemInfo, mode, isPreview) {
         // console.log(this.data)
         const { target, value } = this.data
         const validSelector = await resolveValidSelector(this, page, target)
@@ -286,7 +289,7 @@ class KeyDownActionEntry extends ActionEntryBase {
         return 'KEYDOWN'
     }
 
-    async process(page, systemInfo, mode) {
+    async process(page, systemInfo, mode, isPreview) {
         // console.log(this.data)
         const { target, code } = this.data
         const validSelector = await resolveValidSelector(this, page, target)
@@ -312,7 +315,7 @@ class KeyUpActionEntry extends ActionEntryBase {
         return 'KEYUP'
     }
 
-    async process(page, systemInfo, mode) {
+    async process(page, systemInfo, mode, isPreview) {
         // console.log(this.data)
         const { target, code } = this.data
         const validSelector = await resolveValidSelector(this, page, target)
@@ -338,7 +341,7 @@ class MouseDownActionEntry extends ActionEntryBase {
         return 'MOUSEDOWN'
     }
 
-    async process(page, systemInfo, mode) {
+    async process(page, systemInfo, mode, isPreview) {
         // console.log(this.data)
         const { target, button, x, y } = this.data
         const validSelector = await resolveValidSelector(this, page, target)
@@ -365,7 +368,7 @@ class MouseUpActionEntry extends ActionEntryBase {
         return 'MOUSEUP'
     }
 
-    async process(page, systemInfo, mode) {
+    async process(page, systemInfo, mode, isPreview) {
         // console.log(this.data)
         const { target, button, x, y } = this.data
         const validSelector = await resolveValidSelector(this, page, target)
@@ -392,7 +395,7 @@ class MouseOverActionEntry extends ActionEntryBase {
         return 'MOUSEOVER'
     }
 
-    async process(page, systemInfo, mode) {
+    async process(page, systemInfo, mode, isPreview) {
         // console.log('start mouse over.')
         // console.log(this.data)
         const { target } = this.data
@@ -418,7 +421,7 @@ class ScrollActionEntry extends ActionEntryBase {
         return 'SCROLL'
     }
 
-    async process(page, systemInfo, mode) {
+    async process(page, systemInfo, mode, isPreview) {
         // console.log('start scroll.')
         // console.log(this.data)
         const { x, y } = this.data
@@ -448,7 +451,7 @@ class ResizeActionEntry extends ActionEntryBase {
         return 'RESIZE'
     }
 
-    async process(page, systemInfo, mode) {
+    async process(page, systemInfo, mode, isPreview) {
         const { width, height } = this.data
         await page.setViewport({ width, height })
     }

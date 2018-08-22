@@ -8,6 +8,7 @@ const MarkCursor = async (page) => {
             .mouse-helper {
               pointer-events: none;
               position: absolute;
+              z-index: 1000000000;
               top: 0;
               left: 0;
               width: 20px;
