@@ -5,6 +5,7 @@ class SystemInfo {
         this.version = configJson.version
         this.createAt = configJson.createAt
         this.rootTargets = configJson.rootTargets
+        this.initSize = configJson.initSize
     }
 }
 

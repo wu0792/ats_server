@@ -17,16 +17,17 @@ let systemInfo
  * @param {urls that config the mock} noMockUrls
  */
 async function runPuppeteer(mode, notifier, groupedList, systemInfo, flatList, noMockUrls, isPreview) {
+    const { outerWidth, outerHeight, innerWidth, innerHeight } = systemInfo.initSize
     const browser = await puppeteer.launch({
         headless: false,
         slowMo: 25,
         executablePath: 'node_modules/puppeteer/.local-chromium/win64-571375/chrome-win32/chrome.exe',
-        args: ['--disable-infobars']
+        args: ['--disable-infobars', `--window-size=${outerWidth},${outerHeight}`]
     })
 
     const page = await browser.newPage()
     await page.setRequestInterception(true)
-    await page.setViewport({ width: 1366, height: 768 })
+    await page.setViewport({ width: innerWidth, height: innerHeight })
 
     const director = new Director(mode, notifier, page, groupedList, systemInfo, flatList, noMockUrls, isPreview)
     await director.preProcess()

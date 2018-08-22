@@ -348,7 +348,9 @@ class MouseDownActionEntry extends ActionEntryBase {
 
         if (validSelector) {
             // console.log('start mouse down.')
-            await page.mouse.move(x, y)
+            const { scrollX, scrollY } = await page.evaluate(() => ({ scrollX: scrollX, scrollY: scrollY }))
+
+            await page.mouse.move(x - scrollX, y - scrollY)
             await page.mouse.down({ button: MOUSE_BUTTON_MAP[button] })
             // console.log('end key down')
         }
@@ -375,7 +377,7 @@ class MouseUpActionEntry extends ActionEntryBase {
 
         if (validSelector) {
             // console.log('start mouse up.')
-            await page.mouse.move(x, y)
+            // await page.mouse.move(x, y)
             await page.mouse.up({ button: MOUSE_BUTTON_MAP[button] })
             // console.log('end key up')
         }
