@@ -1,6 +1,7 @@
 const expect = require('expect-puppeteer')
 const asyncSome = require('../common/asyncSome')
 const delay = require('../common/delay')
+const isClickable = require('../common/isClickable`1')
 const option = { timeout: 500, polling: 'mutation' }
 
 const MOUSE_BUTTON_MAP = {
@@ -250,12 +251,10 @@ class ChangeActionEntry extends ActionEntryBase {
     }
 
     async process(page, systemInfo, mode, isPreview) {
-        // console.log(this.data)
         const { target, value } = this.data
         const validSelector = await resolveValidSelector(this, page, target)
 
         if (validSelector) {
-            // console.log('start change.')
             await page.evaluate((theSelector, theValue) => {
                 // the change event may happen at input/textarea/select element,
                 // the input/textarea change event always fired after keydown, keyup, blur event,
@@ -271,7 +270,6 @@ class ChangeActionEntry extends ActionEntryBase {
 
                 theElement.dispatchEvent(new Event('change'))
             }, validSelector, value)
-            // console.log('end change')
         }
     }
 
@@ -342,17 +340,28 @@ class MouseDownActionEntry extends ActionEntryBase {
     }
 
     async process(page, systemInfo, mode, isPreview) {
-        // console.log(this.data)
         const { target, button, x, y } = this.data
         const validSelector = await resolveValidSelector(this, page, target)
 
         if (validSelector) {
-            // console.log('start mouse down.')
-            const { scrollX, scrollY } = await page.evaluate(() => ({ scrollX: scrollX, scrollY: scrollY }))
+            const { scrollX, scrollY, nodeName, nodeWith, nodeHeight } = await page.evaluate((selector) => {
+                let el = document.querySelector(selector),
+                    nodeName, nodeWith, nodeHeight
+                if (el) {
+                    nodeName = el.nodeName
+                    nodeWith = el.offsetWidth
+                    nodeHeight = el.offsetHeight
+                }
+
+                return { scrollX, scrollY, nodeName, nodeWith, nodeHeight }
+            }, validSelector)
+
+            if(isClickable(nodeName)){
+              //  await page.cl
+            }
 
             await page.mouse.move(x - scrollX, y - scrollY)
             await page.mouse.down({ button: MOUSE_BUTTON_MAP[button] })
-            // console.log('end key down')
         }
     }
 
