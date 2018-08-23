@@ -15,7 +15,7 @@ const resolveValidSelector = (entry, page, selectors) => {
 
     return Promise.race(selectors.map(selector => new Promise(async (resolve, reject) => {
         try {
-            const matchPromise = await expect(page).toMatchElement(selector, option)
+            await expect(page).toMatchElement(selector, option)
             if (hasResolved === false) {
                 hasResolved = true
                 resolve(selector)

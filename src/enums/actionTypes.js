@@ -5,7 +5,6 @@ const fs = require('fs')
 
 const ACTION_TYPES = new Enum({
     NETWORK: {
-        ignoreNavigateDelay: true,
         collect: (data) => new ActionEntry.NetworkActionEntry(data),
         preProcess: async (director) => {
             let page = director.page,
@@ -73,7 +72,6 @@ const ACTION_TYPES = new Enum({
         }
     },
     NAVIGATE: {
-        ignoreNavigateDelay: true,
         collect: (data) => new ActionEntry.NavigateActionEntry(data),
         preProcess: async (director) => {
             let page = director.page,
@@ -117,7 +115,6 @@ const ACTION_TYPES = new Enum({
         }
     },
     MUTATION: {
-        ignoreNavigateDelay: true,
         collect: (data) => new ActionEntry.MutationActionEntry(data),
         preProcess: async (director) => {
             const dirNames = ['expect', 'actual', 'compare']
@@ -130,52 +127,42 @@ const ACTION_TYPES = new Enum({
         }
     },
     FOCUS: {
-        ignoreNavigateDelay: false,
         collect: (data) => new ActionEntry.FocusActionEntry(data),
         preProcess: async (director) => { }
     },
     BLUR: {
-        ignoreNavigateDelay: false,
         collect: (data) => new ActionEntry.BlurActionEntry(data),
         preProcess: async (director) => { }
     },
     CHANGE: {
-        ignoreNavigateDelay: false,
         collect: (data) => new ActionEntry.ChangeActionEntry(data),
         preProcess: async (director) => { }
     },
     KEYDOWN: {
-        ignoreNavigateDelay: false,
         collect: (data) => new ActionEntry.KeyDownActionEntry(data),
         preProcess: async (director) => { }
     },
     KEYUP: {
-        ignoreNavigateDelay: false,
         collect: (data) => new ActionEntry.KeyUpActionEntry(data),
         preProcess: async (director) => { }
     },
     MOUSEDOWN: {
-        ignoreNavigateDelay: false,
         collect: (data) => new ActionEntry.MouseDownActionEntry(data),
         preProcess: async (director) => { }
     },
     MOUSEUP: {
-        ignoreNavigateDelay: false,
         collect: (data) => new ActionEntry.MouseUpActionEntry(data),
         preProcess: async (director) => { }
     },
     MOUSEOVER: {
-        ignoreNavigateDelay: false,
         collect: (data) => new ActionEntry.MouseOverActionEntry(data),
         preProcess: async (director) => { }
     },
     SCROLL: {
-        ignoreNavigateDelay: false,
         collect: (data) => new ActionEntry.ScrollActionEntry(data),
         preProcess: async (director) => { }
     },
     RESIZE: {
-        ignoreNavigateDelay: false,
         collect: (data) => new ActionEntry.ResizeActionEntry(data),
         preProcess: async (director) => { }
     },

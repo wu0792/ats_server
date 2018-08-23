@@ -3,6 +3,7 @@ const delay = require('../common/delay')
 const asyncForEach = require('../common/asyncForEach')
 const startCompare = require('../analysis/compare')
 const MarkCursor = require('../common/markCursor')
+const expect = require('expect-puppeteer')
 
 class Director {
     constructor(mode, notifier, page, groupedList, systemInfo, flatList, noMockUrls, isPreview) {
@@ -45,6 +46,8 @@ class Director {
 
     async onDomContentLoaded(navigateId) {
         if (this.isPreview) {
+            await expect(this.page).toMatchElement('head', { timeout: 2000 })
+            await expect(this.page).toMatchElement('body', { timeout: 2000 })
             await MarkCursor(this.page)
         }
 
