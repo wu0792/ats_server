@@ -19,7 +19,7 @@ let systemInfo
 async function runPuppeteer(mode, notifier, groupedList, systemInfo, flatList, noMockUrls, isPreview) {
     const { outerWidth, outerHeight, innerWidth, innerHeight } = systemInfo.initSize
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: !isPreview,
         slowMo: 25,
         executablePath: 'node_modules/puppeteer/.local-chromium/win64-571375/chrome-win32/chrome.exe',
         args: [
@@ -178,7 +178,7 @@ document.getElementById('runExpect').addEventListener('click', async function ()
     }, false)
 })
 
-document.getElementById('runPreview').addEventListener('click', async function () {
+document.getElementById('runExpectPreview').addEventListener('click', async function () {
     initForRepeatProgress(EXPECT, {
         onStartProcess: entry => onStartProcess(EXPECT, entry),
         onEntryFailure: (entry, ex) => onEntryFailure(EXPECT, entry, ex),
@@ -388,4 +388,15 @@ document.getElementById('runActual').addEventListener('click', async function ()
         onStartEntry: entry => onStartEntry(ACTUAL, entry),
         onFinishEntry: (entry) => onFinishEntry(ACTUAL, entry)
     }, false)
+})
+
+document.getElementById('runActualPreview').addEventListener('click', async function () {
+    regEventForCompareResult()
+    await initForRepeatProgress(ACTUAL, {
+        onNotifyCompareProgress,
+        onStartProcess: entry => onStartProcess(ACTUAL, entry),
+        onEntryFailure: (entry, ex) => onEntryFailure(ACTUAL, entry, ex),
+        onStartEntry: entry => onStartEntry(ACTUAL, entry),
+        onFinishEntry: (entry) => onFinishEntry(ACTUAL, entry)
+    }, true)
 })
