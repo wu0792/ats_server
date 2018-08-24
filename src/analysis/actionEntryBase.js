@@ -1,7 +1,11 @@
 const expect = require('expect-puppeteer')
 const asyncSome = require('../common/asyncSome')
 const delay = require('../common/delay')
-const isClickable = require('../common/isClickable`1')
+const isClickable = require('../common/isClickable')
+const querySelector = require('../common/querySelector')
+const asDirectClick = require('../common/asDirectClick')
+
+
 const option = { timeout: 500, polling: 'mutation' }
 
 const MOUSE_BUTTON_MAP = {
@@ -344,24 +348,14 @@ class MouseDownActionEntry extends ActionEntryBase {
         const validSelector = await resolveValidSelector(this, page, target)
 
         if (validSelector) {
-            const { scrollX, scrollY, nodeName, nodeWith, nodeHeight } = await page.evaluate((selector) => {
-                let el = document.querySelector(selector),
-                    nodeName, nodeWith, nodeHeight
-                if (el) {
-                    nodeName = el.nodeName
-                    nodeWith = el.offsetWidth
-                    nodeHeight = el.offsetHeight
-                }
+            const { scrollX, scrollY, nodeName, nodeWith, nodeHeight } = await querySelector(page, validSelector)
 
-                return { scrollX, scrollY, nodeName, nodeWith, nodeHeight }
-            }, validSelector)
-
-            if(isClickable(nodeName)){
-              //  await page.cl
+            if (asDirectClick(nodeName, nodeWith, nodeHeight)) {
+                await page.click(validSelector, { button: MOUSE_BUTTON_MAP[button] })
+            } else {
+                await page.mouse.move(x - scrollX, y - scrollY)
+                await page.mouse.down({ button: MOUSE_BUTTON_MAP[button] })
             }
-
-            await page.mouse.move(x - scrollX, y - scrollY)
-            await page.mouse.down({ button: MOUSE_BUTTON_MAP[button] })
         }
     }
 
@@ -380,15 +374,15 @@ class MouseUpActionEntry extends ActionEntryBase {
     }
 
     async process(page, systemInfo, mode, isPreview) {
-        // console.log(this.data)
-        const { target, button, x, y } = this.data
+        const { target, button } = this.data
         const validSelector = await resolveValidSelector(this, page, target)
 
         if (validSelector) {
-            // console.log('start mouse up.')
-            // await page.mouse.move(x, y)
-            await page.mouse.up({ button: MOUSE_BUTTON_MAP[button] })
-            // console.log('end key up')
+            const { nodeName, nodeWith, nodeHeight } = await querySelector(page, validSelector)
+
+            if (!asDirectClick(nodeName, nodeWith, nodeHeight)) {
+                await page.mouse.up({ button: MOUSE_BUTTON_MAP[button] })
+            }
         }
     }
 
