@@ -14,6 +14,13 @@ const MOUSE_BUTTON_MAP = {
     2: 'right'
 }
 
+const isPositionInValidArea = (recordedXToRoot, recordedYToRoot, scrollX, scrollY, actualXToViewPort, actualYToViewPort, nodeHeight, nodeWith) => {
+    const recordedXToViewport = recordedXToRoot - scrollX,
+        recordedYToViewport = recordedYToRoot - scrollY
+
+    return recordedXToViewport < actualXToViewPort || recordedXToViewport > (actualXToViewPort + nodeWith) || recordedYToViewport < actualYToViewPort || recordedYToViewport > (actualYToViewPort + nodeHeight)
+}
+
 const resolveValidSelector = (entry, page, selectors) => {
     let hasResolved = false,
         id = entry.data.id
@@ -348,9 +355,12 @@ class MouseDownActionEntry extends ActionEntryBase {
         const validSelector = await resolveValidSelector(this, page, target)
 
         if (validSelector) {
-            const { scrollX, scrollY, nodeName, nodeWith, nodeHeight } = await querySelector(page, validSelector)
+            const { scrollX, scrollY, nodeName, nodeWith, nodeHeight, positionX, positionY } = await querySelector(page, validSelector)
 
-            if (asDirectClick(nodeName, nodeWith, nodeHeight)) {
+            // the specific html element type can be clicked directly,
+            // or if the recorded x, y not in valid element area
+            if (asDirectClick(nodeName, nodeWith, nodeHeight)
+                || isPositionInValidArea(x, y, scrollX, scrollY, positionX, positionY, nodeHeight, nodeWith)) {
                 await page.click(validSelector, { button: MOUSE_BUTTON_MAP[button] })
             } else {
                 await page.mouse.move(x - scrollX, y - scrollY)
@@ -378,9 +388,12 @@ class MouseUpActionEntry extends ActionEntryBase {
         const validSelector = await resolveValidSelector(this, page, target)
 
         if (validSelector) {
-            const { nodeName, nodeWith, nodeHeight } = await querySelector(page, validSelector)
+            const { scrollX, scrollY, nodeName, nodeWith, nodeHeight, positionX, positionY } = await querySelector(page, validSelector)
 
-            if (!asDirectClick(nodeName, nodeWith, nodeHeight)) {
+            // the specific html element type can be clicked directly,
+            // or if the recorded x, y not in valid element area
+            if (!asDirectClick(nodeName, nodeWith, nodeHeight)
+                && !isPositionInValidArea(x, y, scrollX, scrollY, positionX, positionY, nodeHeight, nodeWith)) {
                 await page.mouse.up({ button: MOUSE_BUTTON_MAP[button] })
             }
         }
