@@ -58,6 +58,7 @@ class Director {
             this.notifier.onFinishEntry(navigateEntry)
         }
 
+        await delay(2000)
         await asyncForEach(this.flatList, async (entry, i) => {
             const id = entry.data.id
 

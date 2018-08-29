@@ -7,7 +7,9 @@ const getNowString = require('../common/getNowString')
 const readFilePromise = require('fs-readfile-promise')
 const getImageBase64 = require('../common/getImageBase64')
 
-let systemInfo
+let systemInfo,
+    browser
+
 /**
  * 
  * @param {run mode: expect/actual} mode 
@@ -17,8 +19,12 @@ let systemInfo
  * @param {urls that config the mock} noMockUrls
  */
 async function runPuppeteer(mode, notifier, groupedList, systemInfo, flatList, noMockUrls, isPreview) {
+    if (browser) {
+        await browser.close()
+    }
+
     const { outerWidth, outerHeight, innerWidth, innerHeight } = systemInfo.initSize
-    const browser = await puppeteer.launch({
+    browser = await puppeteer.launch({
         headless: !isPreview,
         slowMo: 25,
         executablePath: 'node_modules/puppeteer/.local-chromium/win64-571375/chrome-win32/chrome.exe',

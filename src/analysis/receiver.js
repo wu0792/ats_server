@@ -34,7 +34,7 @@ class Receiver {
             if (theActionType) {
                 groupedList[upperCasedKey] = dataList
             } else {
-                throw `unknown action type: ${key}, all known action types are: ${ACTION_TYPES.enums.map(theEnum => theEnum.key.toLowerCase()).join(', ')}.`
+                console.error(`unknown action type: ${key}, all known action types are: ${ACTION_TYPES.enums.map(theEnum => theEnum.key.toLowerCase()).join(', ')}.`)
             }
         }
 
