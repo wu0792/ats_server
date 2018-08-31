@@ -360,7 +360,7 @@ class MouseDownActionEntry extends ActionEntryBase {
             // the specific html element type can be clicked directly,
             // or if the recorded x, y not in valid element area
             if (asDirectClick(nodeName, nodeWith, nodeHeight)
-                || isPositionInValidArea(x, y, scrollX, scrollY, positionX, positionY, nodeHeight, nodeWith)) {
+                && isPositionInValidArea(x, y, scrollX, scrollY, positionX, positionY, nodeHeight, nodeWith)) {
                 await page.click(validSelector, { button: MOUSE_BUTTON_MAP[button] })
             } else {
                 await page.mouse.move(x - scrollX, y - scrollY)
@@ -384,7 +384,7 @@ class MouseUpActionEntry extends ActionEntryBase {
     }
 
     async process(page, systemInfo, mode, isPreview) {
-        const { target, button } = this.data
+        const { target, button, x, y } = this.data
         const validSelector = await resolveValidSelector(this, page, target)
 
         if (validSelector) {
@@ -393,7 +393,7 @@ class MouseUpActionEntry extends ActionEntryBase {
             // the specific html element type can be clicked directly,
             // or if the recorded x, y not in valid element area
             if (!asDirectClick(nodeName, nodeWith, nodeHeight)
-                && !isPositionInValidArea(x, y, scrollX, scrollY, positionX, positionY, nodeHeight, nodeWith)) {
+                || !isPositionInValidArea(x, y, scrollX, scrollY, positionX, positionY, nodeHeight, nodeWith)) {
                 await page.mouse.up({ button: MOUSE_BUTTON_MAP[button] })
             }
         }
