@@ -15,19 +15,26 @@ class Director {
         this.flatList = flatList
         this.isPreview = isPreview
         this.finishedCount = 0
-        // the urls has two formats:
-        // ['oldurl.com/old/path1.js']
-        // ['oldurl.com/old/path2.js=>newUrl.com/new/path2.js',
-        //  'oldurl.com/old/(.*).js=>newUrl.com/new/$1.js']
+        // the urls has following formats:
+        // ['oldurl.com/old/path1.js',
+        //  'oldurl.com/old/path2.js=>newUrl.com/new/path2.js',
+        //  'oldurl.com/old/(.*).js=>newUrl.com/new/$1.js',
+        //  '*abc.com/path/def.ashx.*']     // the start (*) at begining means the url (abc.com/path/def.ashx.*) need not response from record, while respone directly
         // previous one just let the network go as real request, 
         // while the next one redirect to specific url : 
         this.noMockUrls = noMockUrls.map(noMockUrl => {
             //universal the format
-            let arrowSplitIndex = noMockUrl.indexOf('=>')
+            let arrowSplitIndex = noMockUrl.indexOf('=>'),
+                startsWithStart = noMockUrl[0] === '*'
+
+            if (startsWithStart) {
+                noMockUrl = noMockUrl.substring(1)
+            }
+
             if (arrowSplitIndex >= 0) {
-                return [noMockUrl.substring(0, arrowSplitIndex), noMockUrl.substring(arrowSplitIndex + 2)]
+                return [startsWithStart, noMockUrl.substring(0, arrowSplitIndex), noMockUrl.substring(arrowSplitIndex + 2)]
             } else {
-                return [noMockUrl, '']
+                return [startsWithStart, noMockUrl, '']
             }
         })
         this.currentNavigateId = NaN

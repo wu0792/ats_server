@@ -8,7 +8,7 @@ const ACTION_TYPES = new Enum({
         collect: (data) => new ActionEntry.NetworkActionEntry(data),
         preProcess: async (director) => {
             let page = director.page,
-                noMockUrlRegexs = director.noMockUrls.length ? director.noMockUrls.map(urlArray => new RegExp(urlArray[0])) : null,
+                noMockUrlRegexs = director.noMockUrls.length ? director.noMockUrls.map(urlArray => new RegExp(urlArray[1])) : null,
                 entryList = director.groupedList[ACTION_TYPES.NETWORK.key],
                 canMock = director.mode.value.canMock
 
@@ -19,19 +19,19 @@ const ACTION_TYPES = new Enum({
                     const method = request.method(),
                         url = request.url()
 
-                    if (canMock && noMockUrlRegexs && noMockUrlRegexs.some((regex, index) => {
+                    if (noMockUrlRegexs && noMockUrlRegexs.some((regex, index) => {
                         let targetUrl = url,
                             noMockUrl = regex.source
 
-                        if (noMockUrl.indexOf('http') < 0) {
+                        if (noMockUrl.indexOf('http') !== 0) {
                             let parsedUrl = urlParser.parse(targetUrl)
                             targetUrl = `${parsedUrl.host}${parsedUrl.pathname}`
                         }
 
                         let matched = regex.test(targetUrl)
-                        if (matched) {
-                            if (director.noMockUrls[index].length === 2) {
-                                redirectUrl = url.replace(new RegExp(noMockUrl), director.noMockUrls[index][1])
+                        if (matched && (canMock || director.noMockUrls[index][0])) {    // in runing actual mode(canMock===true), or mock url starts with start(can alse mock in expect mode)
+                            if (director.noMockUrls[index].length === 3) {
+                                redirectUrl = url.replace(new RegExp(noMockUrl), director.noMockUrls[index][2])
                             }
                             return true
                         } else {

@@ -1,10 +1,9 @@
 const expect = require('expect-puppeteer')
 const asyncSome = require('../common/asyncSome')
 const delay = require('../common/delay')
-const isClickable = require('../common/isClickable')
 const querySelector = require('../common/querySelector')
 const asDirectClick = require('../common/asDirectClick')
-
+const asDirectHover = require('../common/asDirectHover')
 
 const option = { timeout: 500, polling: 'mutation' }
 
@@ -357,7 +356,7 @@ class MouseDownActionEntry extends ActionEntryBase {
         if (validSelector) {
             const { scrollX, scrollY, nodeName, nodeWith, nodeHeight, positionX, positionY } = await querySelector(page, validSelector)
 
-            // the specific html element type can be clicked directly,
+            // the specific html element type can be clicked directly:(hover actually mouse move to the center of the element and mouse down, mouse up),
             // or if the recorded x, y not in valid element area
             if (asDirectClick(nodeName, nodeWith, nodeHeight)
                 && isPositionInValidArea(x, y, scrollX, scrollY, positionX, positionY, nodeHeight, nodeWith)) {
@@ -416,12 +415,20 @@ class MouseOverActionEntry extends ActionEntryBase {
     async process(page, systemInfo, mode, isPreview) {
         // console.log('start mouse over.')
         // console.log(this.data)
-        const { target } = this.data
+        const { target, x, y } = this.data
         const validSelector = await resolveValidSelector(this, page, target)
 
         if (validSelector) {
-            await page.hover(validSelector)
-            // console.log('end mouse over')
+            const { scrollX, scrollY, nodeName, nodeWith, nodeHeight, positionX, positionY } = await querySelector(page, validSelector)
+
+            // the specific html element type can be hovered directly:(hover actually mouse move to the center of the element),
+            // or if the recorded x, y not in valid element area
+            if (asDirectHover(nodeName, nodeWith, nodeHeight)
+                && isPositionInValidArea(x, y, scrollX, scrollY, positionX, positionY, nodeHeight, nodeWith)) {
+                await page.hover(validSelector)
+            } else {
+                await page.mouse.move(x - scrollX, y - scrollY)
+            }
         }
     }
 
