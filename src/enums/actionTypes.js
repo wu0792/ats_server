@@ -8,7 +8,7 @@ const ACTION_TYPES = new Enum({
         collect: (data) => new ActionEntry.NetworkActionEntry(data),
         preProcess: async (director) => {
             let page = director.page,
-                noMockUrlRegexs = director.noMockUrls.length ? director.noMockUrls.map(urlArray => new RegExp(urlArray[1])) : null,
+                noMockUrlRegexs = director.noMockUrls.length ? director.noMockUrls.map(urlArray => new RegExp(urlArray[1])) : [],
                 entryList = director.groupedList[ACTION_TYPES.NETWORK.key],
                 canMock = director.mode.value.canMock
 
@@ -19,7 +19,7 @@ const ACTION_TYPES = new Enum({
                     const method = request.method(),
                         url = request.url()
 
-                    if (noMockUrlRegexs && noMockUrlRegexs.some((regex, index) => {
+                    if (canMock && noMockUrlRegexs.some((regex, index) => {
                         let targetUrl = url,
                             noMockUrl = regex.source
 
@@ -29,7 +29,7 @@ const ACTION_TYPES = new Enum({
                         }
 
                         let matched = regex.test(targetUrl)
-                        if (matched && (canMock || director.noMockUrls[index][0])) {    // in runing actual mode(canMock===true), or mock url starts with start(can alse mock in expect mode)
+                        if (matched) {
                             if (director.noMockUrls[index].length === 3) {
                                 redirectUrl = url.replace(new RegExp(noMockUrl), director.noMockUrls[index][2])
                             }
@@ -44,17 +44,30 @@ const ACTION_TYPES = new Enum({
                             request.continue({ url: redirectUrl })
                         } else {
                             // not mock the url if match any of noMockUrlRegex
-                            console.log(`no mock url: ${url}`)
+                            console.log(`continue: ${url}`)
                             request.continue()
                         }
                     } else {
                         const firstMatchedRequestIndex = entryList.findIndex(entry => {
-                            return entry.url === url && entry.method === method
+                            let parsedTargetUrl = urlParser.parse(url),
+                                targetUrlPath = `${parsedTargetUrl.host}${parsedTargetUrl.pathname}`,
+                                parsedEntryUrl = urlParser.parse(entry.url),
+                                entryUrlPath = `${parsedEntryUrl.host}${parsedEntryUrl.pathname}`
+
+                            return entry.method === method && (entry.url === url || (targetUrlPath === entryUrlPath && noMockUrlRegexs.some((regex, index) => {
+                                let looseMatch = director.noMockUrls[index][0]
+                                if (looseMatch) {
+                                    return regex.test(url)
+                                } else {
+                                    return false
+                                }
+                            })))
                         })
 
                         if (firstMatchedRequestIndex >= 0) {
+                            console.log(`respond: ${url}`)
                             const validRequest = entryList[firstMatchedRequestIndex],
-                                { body, form, status, header } = validRequest
+                                { body, status, header } = validRequest
 
                             entryList.splice(firstMatchedRequestIndex, 1)
 
@@ -64,6 +77,7 @@ const ACTION_TYPES = new Enum({
                                 headers: header
                             })
                         } else {
+                            console.log(`continue: ${url}`)
                             request.continue()
                         }
                     }
@@ -88,7 +102,6 @@ const ACTION_TYPES = new Enum({
                 if (frame !== page.mainFrame() || entryList.length === 0)
                     return
 
-                // console.warn(`framenavigated, url:${frame.url()}`)
                 let url = frame.url(),
                     allNavigateId = entryList.map(entry => entry.id),
                     firstEntry = entryList[0],
@@ -110,7 +123,7 @@ const ACTION_TYPES = new Enum({
 
                 director.currentNavigateId = currentNavigateId
                 director.nextNavigateId = nextNavigateId
-                director.onDomContentLoaded(currentNavigateId)
+                director.onDomContentLoaded(firstEntry)
             })
         }
     },

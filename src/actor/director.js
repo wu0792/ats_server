@@ -51,7 +51,7 @@ class Director {
         }
     }
 
-    async onDomContentLoaded(navigateId) {
+    async onDomContentLoaded(navigateEntry) {
         this.finishedCount++
 
         if (this.isPreview) {
@@ -60,12 +60,22 @@ class Director {
             await MarkCursor(this.page)
         }
 
-        const navigateEntry = this.flatList.find(entry => entry.data.id === navigateId)
-        if (navigateEntry) {
-            this.notifier.onFinishEntry(navigateEntry)
+        this.notifier.onFinishEntry(navigateEntry)
+
+        let waitForNavigatePromiseList = [delay(3000)]
+        let navigateFinishSelector = navigateEntry.flag
+        if (navigateFinishSelector) {
+            const hideMode = navigateFinishSelector[0] === '!'
+            if (hideMode) {
+                navigateFinishSelector = navigateFinishSelector.substring(1)
+                waitForNavigatePromiseList.push(await page.waitForFunction(selector => !document.querySelector(selector), { timeout: 20000 }, navigateFinishSelector))
+            } else {
+                waitForNavigatePromiseList.push(await page.waitForFunction(selector => !!document.querySelector(selector), { timeout: 20000 }, navigateFinishSelector))
+            }
         }
 
-        await delay(2000)
+        await Promise.all(waitForNavigatePromiseList)
+
         await asyncForEach(this.flatList, async (entry, i) => {
             const id = entry.data.id
 
