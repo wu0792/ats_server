@@ -91,25 +91,21 @@ class Director {
             console.error(error)
         }
 
-        await asyncForEach(this.flatList, async (entry, i) => {
-            const id = entry.data.id
+        const entryBelongToCurrentNavigate = this.flatList.filter(entry => entry.data.id > this.currentNavigateId && entry.data.id < this.nextNavigateId)
+        await asyncForEach(entryBelongToCurrentNavigate, async (entry, i) => {
+            try {
+                // const delayPromise = delay(i === 0 ? 0 : (new Date(this.flatList[i].data.time) - new Date(this.flatList[i - 1].data.time)))           
+                // await delayPromise
 
-            if (id > this.currentNavigateId && id < this.nextNavigateId) {
-                // const delayPromise = delay(i === 0 ? 0 : (new Date(this.flatList[i].data.time) - new Date(this.flatList[i - 1].data.time)))
-
-                try {
-                    // await delayPromise
-
-                    this.notifier.onStartEntry(entry)
-                    await entry.process(this.page, this.systemInfo, this.mode, this.isPreview)
-                    this.notifier.onFinishEntry(entry)
-                    this.finishedCount++
-                    await this.checkFinish()
-                } catch (ex) {
-                    this.notifier.onEntryFailure(entry, ex)
-                    this.finishedCount++
-                    await this.checkFinish()
-                }
+                this.notifier.onStartEntry(entry)
+                await entry.process(this.page, this.systemInfo, this.mode, this.isPreview)
+                this.notifier.onFinishEntry(entry)
+                this.finishedCount++
+                await this.checkFinish()
+            } catch (ex) {
+                this.notifier.onEntryFailure(entry, ex)
+                this.finishedCount++
+                await this.checkFinish()
             }
         })
     }

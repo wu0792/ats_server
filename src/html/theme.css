@@ -173,7 +173,7 @@ li {
     color: #fff !important;
 }
 
-.btn-primary:hover {
+.btn-primary:not(:disabled):hover {
     border-color: #2678ec #2575e7 #1c6fe2 #2677e7;
     background-color: #388bff;
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAMAAACuX0YVAAAABlBMVEVnpv85i/9PO5r4AAAAD0lEQVR42gEEAPv/AAAAAQAFAAIros7PAAAAAElFTkSuQmCC);
