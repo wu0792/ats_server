@@ -60,21 +60,36 @@ class Director {
             await MarkCursor(this.page)
         }
 
-        this.notifier.onFinishEntry(navigateEntry)
+        this.notifier.onFinishEntry(this.flatList.find(entry => entry.data.id === navigateEntry.id))
 
-        let waitForNavigatePromiseList = [delay(3000)]
-        let navigateFinishSelector = navigateEntry.flag
-        if (navigateFinishSelector) {
-            const hideMode = navigateFinishSelector[0] === '!'
-            if (hideMode) {
-                navigateFinishSelector = navigateFinishSelector.substring(1)
-                waitForNavigatePromiseList.push(await page.waitForFunction(selector => !document.querySelector(selector), { timeout: 20000 }, navigateFinishSelector))
-            } else {
-                waitForNavigatePromiseList.push(await page.waitForFunction(selector => !!document.querySelector(selector), { timeout: 20000 }, navigateFinishSelector))
-            }
+        try {
+            // let waitForNavigatePromiseList = [delay(5000)]
+            // let navigateFinishSelector = navigateEntry.flag
+            // if (navigateFinishSelector) {
+            //     const hideMode = navigateFinishSelector[0] === '!'
+            //     if (hideMode) {
+            //         navigateFinishSelector = navigateFinishSelector.substring(1)
+            //         // first, wait for the loading indicator visible
+            //         await this.page.waitForFunction(selector => {
+            //             const el = document.querySelector(selector)
+            //             return (el && el.style.display !== 'none' && el.style.visibility === 'visible' && el.style.opacity !== '0')
+            //         }, { timeout: 3000 }, navigateFinishSelector)
+
+            //         // second, wait for the indicator hidden
+            //         waitForNavigatePromiseList.push(this.page.waitForFunction(selector => {
+            //             const el = document.querySelector(selector)
+            //             return !(el && el.style.display !== 'none' && el.style.visibility === 'visible' && el.style.opacity !== '0')
+            //         }, { timeout: 20000 }, navigateFinishSelector))
+            //     } else {
+            //         waitForNavigatePromiseList.push(this.page.waitForFunction(selector => !!document.querySelector(selector), { timeout: 20000 }, navigateFinishSelector))
+            //     }
+            // }
+
+            // await Promise.all(waitForNavigatePromiseList)
+            await delay(10000)
+        } catch (error) {
+            console.error(error)
         }
-
-        await Promise.all(waitForNavigatePromiseList)
 
         await asyncForEach(this.flatList, async (entry, i) => {
             const id = entry.data.id
