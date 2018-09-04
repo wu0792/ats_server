@@ -31,12 +31,23 @@
                 </div>
 
                 <div>
-                    <label class='desc' for='noMockUrls'> URL配置： </label>
+                    <label class='desc' for='noMockUrls'> NETWORK URL： </label>
                     <div>
-                        <textarea id='noMockUrls' name='noMockUrls' rows='5' tabindex='3' placeholder=`指定network, navigate的匹配规则，分下面几类：\n
-                        1）需要测试业务逻辑的JS，在测试（test）阶段，对原js的请求url进行替换，格式：oldurl.com/old/(.*).js=>newUrl.com/new/$1.js\n
-                        2）对于不要求URL完全相等的ajax请求，比如URL中包含一些随机数字，格式：*flights.ctrip.com/international/Book/Api/.*\n
-                        3）对于不要求URL完全相等的页面导航，比如内部有逻辑判断`></textarea>
+                        <textarea id='noMockUrls' name='noMockUrls' rows='5' tabindex='3' placeholder='需要测试业务逻辑的JS，在测试（test）阶段，对原js的请求url进行替换，格式：oldurl.com/old/(.*).js=&gt;newUrl.com/new/$1.js'></textarea>
+                    </div>
+                </div>
+
+                <div>
+                    <label class='desc' for='looseAjaxUrls'> AJAX URL： </label>
+                    <div>
+                        <textarea id='looseAjaxUrls' name='looseAjaxUrls' rows='5' tabindex='3' placeholder='对于不要求URL完全相等的ajax请求，比如URL中包含一些随机数，格式：flights.ctrip.com/international/Book/Api/.*'></textarea>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class='desc' for='looseNavigateUrls'> NAVIGATE URL： </label>
+                    <div>
+                        <textarea id='looseNavigateUrls' name='looseNavigateUrls' rows='5' tabindex='3' placeholder='对于不要求URL完全相等的页面导航，格式：flights.ctrip.com/international/Book/Api/.*'></textarea>
                     </div>
                 </div>
 

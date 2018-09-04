@@ -3,12 +3,24 @@ const ActionEntry = require('../analysis/actionEntryBase')
 const urlParser = require('url')
 const fs = require('fs')
 
+const getTargetUrl = (url, testRegSource) => {
+    let targetUrl = url
+
+    if (testRegSource.indexOf('http') !== 0) {
+        let parsedUrl = urlParser.parse(targetUrl)
+        targetUrl = `${parsedUrl.host}${parsedUrl.pathname}`
+    }
+
+    return targetUrl
+}
+
 const ACTION_TYPES = new Enum({
     NETWORK: {
         collect: (data) => new ActionEntry.NetworkActionEntry(data),
         preProcess: async (director) => {
             let page = director.page,
-                noMockUrlRegexs = director.noMockUrls.length ? director.noMockUrls.map(urlArray => new RegExp(urlArray[1])) : [],
+                looseAjaxUrls = director.looseAjaxUrls,
+                noMockUrlRegexs = director.noMockUrls.length ? director.noMockUrls.map(urlArray => new RegExp(urlArray[0])) : [],
                 entryList = director.groupedList[ACTION_TYPES.NETWORK.key],
                 canMock = director.mode.value.canMock
 
@@ -20,18 +32,13 @@ const ACTION_TYPES = new Enum({
                         url = request.url()
 
                     if (canMock && noMockUrlRegexs.some((regex, index) => {
-                        let targetUrl = url,
-                            noMockUrl = regex.source
-
-                        if (noMockUrl.indexOf('http') !== 0) {
-                            let parsedUrl = urlParser.parse(targetUrl)
-                            targetUrl = `${parsedUrl.host}${parsedUrl.pathname}`
-                        }
+                        let noMockUrl = regex.source,
+                            targetUrl = getTargetUrl(url, noMockUrl)
 
                         let matched = regex.test(targetUrl)
                         if (matched) {
-                            if (director.noMockUrls[index].length === 3) {
-                                redirectUrl = url.replace(new RegExp(noMockUrl), director.noMockUrls[index][2])
+                            if (director.noMockUrls[index].length === 2) {
+                                redirectUrl = url.replace(new RegExp(noMockUrl), director.noMockUrls[index][1])
                             }
                             return true
                         } else {
@@ -54,13 +61,9 @@ const ACTION_TYPES = new Enum({
                                 parsedEntryUrl = urlParser.parse(entry.url),
                                 entryUrlPath = `${parsedEntryUrl.host}${parsedEntryUrl.pathname}`
 
-                            return entry.method === method && (entry.url === url || (targetUrlPath === entryUrlPath && noMockUrlRegexs.some((regex, index) => {
-                                let looseMatch = director.noMockUrls[index][0]
-                                if (looseMatch) {
-                                    return regex.test(url)
-                                } else {
-                                    return false
-                                }
+                            return entry.method === method && (entry.url === url || (targetUrlPath === entryUrlPath && looseAjaxUrls.some((looseAjaxUrl) => {
+                                let targetUrl = getTargetUrl(url, looseAjaxUrl)
+                                return new RegExp(looseAjaxUrl).test(targetUrl)
                             })))
                         })
 
@@ -89,6 +92,7 @@ const ACTION_TYPES = new Enum({
         collect: (data) => new ActionEntry.NavigateActionEntry(data),
         preProcess: async (director) => {
             let page = director.page,
+                looseNavigateUrls = director.looseNavigateUrls,
                 entryList = director.groupedList[ACTION_TYPES.NAVIGATE.key]
 
             if (entryList.length) {
@@ -109,11 +113,16 @@ const ACTION_TYPES = new Enum({
                     firstEntryUrl = firstEntry.url
 
                 if (url !== firstEntryUrl) {
-                    const parsedPageUrl = urlParser.parse(firstEntryUrl),
-                        hash = parsedPageUrl.hash
+                    if (!looseNavigateUrls.some(looseNavigateUrl => {
+                        let targetUrl = getTargetUrl(url, looseNavigateUrl)
+                        return new RegExp(looseNavigateUrl).test(targetUrl)
+                    })) {
+                        const parsedPageUrl = urlParser.parse(firstEntryUrl),
+                            hash = parsedPageUrl.hash
 
-                    if (!hash || url !== firstEntryUrl.replace(hash, ''))
-                        console.error(`navigate url not matched with records, expected: ${entryList[0].url}, actual: ${url}`)
+                        if (!hash || url !== firstEntryUrl.replace(hash, ''))
+                            console.error(`navigate url not matched with records, expected: ${entryList[0].url}, actual: ${url}`)
+                    }
                 }
 
                 entryList.splice(0, 1)

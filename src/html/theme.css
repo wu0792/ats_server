@@ -54,13 +54,14 @@ form>div>fieldset>div>div {
 
 form>div>label,
 legend {
-    width: 80px;
+    width: 120px;
     float: left;
+    font-size: 14px;
 }
 
 form>div>div,
 form>div>fieldset>div {
-    width: 50%;
+    width: 80%;
     box-sizing: border-box;
     display: inline-block;
 }

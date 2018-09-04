@@ -6,7 +6,7 @@ const MarkCursor = require('../common/markCursor')
 const expect = require('expect-puppeteer')
 
 class Director {
-    constructor(mode, notifier, page, groupedList, systemInfo, flatList, noMockUrls, isPreview) {
+    constructor(mode, notifier, page, groupedList, systemInfo, flatList, noMockUrls, looseAjaxUrls, looseNavigateUrls, isPreview) {
         this.mode = mode
         this.notifier = notifier
         this.page = page
@@ -15,6 +15,8 @@ class Director {
         this.flatList = flatList
         this.isPreview = isPreview
         this.finishedCount = 0
+        this.looseAjaxUrls = looseAjaxUrls
+        this.looseNavigateUrls = looseNavigateUrls
         // the urls has following formats:
         // ['oldurl.com/old/path1.js',
         //  'oldurl.com/old/path2.js=>newUrl.com/new/path2.js',
@@ -24,17 +26,12 @@ class Director {
         // while the next one redirect to specific url : 
         this.noMockUrls = noMockUrls.map(noMockUrl => {
             //universal the format
-            let arrowSplitIndex = noMockUrl.indexOf('=>'),
-                startsWithStart = noMockUrl[0] === '*'
-
-            if (startsWithStart) {
-                noMockUrl = noMockUrl.substring(1)
-            }
+            let arrowSplitIndex = noMockUrl.indexOf('=>')
 
             if (arrowSplitIndex >= 0) {
-                return [startsWithStart, noMockUrl.substring(0, arrowSplitIndex), noMockUrl.substring(arrowSplitIndex + 2)]
+                return [noMockUrl.substring(0, arrowSplitIndex), noMockUrl.substring(arrowSplitIndex + 2)]
             } else {
-                return [startsWithStart, noMockUrl, '']
+                return [noMockUrl, '']
             }
         })
         this.currentNavigateId = NaN

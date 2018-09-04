@@ -18,7 +18,7 @@ let systemInfo,
  * @param {the flat data retrieved from data file} flatList 
  * @param {urls that config the mock} noMockUrls
  */
-async function runPuppeteer(mode, notifier, groupedList, systemInfo, flatList, noMockUrls, isPreview) {
+async function runPuppeteer(mode, notifier, groupedList, systemInfo, flatList, noMockUrls, looseAjaxUrls, looseNavigateUrls, isPreview) {
     if (browser) {
         await browser.close()
     }
@@ -39,14 +39,17 @@ async function runPuppeteer(mode, notifier, groupedList, systemInfo, flatList, n
     await page.setRequestInterception(true)
     await page.setViewport({ width: innerWidth, height: innerHeight })
 
-    const director = new Director(mode, notifier, page, groupedList, systemInfo, flatList, noMockUrls, isPreview)
+    const director = new Director(mode, notifier, page, groupedList, systemInfo, flatList, noMockUrls, looseAjaxUrls, looseNavigateUrls, isPreview)
     await director.preProcess()
 }
 
 //tab1.saveConfig
 document.getElementById('saveConfig').addEventListener('click', function () {
     let dataFilePath = document.getElementById('dataFilePath').value.trim(),
-        noMockUrls = document.getElementById('noMockUrls').value.trim().split('\n').map(val => val.trim()).filter(val => val),
+        processMultipleText = (value) => value.trim().split('\n').map(val => val.trim()).filter(val => val),
+        noMockUrls = processMultipleText(document.getElementById('noMockUrls').value),
+        looseAjaxUrls = processMultipleText(document.getElementById('looseAjaxUrls').value),
+        looseNavigateUrls = processMultipleText(document.getElementById('looseNavigateUrls').value),
         title = document.getElementById('title').value.trim()
 
     if (!dataFilePath) {
@@ -57,7 +60,9 @@ document.getElementById('saveConfig').addEventListener('click', function () {
     let data = {
         dataFilePath,
         title,
-        noMockUrls
+        noMockUrls,
+        looseAjaxUrls,
+        looseNavigateUrls
     }
 
     SaveFile.saveJson(data, document, `ats_config_${getNowString()}.json`)
@@ -79,7 +84,7 @@ async function readConfigFrom(configFilePath) {
  */
 async function prepare(configFilePath, mode, notifier, isPreview) {
     const configJson = await readConfigFrom(configFilePath),
-        { dataFilePath, title, noMockUrls } = configJson,
+        { dataFilePath, title, noMockUrls, looseAjaxUrls, looseNavigateUrls } = configJson,
         receiver = new Receiver(dataFilePath),
         groupPromise = receiver.dumpGroupedListWrapper(),
         wrapper = await groupPromise,
@@ -94,7 +99,7 @@ async function prepare(configFilePath, mode, notifier, isPreview) {
 
     systemInfo = wrapper.systemInfo
 
-    runPuppeteer(mode, notifier, wrapper.groupedList, wrapper.systemInfo, list, noMockUrls, isPreview)
+    runPuppeteer(mode, notifier, wrapper.groupedList, wrapper.systemInfo, list, noMockUrls, looseAjaxUrls, looseNavigateUrls, isPreview)
 }
 
 //tab2.run expect
