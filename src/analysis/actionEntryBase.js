@@ -139,7 +139,6 @@ class MutationActionEntry extends ActionEntryBase {
     }
 
     async process(page, systemInfo, mode, isPreview) {
-        return
         // preview mode doesn't capture images.
         if (isPreview) return
 
