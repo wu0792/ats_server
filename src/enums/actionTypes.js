@@ -2,6 +2,7 @@ const Enum = require('enum')
 const ActionEntry = require('../analysis/actionEntryBase')
 const urlParser = require('url')
 const fs = require('fs')
+const normalizeRedirectUrl = require('../common/normalizeRedirectUrl')
 
 const getTargetUrl = (url, testRegSource) => {
     let targetUrl = url
@@ -26,7 +27,7 @@ const ACTION_TYPES = new Enum({
 
             if (entryList.length) {
                 await page.setRequestInterception(true)
-                page.on('request', request => {
+                page.on('request', async request => {
                     let redirectUrl = ''
                     const method = request.method(),
                         url = request.url()
@@ -70,15 +71,27 @@ const ACTION_TYPES = new Enum({
                         if (firstMatchedRequestIndex >= 0) {
                             console.log(`respond: ${url}`)
                             const validRequest = entryList[firstMatchedRequestIndex],
-                                { body, status, header } = validRequest
+                                { body, status, header, redirectUrl } = validRequest
 
                             entryList.splice(firstMatchedRequestIndex, 1)
 
-                            request.respond({
-                                status: status,
-                                body: body,
-                                headers: header
-                            })
+                            if (redirectUrl) {
+                                const normalizeUrl = normalizeRedirectUrl(url, redirectUrl),
+                                    nextNavigateEntry = director.flatList.find(entry => entry.data.id === director.nextNavigateId),
+                                    nextNavigateUrl = nextNavigateEntry ? nextNavigateEntry.data.url : ''
+
+                                if (normalizeUrl === nextNavigateUrl) {
+                                    await page.goto(nextNavigateUrl)
+                                } else {
+                                    request.continue({ url: normalizeRedirectUrl })
+                                }
+                            } else {
+                                request.respond({
+                                    status: status,
+                                    body: body,
+                                    headers: header
+                                })
+                            }
                         } else {
                             console.log(`continue: ${url}`)
                             request.continue()
