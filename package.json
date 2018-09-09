@@ -5,7 +5,8 @@
   "private": true,
   "main": "src/index.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "package-win": "electron-packager . electron-tutorial-app --overwrite --asar=true --platform=win32 --arch=all --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"ATS\""
   },
   "keywords": [],
   "author": "",
@@ -23,6 +24,7 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
-    "electron": "^2.0.5"
+    "electron": "2.0.3",
+    "electron-packager": "^12.1.0"
   }
 }
