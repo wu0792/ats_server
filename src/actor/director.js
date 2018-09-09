@@ -6,7 +6,7 @@ const MarkCursor = require('../common/markCursor')
 const expect = require('expect-puppeteer')
 
 class Director {
-    constructor(mode, notifier, page, groupedList, systemInfo, flatList, noMockUrls, looseAjaxUrls, looseNavigateUrls, isPreview) {
+    constructor(mode, notifier, page, groupedList, systemInfo, flatList, noMockUrls, looseAjaxUrls, isPreview) {
         this.mode = mode
         this.notifier = notifier
         this.page = page
@@ -16,7 +16,6 @@ class Director {
         this.isPreview = isPreview
         this.finishedCount = 0
         this.looseAjaxUrls = looseAjaxUrls
-        this.looseNavigateUrls = looseNavigateUrls
         // the urls has following formats:
         // ['oldurl.com/old/path1.js',
         //  'oldurl.com/old/path2.js=>newUrl.com/new/path2.js',

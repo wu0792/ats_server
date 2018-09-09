@@ -105,7 +105,6 @@ const ACTION_TYPES = new Enum({
         collect: (data) => new ActionEntry.NavigateActionEntry(data),
         preProcess: async (director) => {
             let page = director.page,
-                looseNavigateUrls = director.looseNavigateUrls,
                 entryList = director.groupedList[ACTION_TYPES.NAVIGATE.key]
 
             if (entryList.length) {
@@ -126,16 +125,11 @@ const ACTION_TYPES = new Enum({
                     firstEntryUrl = firstEntry.url
 
                 if (url !== firstEntryUrl) {
-                    if (!looseNavigateUrls.some(looseNavigateUrl => {
-                        let targetUrl = getTargetUrl(url, looseNavigateUrl)
-                        return new RegExp(looseNavigateUrl).test(targetUrl)
-                    })) {
-                        const parsedPageUrl = urlParser.parse(firstEntryUrl),
-                            hash = parsedPageUrl.hash
+                    const parsedPageUrl = urlParser.parse(firstEntryUrl),
+                        hash = parsedPageUrl.hash
 
-                        if (!hash || url !== firstEntryUrl.replace(hash, ''))
-                            console.error(`navigate url not matched with records, expected: ${entryList[0].url}, actual: ${url}`)
-                    }
+                    if (!hash || url !== firstEntryUrl.replace(hash, ''))
+                        console.error(`navigate url not matched with records, expected: ${entryList[0].url}, actual: ${url}`)
                 }
 
                 entryList.splice(0, 1)
