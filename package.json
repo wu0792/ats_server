@@ -6,7 +6,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "electron .",
-    "package-win": "electron-packager . electron-tutorial-app --overwrite --asar=true --platform=win32 --arch=all --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"ATS\"",
+    "package-win": "electron-packager . ats --overwrite --asar=true --platform=win32 --arch=x64 --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"ATS\"",
     "create-installer-win": "node installers/windows/createinstaller.js"
   },
   "keywords": [],
