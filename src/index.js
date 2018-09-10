@@ -5,13 +5,52 @@ if (setupEvents.handleSquirrelEvent()) {
     return;
 }
 
-const electron = require('electron');
+const electron = require('electron')
 
-const app = electron.app;
-const BrowserWindow = electron.BrowserWindow;
+const { app, BrowserWindow, Menu } = electron
 
-const path = require('path');
-const url = require('url');
+const path = require('path')
+const url = require('url')
+const { onSetChromiumPath } = require('./common/chromiumPathHandler')
+
+const menuTemplate = [
+    {
+        label: '查看',
+        submenu: [
+            {
+                label: '设置chrominum路径',
+                click() {
+                    onSetChromiumPath()
+                }
+            },
+            {
+                label: 'Developer Tools',
+                accelerator: 'Ctrl+Shift+I',
+                click(item, focusedWindow) {
+                    focusedWindow.toggleDevTools()
+                }
+            },
+            {
+                label: '退出',
+                accelerator: 'Ctrl+Q',
+                click: () => {
+                    app.quit()
+                }
+            }
+        ]
+    },
+    {
+        label: '帮助',
+        submenu: [
+            {
+                label: '关于',
+                click() {
+                    alert('ATS V1.0.1')
+                }
+            }
+        ]
+    }
+]
 
 let mainWindow;
 
@@ -30,6 +69,9 @@ function createWindow() {
         mainWindow = null;
     });
 }
+
+const mainMenu = Menu.buildFromTemplate(menuTemplate)
+Menu.setApplicationMenu(mainMenu)
 
 app.on('ready', createWindow);
 

@@ -6,9 +6,17 @@ const puppeteer = require('puppeteer')
 const getNowString = require('../common/getNowString')
 const readFilePromise = require('fs-readfile-promise')
 const getImageBase64 = require('../common/getImageBase64')
+const fs = require('fs')
+const { onSetChromiumPath, onGetChromiumPath } = require('../common/chromiumPathHandler')
 
 let systemInfo,
-    browser
+    browser,
+    chromiumPath = onGetChromiumPath()
+
+if (!chromiumPath || !fs.existsSync(chromiumPath)) {
+    onSetChromiumPath()
+    chromiumPath = onGetChromiumPath()
+}
 
 /**
  * 
@@ -23,11 +31,11 @@ async function runPuppeteer(mode, notifier, groupedList, systemInfo, flatList, n
         await browser.close()
     }
 
-    const { outerWidth, outerHeight, innerWidth, innerHeight } = systemInfo.initSize
+    const { innerWidth, innerHeight } = systemInfo.initSize
     browser = await puppeteer.launch({
         headless: !isPreview,
         slowMo: 25,
-        executablePath: 'node_modules/puppeteer/.local-chromium/win64-571375/chrome-win32/chrome.exe',
+        executablePath: chromiumPath,
         args: [
             '--disable-infobars',
             // `--window-size=${outerWidth},${outerHeight}`,
@@ -409,3 +417,4 @@ document.getElementById('runActualPreview').addEventListener('click', async func
         onFinishEntry: (entry) => onFinishEntry(ACTUAL, entry)
     }, true)
 })
+
