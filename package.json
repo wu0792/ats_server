@@ -6,7 +6,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "electron .",
-    "package-win": "electron-packager . ats --overwrite --asar=true --platform=win32 --arch=x64 --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"ATS\"",
+    "package-win": "electron-packager . ats --overwrite --asar=true --platform=win32 --arch=x64 --prune=true --out=release --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"ATS\"",
     "create-installer-win": "node installers/windows/createinstaller.js"
   },
   "keywords": [],
@@ -15,6 +15,7 @@
   "dependencies": {
     "copy-webpack-plugin": "^4.5.2",
     "css-selector-generator": "^1.0.2",
+    "electron-winstaller": "^2.6.4",
     "enum": "^2.5.0",
     "expect-puppeteer": "^3.2.0",
     "fs-readfile-promise": "^3.0.1",

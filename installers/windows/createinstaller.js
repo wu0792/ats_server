@@ -11,11 +11,11 @@ getInstallerConfig()
 function getInstallerConfig() {
     console.log('creating windows installer')
     const rootPath = path.join('./')
-    const outPath = path.join(rootPath, 'release-builds')
+    const outPath = path.join(rootPath, 'release')
 
     return Promise.resolve({
         appDirectory: path.join(outPath, 'ats-win32-x64/'),
-        authors: 'Christian Engvall',
+        authors: 'wumm@ctrip.com',
         noMsi: true,
         outputDirectory: path.join(outPath, 'windows-installer'),
         exe: 'ats.exe',
