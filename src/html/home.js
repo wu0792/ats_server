@@ -11,12 +11,19 @@ const { onSetChromiumPath, onGetChromiumPath } = require('../common/chromiumPath
 
 let systemInfo,
     browser,
-    chromiumPath = onGetChromiumPath()
+    chromiumPath = ''
 
-if (!chromiumPath || !fs.existsSync(chromiumPath)) {
-    onSetChromiumPath()
+let checkChromiumPath = () => {
     chromiumPath = onGetChromiumPath()
+    if (!chromiumPath || !fs.existsSync(chromiumPath)) {
+        onSetChromiumPath(newPath => {
+            chromiumPath = newPath
+            checkChromiumPath()
+        })
+    }
 }
+
+checkChromiumPath()
 
 /**
  * 
