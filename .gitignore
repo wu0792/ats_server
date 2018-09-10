@@ -10,4 +10,4 @@ build/ext/panel.js
 expect
 actual
 compare
-release-builds
+release

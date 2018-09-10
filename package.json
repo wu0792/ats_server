@@ -6,8 +6,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "electron .",
-    "package-win": "electron-packager . ats --overwrite --asar=true --platform=win32 --arch=x64 --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"ATS\"",
-    "create-installer-win": "node installers/windows/createinstaller.js"
+    "package-win": "electron-packager . ats --overwrite --asar=true --platform=win32 --arch=x64 --prune=true --out=release --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"ATS\" && node installers/windows/createinstaller.js"
   },
   "keywords": [],
   "author": "",
@@ -16,16 +15,17 @@
     "copy-webpack-plugin": "^4.5.2",
     "css-selector-generator": "^1.0.2",
     "enum": "^2.5.0",
-    "expect-puppeteer": "^3.2.0",
     "fs-readfile-promise": "^3.0.1",
     "pixelmatch": "^4.0.2",
     "pngjs": "^3.3.3",
     "puppeteer": "^1.6.0",
     "uglifyjs-webpack-plugin": "^1.2.7",
-    "url": "^0.11.0"
+    "url": "^0.11.0",
+    "expect-puppeteer": "^3.2.0"
   },
   "devDependencies": {
     "electron": "2.0.3",
-    "electron-packager": "^12.1.0"
+    "electron-packager": "^12.1.0",
+    "electron-winstaller": "^2.6.4"
   }
 }
