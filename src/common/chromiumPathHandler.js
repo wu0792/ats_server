@@ -17,6 +17,7 @@ const onSetChromiumPath = (cb) => {
         let chromiumPath = path
 
         prompt({
+            alwaysOnTop: true,
             title: '设置 Chromium 路径',
             label: '安装Chromium后的exe路径(下载地址: https://download-chromium.appspot.com/)',
             value: chromiumPath,

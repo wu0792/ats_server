@@ -11,3 +11,4 @@ expect
 actual
 compare
 release
+**/config.json
