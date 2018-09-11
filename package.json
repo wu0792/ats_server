@@ -6,7 +6,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "electron .",
-    "package-win": "rm -rf node_modules/puppeteer/.local-chromium && electron-packager . ats --overwrite --asar=true --platform=win32 --arch=x64 --prune=true --out=release --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"ATS\" && node installers/windows/createinstaller.js"
+    "package-win": "rm src/common/config.json -f && rm -rf node_modules/puppeteer/.local-chromium && electron-packager . ats --overwrite --asar=true --platform=win32 --arch=x64 --prune=true --out=release --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"ATS\" && node installers/windows/createinstaller.js"
   },
   "keywords": [],
   "author": "",
