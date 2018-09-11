@@ -21,6 +21,7 @@
     "pixelmatch": "^4.0.2",
     "pngjs": "^3.3.3",
     "puppeteer": "^1.6.0",
+    "teeny-conf": "^2.0.1",
     "uglifyjs-webpack-plugin": "^1.2.7",
     "url": "^0.11.0"
   },

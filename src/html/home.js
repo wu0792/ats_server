@@ -14,13 +14,15 @@ let systemInfo,
     chromiumPath = ''
 
 let checkChromiumPath = () => {
-    chromiumPath = onGetChromiumPath()
-    if (!chromiumPath || !fs.existsSync(chromiumPath)) {
-        onSetChromiumPath(newPath => {
-            chromiumPath = newPath
-            checkChromiumPath()
-        })
-    }
+    onGetChromiumPath().then(path => {
+        chromiumPath = path
+        if (!chromiumPath || !fs.existsSync(chromiumPath)) {
+            onSetChromiumPath(newPath => {
+                chromiumPath = newPath
+                checkChromiumPath()
+            })
+        }
+    })
 }
 
 checkChromiumPath()
