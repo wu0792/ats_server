@@ -4,7 +4,19 @@ const tenny = require('teeny-conf')
 const path = require('path')
 const fs = require('fs')
 
-const CONFIG_FILE_PATH = path.join(__dirname, './config.json')
+const CONFIG_FILE_NAME = 'config.json'
+let CONFIG_FILE_PATH = path.join(__dirname, CONFIG_FILE_NAME).replace('/', '\\')
+
+let asarIndex = CONFIG_FILE_PATH.indexOf('.asar\\')
+if (asarIndex > 0) {
+    let prevPath = CONFIG_FILE_PATH.substr(0, asarIndex),
+        pathArray = prevPath.split('\\'),
+        appRootPath = pathArray.filter((val, index) => index < pathArray.length - 3)
+
+    appRootPath.push(CONFIG_FILE_NAME)
+
+    CONFIG_FILE_PATH = appRootPath.join('\\')
+}
 
 if (!fs.existsSync(CONFIG_FILE_PATH)) {
     fs.appendFileSync(CONFIG_FILE_PATH, '{}', 'utf8')
@@ -28,10 +40,12 @@ const onSetChromiumPath = (cb) => {
             width: 400,
             height: 200
         }).then(newPath => {
-            config.set(STORAGE_KEYS.CHROMIUM_PATH, newPath)
-            config.save().then(() => {
-                typeof cb === 'function' && cb(newPath)
-            })
+            if (newPath) {
+                config.set(STORAGE_KEYS.CHROMIUM_PATH, newPath)
+                config.save().then(() => {
+                    typeof cb === 'function' && cb(newPath)
+                })
+            }
         })
     })
 }
