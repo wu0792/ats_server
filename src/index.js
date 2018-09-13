@@ -42,12 +42,12 @@ const menuTemplate = [
     {
         label: '帮助',
         submenu: [
-            {
-                label: '关于',
-                click() {
-                    alert('ATS V1.0.1')
-                }
-            }
+            // {
+            //     label: '关于',
+            //     click() {
+            //         alert('ATS V1.0.1')
+            //     }
+            // }
         ]
     }
 ]

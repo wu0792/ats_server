@@ -8,10 +8,13 @@ const readFilePromise = require('fs-readfile-promise')
 const getImageBase64 = require('../common/getImageBase64')
 const fs = require('fs')
 const { onSetChromiumPath, onGetChromiumPath } = require('../common/chromiumPathHandler')
+const SystemInfo = require('../analysis/systemInfo')
 
 let systemInfo,
     browser,
     chromiumPath = ''
+
+document.title = `ATS ${SystemInfo.version}`
 
 let checkChromiumPath = () => {
     onGetChromiumPath().then(path => {
@@ -426,4 +429,3 @@ document.getElementById('runActualPreview').addEventListener('click', async func
         onFinishEntry: (entry) => onFinishEntry(ACTUAL, entry)
     }, true)
 })
-

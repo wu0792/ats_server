@@ -1,5 +1,5 @@
 const STORAGE_KEYS = require('./storageKeys')
-const prompt = require('electron-prompt')
+const prompt = require('./prompt/index')
 const tenny = require('teeny-conf')
 const path = require('path')
 const fs = require('fs')
@@ -31,13 +31,13 @@ const onSetChromiumPath = (cb) => {
         prompt({
             alwaysOnTop: true,
             title: '设置 Chromium 路径',
-            label: '安装Chromium后的exe路径(下载地址: https://download-chromium.appspot.com/)',
+            label: ['请输入安装Chromium后的chrome.exe文件的完整路径', '(下载地址: https://download-chromium.appspot.com/)'],
             value: chromiumPath,
             inputAttrs: {
                 type: 'text'
             },
             type: 'input',
-            width: 400,
+            width: 500,
             height: 200
         }).then(newPath => {
             if (newPath) {
