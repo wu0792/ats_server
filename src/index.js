@@ -12,6 +12,7 @@ const { app, BrowserWindow, Menu } = electron
 const path = require('path')
 const url = require('url')
 const { onSetChromiumPath } = require('./common/chromiumPathHandler')
+const autoOpenLink = require('./common/autoOpenLink/main')
 
 const menuTemplate = [
     {
@@ -42,12 +43,12 @@ const menuTemplate = [
     {
         label: '帮助',
         submenu: [
-            // {
-            //     label: '关于',
-            //     click() {
-            //         alert('ATS V1.0.1')
-            //     }
-            // }
+            {
+                label: 'CONF文档',
+                click() {
+                    autoOpenLink('http://www.baidu.com')
+                }
+            }
         ]
     }
 ]
