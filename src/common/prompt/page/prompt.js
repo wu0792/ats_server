@@ -1,5 +1,4 @@
 const { ipcRenderer } = require('electron');
-const docReady = require('doc-ready');
 
 let promptId = null;
 let promptOptions = null;
@@ -37,7 +36,7 @@ window.addEventListener('error', error => {
 	}
 });
 
-docReady(() => {
+document.addEventListener('DOMContentLoaded', function (event) {
 	promptId = document.location.hash.replace('#', '');
 
 	try {
@@ -111,4 +110,4 @@ docReady(() => {
 	if (promptOptions.type === 'input') {
 		dataEl.select();
 	}
-});
+})

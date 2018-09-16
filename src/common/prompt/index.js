@@ -34,14 +34,12 @@ function electronPrompt(options, parentWindow) {
 			height: opts.height,
 			resizable: opts.resizable,
 			parent: parentWindow,
-			skipTaskbar: true,
+			skipTaskbar: false,
 			alwaysOnTop: opts.alwaysOnTop,
 			useContentSize: true,
 			modal: Boolean(parentWindow),
 			title: opts.title,
-			icon: opts.icon,
-			minimizable: false,
-			closable: false
+			icon: opts.icon
 		});
 
 		promptWindow.setMenu(null);

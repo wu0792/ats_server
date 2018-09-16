@@ -1,5 +1,4 @@
 const { ipcRenderer } = require('electron');
-const docReady = require('doc-ready');
 
 let promptId = null;
 let url = null;
@@ -17,7 +16,7 @@ window.addEventListener('error', error => {
     }
 });
 
-docReady(() => {
+document.addEventListener('DOMContentLoaded', () => {
     try {
         url = ipcRenderer.sendSync('auto-open-link-get-options')
         let link = document.getElementById('link')
@@ -27,5 +26,4 @@ docReady(() => {
         return onError(e);
     }
 })
-
 
