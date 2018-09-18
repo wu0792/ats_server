@@ -49,11 +49,11 @@ const ACTION_TYPES = new Enum({
                         if (redirectUrl) {
                             // redirect url
                             console.log(`redirect url: ${url} => ${redirectUrl}`)
-                            request.continue({ url: redirectUrl })
+                            await request.continue({ url: redirectUrl })
                         } else {
                             // not mock the url if match any of noMockUrlRegex
                             console.log(`continue: ${url}`)
-                            request.continue()
+                            await request.continue()
                         }
                     } else {
                         const firstMatchedRequestIndex = entryList.findIndex(entry => {
@@ -83,10 +83,10 @@ const ACTION_TYPES = new Enum({
                                 if (normalizeUrl === nextNavigateUrl) {
                                     await page.goto(nextNavigateUrl)
                                 } else {
-                                    request.continue({ url: normalizeRedirectUrl })
+                                    await request.continue({ url: nextNavigateUrl })
                                 }
                             } else {
-                                request.respond({
+                                await request.respond({
                                     status: status,
                                     body: body,
                                     headers: header
@@ -94,7 +94,7 @@ const ACTION_TYPES = new Enum({
                             }
                         } else {
                             console.log(`continue: ${url}`)
-                            request.continue()
+                            await request.continue()
                         }
                     }
                 })
