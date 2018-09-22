@@ -62,10 +62,10 @@ const ACTION_TYPES = new Enum({
                                 parsedEntryUrl = urlParser.parse(entry.url),
                                 entryUrlPath = `${parsedEntryUrl.host}${parsedEntryUrl.pathname}`
 
-                            return entry.method === method && (entry.url === url || (targetUrlPath === entryUrlPath && looseAjaxUrls.some((looseAjaxUrl) => {
+                            return (entry.url === url && entry.method === method) || (targetUrlPath === entryUrlPath && looseAjaxUrls.some((looseAjaxUrl) => {
                                 let targetUrl = getTargetUrl(url, looseAjaxUrl)
                                 return new RegExp(looseAjaxUrl).test(targetUrl)
-                            })))
+                            }))
                         })
 
                         if (firstMatchedRequestIndex >= 0) {
