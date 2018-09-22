@@ -51,8 +51,8 @@ class Director {
         this.finishedCount++
 
         if (this.isPreview) {
-            await expect(this.page).toMatchElement('head', { timeout: 2000 })
-            await expect(this.page).toMatchElement('body', { timeout: 2000 })
+            await expect(this.page).toMatchElement('head', { timeout: 30000 })
+            await expect(this.page).toMatchElement('body', { timeout: 30000 })
             await MarkCursor(this.page)
         }
 
