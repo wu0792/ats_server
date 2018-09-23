@@ -2,7 +2,7 @@ const Enum = require('enum')
 const ActionEntry = require('../analysis/actionEntryBase')
 const urlParser = require('url')
 const fs = require('fs')
-const normalizeRedirectUrl = require('../common/normalizeRedirectUrl')
+const normalizeRedirectUrlFunc = require('../common/normalizeRedirectUrl')
 
 const getTargetUrl = (url, testRegSource) => {
     let targetUrl = url
@@ -76,14 +76,19 @@ const ACTION_TYPES = new Enum({
                             entryList.splice(firstMatchedRequestIndex, 1)
 
                             if (redirectUrl) {
-                                const normalizeUrl = normalizeRedirectUrl(url, redirectUrl),
+                                const normalizeUrl = normalizeRedirectUrlFunc(url, redirectUrl),
                                     nextNavigateEntry = director.flatList.find(entry => entry.data.id === director.nextNavigateId),
                                     nextNavigateUrl = nextNavigateEntry ? nextNavigateEntry.data.url : ''
 
                                 if (normalizeUrl === nextNavigateUrl) {
                                     await page.goto(nextNavigateUrl)
                                 } else {
-                                    await request.continue({ url: nextNavigateUrl })
+                                    await request.respond({
+                                        status: status,
+                                        headers: {
+                                            location: normalizeUrl
+                                        }
+                                    })
                                 }
                             } else {
                                 await request.respond({
