@@ -16,6 +16,7 @@ class Director {
         this.isPreview = isPreview
         this.finishedCount = 0
         this.looseAjaxUrls = looseAjaxUrls
+        this.checkFinishTimeoutFlag = null
         // the urls has following formats:
         // ['oldurl.com/old/path1.js',
         //  'oldurl.com/old/path2.js=>newUrl.com/new/path2.js',
@@ -38,11 +39,23 @@ class Director {
     }
 
     async checkFinish() {
+        const doCompare = async () => {
+            await startCompare(this.systemInfo.id, this.notifier.onNotifyCompareProgress)
+        }
+
         if (this.finishedCount === this.flatList.length) {
             console.log('finish all process.')
 
             if (this.mode.value.needCompare) {
-                await startCompare(this.systemInfo.id, this.notifier.onNotifyCompareProgress)
+                await doCompare()
+            }
+        } else {
+            // if no more action after 30s, we alse do compare
+            if (this.mode.value.needCompare) {
+                clearTimeout(this.checkFinishTimeoutFlag)
+                this.checkFinishTimeoutFlag = setTimeout(async () => {
+                    await doCompare()
+                }, 30000)
             }
         }
     }

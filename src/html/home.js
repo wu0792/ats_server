@@ -303,7 +303,7 @@ const renderEqualsDetail = (index) => {
             span = document.createElement('span')
 
         span.className = 'equal_entry'
-        span.innerHTML = `[<span class='correct'>√</span>] ${fileName}`
+        span.innerHTML = `<span class='correct'>√</span> ${fileName}`
 
         getEqualsDetailEl().appendChild(span)
         getEqualsDetailEl().children[0].style.display = 'none'
@@ -320,7 +320,7 @@ const renderNotEqualsDetail = (index) => {
             id = fileNameMatch.length === 2 ? fileNameMatch[1] : 0
 
         span.className = 'equal_entry'
-        span.innerHTML = `[<span class='error'>×</span>] ${fileName} ${differentPixelCount} 不同像素点<a href='javascript:void(0);'><span class='viewNotEqualImage' fileId='${id}'>...</span></a>`
+        span.innerHTML = `<span class='error'>×</span> ${fileName} ${differentPixelCount} 不同像素点<a href='javascript:void(0);'><span class='viewNotEqualImage' fileId='${id}'>...</span></a>`
         span.querySelector('.viewNotEqualImage').addEventListener('click', (ev) => toggleNotEqualImage(ev))
 
         getNotEqualsDetailEl().appendChild(span)
