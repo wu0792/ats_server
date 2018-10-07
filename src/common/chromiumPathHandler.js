@@ -31,7 +31,7 @@ const onSetChromiumPath = (cb) => {
         prompt({
             alwaysOnTop: true,
             title: '设置 Chromium 路径',
-            label: ['请输入安装Chromium后的chrome.exe文件的完整路径', '(下载地址: https://download-chromium.appspot.com/)'],
+            label: ['请输入安装Chromium后的chrome.exe文件的完整路径', '(下载地址: https://pan.baidu.com/s/1-XOJAtj_r5zFxzdd6NO-vQ)'],
             value: chromiumPath,
             inputAttrs: {
                 type: 'text'

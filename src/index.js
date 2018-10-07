@@ -46,7 +46,7 @@ const menuTemplate = [
             {
                 label: 'CONF文档',
                 click() {
-                    autoOpenLink('http://www.baidu.com')
+                    autoOpenLink('https://note.youdao.com/share/?id=27c352acdd14370fa56405f71b9a3134&type=note#/')
                 }
             }
         ]
