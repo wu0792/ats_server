@@ -46,7 +46,7 @@ const menuTemplate = [
             {
                 label: 'CONF文档',
                 click() {
-                    autoOpenLink('https://note.youdao.com/share/?id=27c352acdd14370fa56405f71b9a3134&type=note#/')
+                    autoOpenLink('http://git.dev.sh.ctripcorp.com/wum/ats/wikis/ats%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3')
                 }
             }
         ]
