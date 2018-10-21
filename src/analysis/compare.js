@@ -18,28 +18,28 @@ function doCompare(id, fileName, index, count, notifier) {
             valid = false
         }
 
-        if (!valid) {
-            return
-        }
+        if (valid) {
+            let img1 = fs.createReadStream(img1Path).pipe(new PNG()).on('parsed', compare),
+                img2 = fs.createReadStream(img2Path).pipe(new PNG()).on('parsed', compare),
+                filesRead = 0;
 
-        let img1 = fs.createReadStream(img1Path).pipe(new PNG()).on('parsed', compare),
-            img2 = fs.createReadStream(img2Path).pipe(new PNG()).on('parsed', compare),
-            filesRead = 0;
+            function compare() {
+                if (++filesRead < 2) return
+                let diff = new PNG({ width: img1.width, height: img1.height })
 
-        function compare() {
-            if (++filesRead < 2) return;
-            let diff = new PNG({ width: img1.width, height: img1.height })
+                const differentPixelCount = pixelmatch(img1.data, img2.data, diff.data, img1.width, img1.height, { threshold: 0.1 });
+                if (differentPixelCount === 0) {
+                    notifier(index, count, fileName, 0)
+                } else {
+                    notifier(index, count, fileName, differentPixelCount)
+                }
+                if (differentPixelCount > 0) {
+                    diff.pack().pipe(fs.createWriteStream(`./compare/${id}/${fileName}`))
+                }
 
-            const differentPixelCount = pixelmatch(img1.data, img2.data, diff.data, img1.width, img1.height, { threshold: 0.1 });
-            if (differentPixelCount === 0) {
-                notifier(index, count, fileName, 0)
-            } else {
-                notifier(index, count, fileName, differentPixelCount)
+                resolve()
             }
-            if (differentPixelCount > 0) {
-                diff.pack().pipe(fs.createWriteStream(`./compare/${id}/${fileName}`))
-            }
-
+        } else {
             resolve()
         }
     })

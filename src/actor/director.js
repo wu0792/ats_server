@@ -63,6 +63,9 @@ class Director {
     async onDomContentLoaded(navigateEntry) {
         this.finishedCount++
 
+        // await this.checkFinish()
+        // return
+
         if (this.isPreview) {
             await expect(this.page).toMatchElement('head', { timeout: 30000 })
             await expect(this.page).toMatchElement('body', { timeout: 30000 })
