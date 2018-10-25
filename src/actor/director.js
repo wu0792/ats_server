@@ -74,41 +74,11 @@ class Director {
 
         this.notifier.onFinishEntry(this.flatList.find(entry => entry.data.id === navigateEntry.id))
 
-        try {
-            // let waitForNavigatePromiseList = [delay(5000)]
-            // let navigateFinishSelector = navigateEntry.flag
-            // if (navigateFinishSelector) {
-            //     const hideMode = navigateFinishSelector[0] === '!'
-            //     if (hideMode) {
-            //         navigateFinishSelector = navigateFinishSelector.substring(1)
-            //         // first, wait for the loading indicator visible
-            //         await this.page.waitForFunction(selector => {
-            //             const el = document.querySelector(selector)
-            //             return (el && el.style.display !== 'none' && el.style.visibility === 'visible' && el.style.opacity !== '0')
-            //         }, { timeout: 3000 }, navigateFinishSelector)
-
-            //         // second, wait for the indicator hidden
-            //         waitForNavigatePromiseList.push(this.page.waitForFunction(selector => {
-            //             const el = document.querySelector(selector)
-            //             return !(el && el.style.display !== 'none' && el.style.visibility === 'visible' && el.style.opacity !== '0')
-            //         }, { timeout: 20000 }, navigateFinishSelector))
-            //     } else {
-            //         waitForNavigatePromiseList.push(this.page.waitForFunction(selector => !!document.querySelector(selector), { timeout: 20000 }, navigateFinishSelector))
-            //     }
-            // }
-
-            // await Promise.all(waitForNavigatePromiseList)
-            await delay(10000)
-        } catch (error) {
-            console.error(error)
-        }
+        await delay(10000)
 
         const entryBelongToCurrentNavigate = this.flatList.filter(entry => entry.data.id > this.currentNavigateId && entry.data.id < this.nextNavigateId)
         await asyncForEach(entryBelongToCurrentNavigate, async (entry, i) => {
             try {
-                // const delayPromise = delay(i === 0 ? 0 : (new Date(this.flatList[i].data.time) - new Date(this.flatList[i - 1].data.time)))           
-                // await delayPromise
-
                 this.notifier.onStartEntry(entry)
                 await entry.process(this.page, this.systemInfo, this.mode, this.isPreview)
                 this.notifier.onFinishEntry(entry)
