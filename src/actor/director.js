@@ -47,6 +47,7 @@ class Director {
             console.log('finish all process.')
 
             if (this.mode.value.needCompare) {
+                clearTimeout(this.checkFinishTimeoutFlag)
                 await doCompare()
             }
         } else {

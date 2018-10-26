@@ -152,6 +152,8 @@ class MutationActionEntry extends ActionEntryBase {
             return
         }
 
+        await delay(200)
+
         const currentValidSelector = await resolveValidSelector(this, page, currentTarget),
             targetSelectors = systemInfo.rootTargets,
             isInTargets = currentValidSelector && (targetSelectors.length === 0 || await asyncSome(targetSelectors, async targetSelector => {
